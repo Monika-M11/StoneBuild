@@ -1,99 +1,42 @@
-/**
- * Theme for Pinterest-inspired social media UI
- * Palette: #574964 (primary dark purple), #9F8383 (accent), #C8AAAA (bg light), #FFDAB3 (highlight peach)
- */
+const lightColors = {
+  primaryDark: '#3C467B',
+  primary: '#50589C',
+  primaryLight: '#636CCB',
+  highlight: '#6E8CFB',
+  accent: '#6E8CFB',
 
-import { Platform } from 'react-native';
-
-const palette = {
-  primary: '#574964',
-  accent: '#9F8383',
-  backgroundLight: '#C8AAAA',
-  highlight: '#FFDAB3',
+  background: '#FFFFFF',
   white: '#FFFFFF',
-  black: '#000000',
+  text: '#1E1E2C',
+  textSecondary: '#6B7280',
+  icon: '#9CA3AF',
+  inputBg: '#F9FAFB',
+  inputBorder: '#E5E7EB',
+  border: '#E5E7EB',
 };
 
-export const Colors = {
-  light: {
-    text: palette.primary,
-    background: palette.backgroundLight,
-    tint: palette.highlight,
-    icon: palette.accent,
-    tabIconDefault: palette.accent,
-    tabIconSelected: palette.highlight,
-    primary: palette.primary,
-    accent: palette.accent,
-    highlight: palette.highlight,
-    gradientStart: palette.highlight,
-    gradientEnd: palette.backgroundLight,
-    inputBg: palette.white,
-    inputBorder: palette.accent,
-  },
-  dark: {
-    text: palette.white,
-    background: palette.primary,
-    tint: palette.highlight,
-    icon: palette.accent,
-    tabIconDefault: palette.accent,
-    tabIconSelected: palette.highlight,
-    primary: palette.primary,
-    accent: palette.accent,
-    highlight: palette.highlight,
-    gradientStart: palette.highlight,
-    gradientEnd: palette.primary,
-    inputBg: palette.primary + 'CC',
-    inputBorder: palette.accent,
-  },
+const darkColors = {
+  primaryDark: '#5A64B6',
+  primary: '#6D75C8',
+  primaryLight: '#8C96E6',
+  highlight: '#9FB4FF',
+  accent: '#9FB4FF',
+
+  background: '#0F0F23',
+  white: '#F8FAFC',
+  text: '#F1F5F9',
+  textSecondary: '#CBD5E1',
+  icon: '#94A3B8',
+  inputBg: '#1E1B29',
+  inputBorder: '#334155',
+  border: '#334155',
 };
 
-export const Shadows = {
-  card: {
-    shadowColor: palette.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  button: {
-    shadowColor: palette.highlight,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
-  },
+const Colors = {
+  light: lightColors,
+  dark: darkColors,
+  ...lightColors,  // Preserve flat access for backward compat
 };
 
-export const BorderRadius = {
-  sm: 8,
-  md: 12,
-  lg: 20,
-  xl: 30,
-};
-
-export const Fonts = Platform.select({
-  ios: {
-    sans: 'system-ui',
-    serif: 'ui-serif',
-    rounded: 'ui-rounded',
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
-
-// Hook to get theme colors
-export function useThemeColor(paletteName, colorScheme) {
-  const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
-  return theme[paletteName];
-}
+export { darkColors, lightColors };
+export default Colors;

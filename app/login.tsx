@@ -1,4 +1,7 @@
-import { Colors } from '@/constants/theme';
+import Colors from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -17,6 +20,17 @@ import {
 
 export default function Login() {
   const router = useRouter();
+  const theme = useColorScheme();
+  const primary = useThemeColor({ light: 'primary', dark: 'primary' }, 'primary');
+  const highlight = useThemeColor({ light: 'highlight', dark: 'highlight' }, 'highlight');
+  const inputBorder = useThemeColor({ light: 'inputBorder', dark: 'inputBorder' }, 'inputBorder');
+  const inputBg = useThemeColor({ light: 'inputBg', dark: 'inputBg' }, 'inputBg');
+  const text = useThemeColor({ light: 'text', dark: 'text' }, 'text');
+  const textSecondary = useThemeColor({ light: 'textSecondary', dark: 'textSecondary' }, 'textSecondary');
+  const icon = useThemeColor({ light: 'icon', dark: 'icon' }, 'icon');
+  const border = useThemeColor({ light: 'border', dark: 'border' }, 'border');
+  const background = useThemeColor({ light: 'background', dark: 'background' }, 'background');
+
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -52,7 +66,7 @@ export default function Login() {
   };
 
   const inputBorderColor = (field: string) =>
-    focusedField === field ? Colors.light.primary : Colors.light.inputBorder + '66';
+    focusedField === field ? primary : inputBorder + '66';
 
   return (
     <KeyboardAvoidingView
@@ -69,6 +83,19 @@ export default function Login() {
       >
         {/* Header */}
         <View style={styles.header}>
+          {/* Back button */}
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+            activeOpacity={0.7}
+          >
+            <Ionicons 
+              name="arrow-back" 
+              size={24} 
+              color={icon} 
+            />
+          </TouchableOpacity>
+          
           <View style={styles.logoMark}>
             <Text style={styles.logoSymbol}>✦</Text>
           </View>
@@ -92,7 +119,7 @@ export default function Login() {
               <TextInput
                 style={styles.input}
                 placeholder="Jane Doe"
-                placeholderTextColor={Colors.light.icon}
+                placeholderTextColor={icon}
                 value={name}
                 onChangeText={setName}
                 onFocus={() => setFocusedField('name')}
@@ -107,10 +134,10 @@ export default function Login() {
             <Text style={styles.inputLabel}>Email</Text>
             <TextInput
               style={styles.input}
-              placeholder="you@example.com"
-              placeholderTextColor={Colors.light.icon}
-              value={email}
-              onChangeText={setEmail}
+              placeholder="Enter your Email"
+                placeholderTextColor={icon}
+                value={email}
+                onChangeText={setEmail}
               onFocus={() => setFocusedField('email')}
               onBlur={() => setFocusedField(null)}
               keyboardType="email-address"
@@ -123,10 +150,10 @@ export default function Login() {
             <Text style={styles.inputLabel}>Password</Text>
             <TextInput
               style={styles.input}
-              placeholder="••••••••"
-              placeholderTextColor={Colors.light.icon}
-              value={password}
-              onChangeText={setPassword}
+              placeholder="Password..."
+                placeholderTextColor={icon}
+                value={password}
+                onChangeText={setPassword}
               onFocus={() => setFocusedField('password')}
               onBlur={() => setFocusedField(null)}
               secureTextEntry
@@ -210,12 +237,21 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 28,
-    paddingTop: 90,
+    paddingTop: 120, // Increased for back button space
     paddingBottom: 40,
   },
   header: {
-    marginBottom: 40,
-    gap: 10,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingTop: 20,
+    marginBottom: 20,
+    gap: 16,
+  },
+  backButton: {
+    padding: 12,
+    borderRadius: 20,
+    backgroundColor: Colors.light.background + 'CC',
+    marginTop: 10,
   },
   logoMark: {
     width: 52,

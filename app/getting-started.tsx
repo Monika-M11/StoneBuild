@@ -1,3 +1,4 @@
+import Colors from '@/constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
@@ -20,7 +21,7 @@ const SLIDES = [
     title: 'Welcome',
     subtitle: 'Your journey starts here.',
     description: 'Discover a seamless experience built around what matters most to you.',
-    accent: '#574964',
+    accent: Colors.light.primaryDark,
     icon: '✦',
   },
   {
@@ -28,7 +29,7 @@ const SLIDES = [
     title: 'Explore',
     subtitle: 'Everything in one place.',
     description: 'Powerful tools and beautiful design working together effortlessly.',
-    accent: '#9F8383',
+    accent: Colors.light.highlight,
     icon: '◈',
   },
   {
@@ -36,7 +37,7 @@ const SLIDES = [
     title: 'Begin',
     subtitle: 'Ready when you are.',
     description: 'Set up takes seconds. The impact lasts forever.',
-    accent: '#FFDAB3',
+    accent: Colors.light.primaryLight,
     icon: '⬡',
   },
 ];
@@ -55,11 +56,11 @@ export default function GettingStarted() {
 
   const handleNext = useCallback(() => {
     if (currentIndex < SLIDES.length - 1) {
-      flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
+      flatListRef.current?.scrollToOffset({ offset: (currentIndex + 1) * width, animated: true });
     } else {
       router.replace('/login');
     }
-  }, [currentIndex]);
+  }, [currentIndex, width]);
 
   const handleSkip = useCallback(() => {
     router.replace('/login');
@@ -80,12 +81,17 @@ export default function GettingStarted() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onScroll={Animated.event(
+      onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: false }
         )}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
+        getItemLayout={(data, index) => ({
+          length: width,
+          offset: width * index,
+          index,
+        })}    
         renderItem={({ item, index }) => {
           const inputRange = [
             (index - 1) * width,
@@ -181,12 +187,11 @@ export default function GettingStarted() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
+     flex: 1,
+     backgroundColor: Colors.light.background,
+     },
   skipButton: {
     position: 'absolute',
     top: 60,
@@ -196,10 +201,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#9F8383',
+    borderColor: Colors.light.textSecondary,
   },
   skipText: {
-    color: '#574964',
+    color: Colors.light.text,
     fontSize: 13,
     fontWeight: '500',
     letterSpacing: 0.5,
@@ -245,14 +250,14 @@ const styles = StyleSheet.create({
   },
   slideSubtitle: {
     fontSize: 20,
-    color: '#574964',
+    color: Colors.light.primaryDark,
     fontWeight: '600',
     textAlign: 'center',
     letterSpacing: -0.3,
   },
   slideDescription: {
     fontSize: 15,
-    color: '#9F8383',
+    color: Colors.light.textSecondary,
     textAlign: 'center',
     lineHeight: 23,
     letterSpacing: 0.1,

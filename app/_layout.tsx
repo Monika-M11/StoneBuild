@@ -76,7 +76,7 @@ export default function RootLayout() {
 
         <Stack.Screen name="index" />
 
-        <Stack.Screen name="getting-started" />
+        <Stack.Screen name="r" />
 
         <Stack.Screen name="login" />
 
