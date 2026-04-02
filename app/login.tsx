@@ -1,0 +1,351 @@
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import React, { useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
+export default function Login() {
+  const router = useRouter();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
+  const shakeAnim = useRef(new Animated.Value(0)).current;
+
+  const shake = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnim, { toValue: 10, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -10, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 6, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -6, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 0, duration: 60, useNativeDriver: true }),
+    ]).start();
+  };
+
+  const handleSubmit = async () => {
+    if (!email || !password || (isSignUp && !name)) {
+      shake();
+      return;
+    }
+
+    setLoading(true);
+    // Simulate API call
+    await new Promise((res) => setTimeout(res, 1500));
+    setLoading(false);
+
+    // Navigate to main app after login
+    router.replace('/');
+  };
+
+  const inputBorderColor = (field: string) =>
+    focusedField === field ? '#6C63FF' : 'rgba(255,255,255,0.08)';
+
+  return (
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <LinearGradient
+        colors={['#0A0A0F', '#0F0F1A']}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Background accent */}
+      <View style={styles.bgAccent} />
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.logoMark}>
+            <Text style={styles.logoSymbol}>✦</Text>
+          </View>
+          <Text style={styles.title}>
+            {isSignUp ? 'Create account' : 'Welcome back'}
+          </Text>
+          <Text style={styles.subtitle}>
+            {isSignUp
+              ? 'Sign up to get started today'
+              : 'Sign in to continue your journey'}
+          </Text>
+        </View>
+
+        {/* Form */}
+        <Animated.View
+          style={[styles.form, { transform: [{ translateX: shakeAnim }] }]}
+        >
+          {isSignUp && (
+            <View style={[styles.inputGroup, { borderColor: inputBorderColor('name') }]}>
+              <Text style={styles.inputLabel}>Full Name</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Jane Doe"
+                placeholderTextColor="rgba(255,255,255,0.2)"
+                value={name}
+                onChangeText={setName}
+                onFocus={() => setFocusedField('name')}
+                onBlur={() => setFocusedField(null)}
+                autoCapitalize="words"
+                autoComplete="name"
+              />
+            </View>
+          )}
+
+          <View style={[styles.inputGroup, { borderColor: inputBorderColor('email') }]}>
+            <Text style={styles.inputLabel}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="you@example.com"
+              placeholderTextColor="rgba(255,255,255,0.2)"
+              value={email}
+              onChangeText={setEmail}
+              onFocus={() => setFocusedField('email')}
+              onBlur={() => setFocusedField(null)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
+          </View>
+
+          <View style={[styles.inputGroup, { borderColor: inputBorderColor('password') }]}>
+            <Text style={styles.inputLabel}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••"
+              placeholderTextColor="rgba(255,255,255,0.2)"
+              value={password}
+              onChangeText={setPassword}
+              onFocus={() => setFocusedField('password')}
+              onBlur={() => setFocusedField(null)}
+              secureTextEntry
+              autoComplete={isSignUp ? 'new-password' : 'current-password'}
+            />
+          </View>
+
+          {!isSignUp && (
+            <TouchableOpacity style={styles.forgotButton}>
+              <Text style={styles.forgotText}>Forgot password?</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Submit */}
+          <TouchableOpacity
+            onPress={handleSubmit}
+            activeOpacity={0.88}
+            disabled={loading}
+            style={styles.submitWrapper}
+          >
+            <LinearGradient
+              colors={['#6C63FF', '#9B8BFF']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.submitButton}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.submitText}>
+                  {isSignUp ? 'Create Account' : 'Sign In'}
+                </Text>
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          {/* Social login placeholder */}
+          <TouchableOpacity style={styles.socialButton} activeOpacity={0.8}>
+            <Text style={styles.socialIcon}>G</Text>
+            <Text style={styles.socialText}>Continue with Google</Text>
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* Footer toggle */}
+        <View style={styles.toggleRow}>
+          <Text style={styles.toggleLabel}>
+            {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+          </Text>
+          <TouchableOpacity onPress={() => setIsSignUp(!isSignUp)}>
+            <Text style={styles.toggleAction}>
+              {isSignUp ? 'Sign in' : 'Sign up'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0A0A0F',
+  },
+  bgAccent: {
+    position: 'absolute',
+    top: -120,
+    right: -80,
+    width: 320,
+    height: 320,
+    borderRadius: 160,
+    backgroundColor: '#6C63FF14',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 28,
+    paddingTop: 90,
+    paddingBottom: 40,
+  },
+  header: {
+    marginBottom: 40,
+    gap: 10,
+  },
+  logoMark: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    backgroundColor: '#6C63FF18',
+    borderWidth: 1,
+    borderColor: '#6C63FF44',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  logoSymbol: {
+    fontSize: 22,
+    color: '#6C63FF',
+  },
+  title: {
+    fontSize: 34,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.8,
+  },
+  subtitle: {
+    fontSize: 15,
+    color: 'rgba(255,255,255,0.4)',
+    letterSpacing: 0.1,
+  },
+  form: {
+    gap: 16,
+  },
+  inputGroup: {
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 10,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+  },
+  inputLabel: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.35)',
+    fontWeight: '600',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: 4,
+  },
+  input: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    paddingVertical: 0,
+  },
+  forgotButton: {
+    alignSelf: 'flex-end',
+    marginTop: -4,
+  },
+  forgotText: {
+    fontSize: 13,
+    color: '#6C63FF',
+    fontWeight: '500',
+  },
+  submitWrapper: {
+    marginTop: 8,
+    borderRadius: 14,
+    overflow: 'hidden',
+  },
+  submitButton: {
+    paddingVertical: 17,
+    alignItems: 'center',
+    borderRadius: 14,
+  },
+  submitText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginVertical: 4,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+  },
+  dividerText: {
+    color: 'rgba(255,255,255,0.25)',
+    fontSize: 13,
+  },
+  socialButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    paddingVertical: 15,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+  },
+  socialIcon: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  socialText: {
+    fontSize: 15,
+    color: 'rgba(255,255,255,0.7)',
+    fontWeight: '500',
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 36,
+  },
+  toggleLabel: {
+    color: 'rgba(255,255,255,0.35)',
+    fontSize: 14,
+  },
+  toggleAction: {
+    color: '#6C63FF',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+});
