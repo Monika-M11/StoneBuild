@@ -68,7 +68,7 @@ export default function RootLayout() {
 
           animation: 'fade',
 
-          contentStyle: { backgroundColor: '#0A0A0F' },
+          // contentStyle bg removed for white child screens
 
         }}
 

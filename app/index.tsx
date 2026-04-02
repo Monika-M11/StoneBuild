@@ -15,7 +15,7 @@ export default function SplashScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>MyApp</Text>
+      <Text style={styles.logo}>StoneBuild</Text>
       <Text style={styles.loading}>Loading...</Text>
     </View>
   );
@@ -31,10 +31,11 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 34,
     fontWeight: "bold",
-    color: "#fff",
+    color: '#574964',
     marginBottom: 10,
   },
   loading: {
-    color: "#fff",
+    color: '#574964',
+    fontSize: 16,
   },
 });

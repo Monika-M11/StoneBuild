@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -41,28 +42,23 @@ export default function Login() {
       return;
     }
 
-    setLoading(true);
-    // Simulate API call
-    await new Promise((res) => setTimeout(res, 1500));
-    setLoading(false);
+  setLoading(true);
+  // Simulate API call
+  await new Promise((res) => setTimeout(res, 1500));
+  setLoading(false);
 
-    // Navigate to main app after login
-    router.replace('/');
+  // Navigate to main app after login
+  router.replace('/');
   };
 
   const inputBorderColor = (field: string) =>
-    focusedField === field ? '#6C63FF' : 'rgba(255,255,255,0.08)';
+    focusedField === field ? Colors.light.primary : Colors.light.inputBorder + '66';
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <LinearGradient
-        colors={['#0A0A0F', '#0F0F1A']}
-        style={StyleSheet.absoluteFill}
-      />
-
       {/* Background accent */}
       <View style={styles.bgAccent} />
 
@@ -96,7 +92,7 @@ export default function Login() {
               <TextInput
                 style={styles.input}
                 placeholder="Jane Doe"
-                placeholderTextColor="rgba(255,255,255,0.2)"
+                placeholderTextColor={Colors.light.icon}
                 value={name}
                 onChangeText={setName}
                 onFocus={() => setFocusedField('name')}
@@ -112,7 +108,7 @@ export default function Login() {
             <TextInput
               style={styles.input}
               placeholder="you@example.com"
-              placeholderTextColor="rgba(255,255,255,0.2)"
+              placeholderTextColor={Colors.light.icon}
               value={email}
               onChangeText={setEmail}
               onFocus={() => setFocusedField('email')}
@@ -128,7 +124,7 @@ export default function Login() {
             <TextInput
               style={styles.input}
               placeholder="••••••••"
-              placeholderTextColor="rgba(255,255,255,0.2)"
+              placeholderTextColor={Colors.light.icon}
               value={password}
               onChangeText={setPassword}
               onFocus={() => setFocusedField('password')}
@@ -152,13 +148,13 @@ export default function Login() {
             style={styles.submitWrapper}
           >
             <LinearGradient
-              colors={['#6C63FF', '#9B8BFF']}
+              colors={[Colors.light.primary, Colors.light.highlight]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.submitButton}
             >
               {loading ? (
-                <ActivityIndicator color="#fff" size="small" />
+                <ActivityIndicator color="#FFFFFF" size="small" />
               ) : (
                 <Text style={styles.submitText}>
                   {isSignUp ? 'Create Account' : 'Sign In'}
@@ -200,7 +196,7 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0F',
+    backgroundColor: '#FFFFFF',
   },
   bgAccent: {
     position: 'absolute',
@@ -209,7 +205,7 @@ const styles = StyleSheet.create({
     width: 320,
     height: 320,
     borderRadius: 160,
-    backgroundColor: '#6C63FF14',
+    backgroundColor: Colors.light.highlight + '1A',
   },
   scrollContent: {
     flexGrow: 1,
@@ -225,26 +221,26 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 14,
-    backgroundColor: '#6C63FF18',
+    backgroundColor: Colors.light.primary + '1A',
     borderWidth: 1,
-    borderColor: '#6C63FF44',
+    borderColor: Colors.light.primary + '44',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
   },
   logoSymbol: {
     fontSize: 22,
-    color: '#6C63FF',
+    color: Colors.light.primary,
   },
   title: {
     fontSize: 34,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: Colors.light.text,
     letterSpacing: -0.8,
   },
   subtitle: {
     fontSize: 15,
-    color: 'rgba(255,255,255,0.4)',
+    color: Colors.light.icon,
     letterSpacing: 0.1,
   },
   form: {
@@ -256,11 +252,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: 10,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: Colors.light.inputBg,
   },
   inputLabel: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.35)',
+    color: Colors.light.icon,
     fontWeight: '600',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
@@ -268,7 +264,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 16,
-    color: '#FFFFFF',
+    color: Colors.light.text,
     paddingVertical: 0,
   },
   forgotButton: {
@@ -277,7 +273,7 @@ const styles = StyleSheet.create({
   },
   forgotText: {
     fontSize: 13,
-    color: '#6C63FF',
+    color: Colors.light.primary,
     fontWeight: '500',
   },
   submitWrapper: {
@@ -305,10 +301,10 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: Colors.light.inputBorder,
   },
   dividerText: {
-    color: 'rgba(255,255,255,0.25)',
+    color: Colors.light.icon,
     fontSize: 13,
   },
   socialButton: {
@@ -319,17 +315,17 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderColor: Colors.light.inputBorder,
+    backgroundColor: Colors.light.inputBg,
   },
   socialIcon: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: Colors.light.text,
   },
   socialText: {
     fontSize: 15,
-    color: 'rgba(255,255,255,0.7)',
+    color: Colors.light.text,
     fontWeight: '500',
   },
   toggleRow: {
@@ -340,11 +336,11 @@ const styles = StyleSheet.create({
     marginTop: 36,
   },
   toggleLabel: {
-    color: 'rgba(255,255,255,0.35)',
+    color: Colors.light.icon,
     fontSize: 14,
   },
   toggleAction: {
-    color: '#6C63FF',
+    color: Colors.light.primary,
     fontSize: 14,
     fontWeight: '700',
   },
