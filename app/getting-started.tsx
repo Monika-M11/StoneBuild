@@ -29,7 +29,7 @@ const SLIDES = [
     title: 'Explore',
     subtitle: 'Everything in one place.',
     description: 'Powerful tools and beautiful design working together effortlessly.',
-    accent: Colors.light.highlight,
+    accent: Colors.light.primaryDark,
     icon: '◈',
   },
   {
@@ -37,7 +37,7 @@ const SLIDES = [
     title: 'Begin',
     subtitle: 'Ready when you are.',
     description: 'Set up takes seconds. The impact lasts forever.',
-    accent: Colors.light.primaryLight,
+    accent: Colors.light.primaryDark,
     icon: '⬡',
   },
 ];
@@ -81,7 +81,7 @@ export default function GettingStarted() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-      onScroll={Animated.event(
+        onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: false }
         )}
@@ -187,11 +187,12 @@ export default function GettingStarted() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
-     flex: 1,
-     backgroundColor: Colors.light.background,
-     },
+    flex: 1,
+    backgroundColor: Colors.light.background,
+  },
   skipButton: {
     position: 'absolute',
     top: 60,
@@ -204,6 +205,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.textSecondary,
   },
   skipText: {
+    fontFamily: 'SourceSans3_400Regular',
     color: Colors.light.text,
     fontSize: 13,
     fontWeight: '500',
@@ -243,12 +245,14 @@ const styles = StyleSheet.create({
     fontSize: 44,
   },
   slideTitle: {
+    fontFamily: 'SourceSans3_700Bold',
     fontSize: 42,
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: -1,
   },
   slideSubtitle: {
+    fontFamily: 'SourceSans3_500Medium',
     fontSize: 20,
     color: Colors.light.primaryDark,
     fontWeight: '600',
@@ -256,6 +260,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   slideDescription: {
+    fontFamily: 'SourceSans3_400Regular',
     fontSize: 15,
     color: Colors.light.textSecondary,
     textAlign: 'center',
@@ -279,12 +284,14 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   ctaButton: {
-    paddingVertical: 16,
-    paddingHorizontal: 64,
+    width: 280,
+    height: 56,
     borderRadius: 14,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   ctaText: {
+    fontFamily: 'SourceSans3_700Bold',
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',

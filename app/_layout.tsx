@@ -20,11 +20,15 @@ import { Stack } from 'expo-router';
 
 import { StatusBar } from 'expo-status-bar';
 
-import { useFonts } from 'expo-font';
+import { useFonts } from '@expo-google-fonts/source-sans-3';
+
+import { SourceSans3_400Regular, SourceSans3_500Medium, SourceSans3_700Bold } from '@expo-google-fonts/source-sans-3';
 
 import * as SplashScreen from 'expo-splash-screen';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+import { ThemeProvider } from '../providers/ThemeProvider';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,9 +36,11 @@ export default function RootLayout() {
 
   const [loaded, error] = useFonts({
 
-    // Add custom fonts here if needed
+    SourceSans3_400Regular,
 
-    // 'MyFont': require('../assets/fonts/MyFont.ttf'),
+    SourceSans3_500Medium,
+
+    SourceSans3_700Bold,
 
   });
 
@@ -60,27 +66,29 @@ export default function RootLayout() {
 
       <StatusBar style="auto" />
 
-      <Stack
+      <ThemeProvider>
 
-        screenOptions={{
+        <Stack
 
-          headerShown: false,
+          screenOptions={{
 
-          animation: 'fade',
+            headerShown: false,
 
-          // contentStyle bg removed for white child screens
+            animation: 'fade',
 
-        }}
+            // contentStyle bg removed for white child screens
 
-      >
+          }}
+
+        >
 
         <Stack.Screen name="index" />
+          <Stack.Screen name="getting-started" />
+          <Stack.Screen name="login" />
 
-        <Stack.Screen name="r" />
+        </Stack>
 
-        <Stack.Screen name="login" />
-
-      </Stack>
+      </ThemeProvider>
 
     </GestureHandlerRootView>
 

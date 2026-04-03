@@ -39,4 +39,17 @@ const Colors = {
 };
 
 export { darkColors, lightColors };
+
+export const Fonts = {
+  regular: 'SourceSans3_400Regular',
+  medium: 'SourceSans3_500Medium',
+  bold: 'SourceSans3_700Bold',
+  size: {
+    base: 16,
+    small: 14,
+    large: 18,
+    title: 24,
+  },
+};
+
 export default Colors;
