@@ -4,7 +4,6 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   Animated,
   KeyboardAvoidingView,
   Platform,
@@ -13,21 +12,21 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { useTheme } from '../providers/ThemeProvider';
+import AuthInput from './components/AuthInput';
+import PrimaryButton from './components/PrimaryButton';
 
 export default function Login() {
   const router = useRouter();
   const theme = useTheme();
-  
-  // Colors matching getting-started exactly
+
   const primaryDark = Colors.light.primaryDark;
   const primary = useThemeColor({ light: 'primary', dark: 'primary' }, 'primary');
   const inputBorder = useThemeColor({ light: 'inputBorder', dark: 'inputBorder' }, 'inputBorder');
   const inputBg = useThemeColor({ light: 'inputBg', dark: 'inputBg' }, 'inputBg');
   const text = useThemeColor({ light: 'text', dark: 'text' }, 'text');
-  const textSecondary = useThemeColor({ light: 'textSecondary', dark: 'textSecondary' }, 'textSecondary');
   const icon = useThemeColor({ light: 'icon', dark: 'icon' }, 'icon');
 
   const [isSignUp, setIsSignUp] = useState(false);
@@ -54,7 +53,6 @@ export default function Login() {
       shake();
       return;
     }
-
     setLoading(true);
     await new Promise((res) => setTimeout(res, 1500));
     setLoading(false);
@@ -70,7 +68,7 @@ export default function Login() {
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.backButton, { backgroundColor: inputBg + 'CC' }]}
             onPress={() => router.push('/')}
             activeOpacity={0.7}
@@ -78,7 +76,6 @@ export default function Login() {
             <Ionicons name="arrow-back" size={24} color={icon} />
           </TouchableOpacity>
 
-          {/* Title only - centered, no logo */}
           <View style={styles.centeredContent}>
             <Text style={[styles.title, { color: primaryDark }]}>
               {isSignUp ? 'Create account' : 'Welcome back'}
@@ -110,36 +107,30 @@ export default function Login() {
             </View>
           )}
 
-          <View style={[styles.inputGroup, { borderColor: inputBorderDynamic('email') }]}>
-            <Text style={[styles.inputLabel, { color: icon }]}>Username</Text>
-            <TextInput
-              style={[styles.input, { color: text, fontFamily: theme.fonts.regular }]}
-              placeholder="Enter your username"
-              placeholderTextColor={icon}
-              value={email}
-              onChangeText={setEmail}
-              onFocus={() => setFocusedField('email')}
-              onBlur={() => setFocusedField(null)}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-          </View>
+          <AuthInput
+            label="Username"
+            value={email}
+            onChangeText={setEmail}
+            onFocus={() => setFocusedField('email')}
+            onBlur={() => setFocusedField(null)}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+            focusedField={focusedField}
+            fieldId="email"
+          />
 
-          <View style={[styles.inputGroup, { borderColor: inputBorderDynamic('password') }]}>
-            <Text style={[styles.inputLabel, { color: icon }]}>Password</Text>
-            <TextInput
-              style={[styles.input, { color: text, fontFamily: theme.fonts.regular }]}
-              placeholder="Password..."
-              placeholderTextColor={icon}
-              value={password}
-              onChangeText={setPassword}
-              onFocus={() => setFocusedField('password')}
-              onBlur={() => setFocusedField(null)}
-              secureTextEntry
-              autoComplete={isSignUp ? 'new-password' : 'current-password'}
-            />
-          </View>
+          <AuthInput
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            onFocus={() => setFocusedField('password')}
+            onBlur={() => setFocusedField(null)}
+            secureTextEntry
+            autoComplete={isSignUp ? 'new-password' : 'current-password'}
+            focusedField={focusedField}
+            fieldId="password"
+          />
 
           {!isSignUp && (
             <TouchableOpacity style={styles.forgotButton}>
@@ -147,44 +138,37 @@ export default function Login() {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity
+          {/* Sign In / Create Account — PrimaryButton */}
+          <PrimaryButton 
             onPress={handleSubmit}
-            activeOpacity={0.88}
-            disabled={loading}
-            style={[styles.submitWrapper, { backgroundColor: primaryDark }]}
+            loading={loading}
           >
-            {loading ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
-            ) : (
-              <Text style={styles.submitText}>
-                {isSignUp ? 'Create Account' : 'Sign In'}
-              </Text>
-            )}
-          </TouchableOpacity>
+            {isSignUp ? 'Create Account' : 'Sign In'}
+          </PrimaryButton>
 
-          <View style={styles.divider}>
+          {/* <View style={styles.divider}>
             <View style={[styles.dividerLine, { backgroundColor: inputBorder }]} />
             <Text style={[styles.dividerText, { color: icon }]}>or</Text>
             <View style={[styles.dividerLine, { backgroundColor: inputBorder }]} />
-          </View>
+          </View> */}
 
-          <TouchableOpacity style={[styles.socialButton, { 
-            borderColor: inputBorder, 
-            backgroundColor: inputBg 
+          {/* <TouchableOpacity style={[styles.socialButton, {
+            borderColor: inputBorder,
+            backgroundColor: inputBg
           }]} activeOpacity={0.8}>
             <Text style={[styles.socialIcon, { color: text }]}>G</Text>
             <Text style={[styles.socialText, { color: text }]}>Continue with Google</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </Animated.View>
 
-        <View style={styles.toggleRow}>
+        {/* <View style={styles.toggleRow}>
           <Text style={[styles.toggleLabel, { color: icon }]}>
             {isSignUp ? 'Already have an account?' : "Don't have an account?"}
           </Text>
           <TouchableOpacity onPress={() => setIsSignUp(!isSignUp)}>
             <Text style={[styles.toggleAction, { color: primaryDark }]}>{isSignUp ? 'Sign in' : 'Sign up'}</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -217,11 +201,14 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    left: -4,
-    top: 20,
+    left: -8,
+    top: 10,
     padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 20,
     zIndex: 10,
+    borderWidth: 1,
+    borderColor: Colors.light.textSecondary,
   },
   centeredContent: {
     alignItems: 'center',
@@ -230,7 +217,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'SourceSans3_700Bold',
     fontSize: 32,
-    fontWeight: '700',
+    fontWeight: '600',
     letterSpacing: -0.8,
     textAlign: 'center',
   },
@@ -272,13 +259,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
   },
-  submitWrapper: {
-    marginTop: 8,
-    borderRadius: 14,
-    height: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  // submitWrapper/submitButton removed - using PrimaryButton
   submitText: {
     fontFamily: 'SourceSans3_700Bold',
     color: '#FFFFFF',

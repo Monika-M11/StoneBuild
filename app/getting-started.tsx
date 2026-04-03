@@ -1,5 +1,4 @@
 import Colors from '@/constants/theme';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import {
@@ -12,6 +11,7 @@ import {
   View,
   ViewToken
 } from 'react-native';
+import PrimaryButton from './components/PrimaryButton';
 
 const { width } = Dimensions.get('window');
 
@@ -171,18 +171,9 @@ export default function GettingStarted() {
         </View>
 
         {/* CTA button */}
-        <TouchableOpacity onPress={handleNext} activeOpacity={0.85}>
-          <LinearGradient
-            colors={[SLIDES[currentIndex].accent, SLIDES[currentIndex].accent + 'CC']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.ctaButton}
-          >
-            <Text style={styles.ctaText}>
-              {currentIndex === SLIDES.length - 1 ? 'Get Started' : 'Continue'}
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
+        <PrimaryButton onPress={handleNext} style={{ width: 250 }}>
+          {currentIndex === SLIDES.length - 1 ? 'Get Started' : 'Continue'}
+        </PrimaryButton>
       </View>
     </View>
   );
@@ -198,8 +189,9 @@ const styles = StyleSheet.create({
     top: 60,
     right: 24,
     zIndex: 10,
-    paddingVertical: 6,
-    paddingHorizontal: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: Colors.light.textSecondary,
@@ -283,18 +275,5 @@ const styles = StyleSheet.create({
     height: 5,
     borderRadius: 3,
   },
-  ctaButton: {
-    width: 280,
-    height: 56,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  ctaText: {
-    fontFamily: 'SourceSans3_700Bold',
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.2,
-  },
+  // ctaButton and ctaText removed - using PrimaryButton
 });

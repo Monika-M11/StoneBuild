@@ -1,16 +1,12 @@
-# Navigation Error Fixes - Progress Tracker
+# TODO: Modular Username/Password Inputs for Login
 
 ## Plan Overview
-- Fix WARN: Remove invalid route "r" from app/_layout.tsx
-- Fix ERROR: Replace router.back() with router.push('/') in app/login.tsx back button
-- Test navigation flow
+- Create `app/components/AuthInput.tsx`: Modular for username/password (no placeholder, exact current styles).
+- Update `app/login.tsx`: Replace username/password inputs → AuthInput.
+- Keep name input as-is (if used), focus logic.
 
-## Steps (Mark as [x] when complete)
-
-- [x] Step 1: Edit app/_layout.tsx - Remove <Stack.Screen name="r" />, add getting-started screen
-- [x] Step 2: Edit app/login.tsx - Update back button onPress to router.push('/')
-
-- [ ] Step 3: Test app - Run expo start, navigate index → getting-started → login → back/home, confirm no errors
-
-**Next:** Will update this file after each step.
-
+## Steps
+- [ ] Step 1: Create `app/components/AuthInput.tsx`
+- [ ] Step 2: Update `app/login.tsx`
+- [ ] Step 3: Test login inputs (focus border, typing)
+- [ ] Step 4: Complete
