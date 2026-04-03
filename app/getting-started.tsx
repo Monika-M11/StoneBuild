@@ -2,16 +2,16 @@ import Colors from '@/constants/theme';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import {
-  Animated,
-  Dimensions,
-  FlatList as RNFlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewToken
+    Animated,
+    Dimensions,
+    FlatList as RNFlatList,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ViewToken
 } from 'react-native';
-import PrimaryButton from './components/PrimaryButton';
+import PrimaryButton from '../components/PrimaryButton';
 
 const { width } = Dimensions.get('window');
 

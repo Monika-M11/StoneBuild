@@ -60,8 +60,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 14,
     paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 10,
+    paddingTop: 8,
+    paddingBottom: 6,
   },
   inputLabel: {
     fontFamily: 'SourceSans3_500Medium',
@@ -69,11 +69,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   input: {
     fontSize: 16,
     paddingVertical: 0,
   },
 });
-

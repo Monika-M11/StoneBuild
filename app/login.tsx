@@ -1,22 +1,21 @@
 import Colors from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
-  Animated,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
+    Animated,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
+import AuthInput from '../components/AuthInput';
+import PrimaryButton from '../components/PrimaryButton';
 import { useTheme } from '../providers/ThemeProvider';
-import AuthInput from './components/AuthInput';
-import PrimaryButton from './components/PrimaryButton';
 
 export default function Login() {
   const router = useRouter();
@@ -35,7 +34,6 @@ export default function Login() {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
-
   const shakeAnim = useRef(new Animated.Value(0)).current;
 
   const shake = () => {
@@ -56,7 +54,7 @@ export default function Login() {
     setLoading(true);
     await new Promise((res) => setTimeout(res, 1500));
     setLoading(false);
-    router.replace('/');
+    router.replace('/home');
   };
 
   const inputBorderDynamic = (field: string) =>
@@ -68,13 +66,14 @@ export default function Login() {
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity
+         
+          {/* <TouchableOpacity
             style={[styles.backButton, { backgroundColor: inputBg + 'CC' }]}
             onPress={() => router.push('/')}
             activeOpacity={0.7}
           >
             <Ionicons name="arrow-back" size={24} color={icon} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <View style={styles.centeredContent}>
             <Text style={[styles.title, { color: primaryDark }]}>
