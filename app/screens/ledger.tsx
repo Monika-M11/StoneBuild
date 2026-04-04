@@ -1,77 +1,66 @@
 import Colors from '@/constants/theme';
 import { useTheme } from '@/providers/ThemeProvider';
-import React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import ScreenPage from '../../components/ScreenPage';
-
-const ENTRIES = [
-  { id: '1', date: '01 Apr 2026', desc: 'Sales Invoice #1021', type: 'credit', amount: '₹45,000' },
-  { id: '2', date: '02 Apr 2026', desc: 'Material Purchase', type: 'debit', amount: '₹12,500' },
-  { id: '3', date: '02 Apr 2026', desc: 'Labour Payment', type: 'debit', amount: '₹8,000' },
-  { id: '4', date: '03 Apr 2026', desc: 'Client Advance', type: 'credit', amount: '₹60,000' },
-  { id: '5', date: '03 Apr 2026', desc: 'Equipment Rent', type: 'debit', amount: '₹5,500' },
-  { id: '6', date: '04 Apr 2026', desc: 'Sales Invoice #1022', type: 'credit', amount: '₹32,000' },
-];
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Footer from '../../components/Footer';
 
 export default function LedgerScreen() {
   const theme = useTheme();
-  const total = { credit: '₹1,37,000', debit: '₹26,000' };
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('ledger');
 
   return (
-    <ScreenPage title="Ledger" icon="book-outline">
-      {/* Summary */}
-      <View style={styles.summaryRow}>
-        <View style={[styles.summaryCard, { borderLeftColor: '#22c55e' }]}>
-          <Text style={[styles.summaryLabel, { fontFamily: theme.fonts.regular }]}>Total Credit</Text>
-          <Text style={[styles.summaryValue, { fontFamily: theme.fonts.bold, color: '#22c55e' }]}>{total.credit}</Text>
-        </View>
-        <View style={[styles.summaryCard, { borderLeftColor: '#ef4444' }]}>
-          <Text style={[styles.summaryLabel, { fontFamily: theme.fonts.regular }]}>Total Debit</Text>
-          <Text style={[styles.summaryValue, { fontFamily: theme.fonts.bold, color: '#ef4444' }]}>{total.debit}</Text>
-        </View>
-      </View>
-
-      <FlatList
-        data={ENTRIES}
-        keyExtractor={(i) => i.id}
-        contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <View style={styles.row}>
-            <View style={[styles.dot, { backgroundColor: item.type === 'credit' ? '#22c55e' : '#ef4444' }]} />
-            <View style={styles.rowInfo}>
-              <Text style={[styles.rowDesc, { fontFamily: theme.fonts.medium }]}>{item.desc}</Text>
-              <Text style={[styles.rowDate, { fontFamily: theme.fonts.regular }]}>{item.date}</Text>
-            </View>
-            <Text style={[styles.amount, { fontFamily: theme.fonts.bold, color: item.type === 'credit' ? '#22c55e' : '#ef4444' }]}>
-              {item.type === 'credit' ? '+' : '-'}{item.amount}
-            </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="arrow-back" size={24} color={Colors.light.primaryDark} />
+          </TouchableOpacity>
+          <View style={styles.headerCenter}>
+            <Ionicons name="book-outline" size={20} color={Colors.light.primaryDark} />
+            <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Ledger</Text>
           </View>
-        )}
-      />
-    </ScreenPage>
+          <View style={{ width: 24 }} />
+        </View>
+
+        {/* BODY */}
+        <View style={styles.body}>
+          <Text style={[styles.bodyText, { fontFamily: theme.fonts.bold }]}>
+            Ledger Page
+          </Text>
+        </View>
+
+        {/* FOOTER */}
+        <Footer activeTab={activeTab} onTabChange={setActiveTab} />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  summaryRow: { flexDirection: 'row', gap: 12, padding: 16 },
-  summaryCard: {
-    flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 14,
-    borderLeftWidth: 4, elevation: 1, shadowColor: '#000',
-    shadowOpacity: 0.05, shadowOffset: { width: 0, height: 1 }, shadowRadius: 3,
+  safeArea: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.light.inputBg },
+  header: {
+    height: 64, paddingHorizontal: 16, backgroundColor: Colors.light.background,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    elevation: 3, shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4,
   },
-  summaryLabel: { fontSize: 11, color: Colors.light.icon },
-  summaryValue: { fontSize: 18, marginTop: 4 },
-  list: { paddingHorizontal: 16, gap: 8 },
-  row: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#fff', borderRadius: 12, padding: 14,
-    elevation: 1, shadowColor: '#000', shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 1 }, shadowRadius: 3,
-  },
-  dot: { width: 10, height: 10, borderRadius: 5 },
-  rowInfo: { flex: 1 },
-  rowDesc: { fontSize: 14, color: Colors.light.text },
-  rowDate: { fontSize: 11, color: Colors.light.icon, marginTop: 2 },
-  amount: { fontSize: 14 },
+  headerCenter: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerTitle: { fontSize: 20, color: Colors.light.primaryDark },
+  body: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  bodyText: { fontSize: 20, color: Colors.light.text },
 });
 

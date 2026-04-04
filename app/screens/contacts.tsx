@@ -1,64 +1,63 @@
 import Colors from '@/constants/theme';
 import { useTheme } from '@/providers/ThemeProvider';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import ScreenPage from '../../components/ScreenPage';
-
-const CONTACTS = [
-  { id: '1', name: 'Arjun Mehta', role: 'Supplier', phone: '+91 98400 11111', initial: 'A' },
-  { id: '2', name: 'Priya Nair', role: 'Client', phone: '+91 98400 22222', initial: 'P' },
-  { id: '3', name: 'Ravi Kumar', role: 'Contractor', phone: '+91 98400 33333', initial: 'R' },
-  { id: '4', name: 'Shalini Das', role: 'Vendor', phone: '+91 98400 44444', initial: 'S' },
-  { id: '5', name: 'Vikram Singh', role: 'Client', phone: '+91 98400 55555', initial: 'V' },
-  { id: '6', name: 'Meena Iyer', role: 'Supplier', phone: '+91 98400 66666', initial: 'M' },
-];
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Footer from '../../components/Footer';
 
 export default function ContactsScreen() {
+  const [activeTab, setActiveTab] = useState<string>('contacts');
   const theme = useTheme();
+  const router = useRouter();
+
   return (
-    <ScreenPage title="Contacts" icon="people-outline">
-      <FlatList
-        data={CONTACTS}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={styles.avatar}>
-              <Text style={[styles.avatarText, { fontFamily: theme.fonts.bold }]}>{item.initial}</Text>
-            </View>
-            <View style={styles.info}>
-              <Text style={[styles.name, { fontFamily: theme.fonts.bold }]}>{item.name}</Text>
-              <Text style={[styles.role, { fontFamily: theme.fonts.regular }]}>{item.role}</Text>
-              <Text style={[styles.phone, { fontFamily: theme.fonts.regular }]}>{item.phone}</Text>
-            </View>
-            <Ionicons name="call-outline" size={20} color={Colors.light.primaryDark} />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="arrow-back" size={24} color={Colors.light.primaryDark} />
+          </TouchableOpacity>
+          <View style={styles.headerCenter}>
+            <Ionicons name="people-outline" size={20} color={Colors.light.primaryDark} />
+            <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Contacts</Text>
           </View>
-        )}
-      />
-    </ScreenPage>
+          <View style={{ width: 24 }} />
+        </View>
+
+        {/* BODY */}
+        <View style={styles.body}>
+          <Text style={[styles.bodyText, { fontFamily: theme.fonts.regular }]}>Contacts Screen Content</Text>
+        </View>
+
+        {/* FOOTER */}
+        <Footer activeTab={activeTab} onTabChange={setActiveTab} />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  list: { padding: 16, gap: 10 },
-  separator: { height: 0 },
-  card: {
-    flexDirection: 'row', alignItems: 'center', gap: 14,
-    backgroundColor: '#fff', borderRadius: 14, padding: 14,
-    elevation: 1, shadowColor: '#000', shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 1 }, shadowRadius: 4,
+  safeArea: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.light.inputBg },
+  header: {
+    height: 64, paddingHorizontal: 16, backgroundColor: Colors.light.background,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    elevation: 3, shadowColor: Colors.light.text,
+    shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 3.84,
   },
-  avatar: {
-    width: 44, height: 44, borderRadius: 22,
-    backgroundColor: Colors.light.primaryDark + '1A',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  avatarText: { fontSize: 18, color: Colors.light.primaryDark },
-  info: { flex: 1 },
-  name: { fontSize: 15, color: Colors.light.text },
-  role: { fontSize: 12, color: Colors.light.icon, marginTop: 1 },
-  phone: { fontSize: 12, color: Colors.light.icon, marginTop: 1 },
+  headerCenter: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerTitle: { fontSize: 20, color: Colors.light.primaryDark },
+  body: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  bodyText: { fontSize: 16, color: Colors.light.text },
 });
-

@@ -1,60 +1,66 @@
 import Colors from '@/constants/theme';
 import { useTheme } from '@/providers/ThemeProvider';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import ScreenPage from '../../components/ScreenPage';
-
-const RECEIPTS = [
-  { id: 'RCP-001', from: 'Client A - Shankar Homes', date: '01 Apr 2026', amount: '₹75,000', method: 'NEFT' },
-  { id: 'RCP-002', from: 'Client B - Green Builders', date: '02 Apr 2026', amount: '₹40,000', method: 'UPI' },
-  { id: 'RCP-003', from: 'Client C - Urban Infra', date: '03 Apr 2026', amount: '₹1,20,000', method: 'Cheque' },
-  { id: 'RCP-004', from: 'Client A - Shankar Homes', date: '04 Apr 2026', amount: '₹25,000', method: 'Cash' },
-];
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Footer from '../../components/Footer';
 
 export default function ReceiptScreen() {
   const theme = useTheme();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('receipt');
+
   return (
-    <ScreenPage title="Receipt" icon="receipt-outline">
-      <FlatList
-        data={RECEIPTS}
-        keyExtractor={(i) => i.id}
-        contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={styles.iconBox}>
-              <Ionicons name="document-text-outline" size={20} color={Colors.light.primaryDark} />
-            </View>
-            <View style={styles.info}>
-              <Text style={[styles.receiptId, { fontFamily: theme.fonts.bold }]}>{item.id}</Text>
-              <Text style={[styles.from, { fontFamily: theme.fonts.medium }]}>{item.from}</Text>
-              <Text style={[styles.date, { fontFamily: theme.fonts.regular }]}>{item.date} · {item.method}</Text>
-            </View>
-            <Text style={[styles.amount, { fontFamily: theme.fonts.bold }]}>{item.amount}</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="arrow-back" size={24} color={Colors.light.primaryDark} />
+          </TouchableOpacity>
+          <View style={styles.headerCenter}>
+            <Ionicons name="receipt-outline" size={20} color={Colors.light.primaryDark} />
+            <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Receipt</Text>
           </View>
-        )}
-      />
-    </ScreenPage>
+          <View style={{ width: 24 }} />
+        </View>
+
+        {/* BODY */}
+        <View style={styles.body}>
+          <Text style={[styles.bodyText, { fontFamily: theme.fonts.bold }]}>
+            Receipt Page
+          </Text>
+        </View>
+
+        {/* FOOTER */}
+        <Footer activeTab={activeTab} onTabChange={setActiveTab} />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  list: { padding: 16, gap: 10 },
-  card: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#fff', borderRadius: 14, padding: 14,
-    elevation: 1, shadowColor: '#000', shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 1 }, shadowRadius: 4,
+  safeArea: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.light.inputBg },
+  header: {
+    height: 64, paddingHorizontal: 16, backgroundColor: Colors.light.background,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    elevation: 3, shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4,
   },
-  iconBox: {
-    width: 42, height: 42, borderRadius: 10,
-    backgroundColor: Colors.light.primaryDark + '1A',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  info: { flex: 1 },
-  receiptId: { fontSize: 11, color: Colors.light.primaryDark },
-  from: { fontSize: 13, color: Colors.light.text, marginTop: 2 },
-  date: { fontSize: 11, color: Colors.light.icon, marginTop: 2 },
-  amount: { fontSize: 15, color: '#22c55e' },
+  headerCenter: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerTitle: { fontSize: 20, color: Colors.light.primaryDark },
+  body: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  bodyText: { fontSize: 20, color: Colors.light.text },
 });
 

@@ -134,7 +134,7 @@ export default function SideDrawer({
           <View style={styles.brandIcon}>
             <Ionicons name="flash" size={18} color="#fff" />
           </View>
-          <Text style={styles.brandText}>Menu</Text>
+          <Text style={styles.brandText}>Stonebuild</Text>
         </View>
 
         <View style={styles.divider} />
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    paddingVertical: 11,
+    paddingVertical: 5,
     paddingHorizontal: 16,
     marginHorizontal: 10,
     borderRadius: 12,

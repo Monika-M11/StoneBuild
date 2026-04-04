@@ -10,30 +10,14 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Footer from '../components/Footer';
 import { useDrawer } from '../contexts/DrawerContext';
-
-type IconName =
-  | 'menu'
-  | 'home-outline'
-  | 'briefcase-outline'
-  | 'swap-horizontal-outline'
-  | 'cube-outline'
-  | 'person-outline';
-
-interface FooterItemProps {
-  icon: IconName;
-  label: string;
-  onPress: () => void;
-  active?: boolean;
-}
 
 export default function Home() {
   const { openDrawer } = useDrawer();
   const [activeTab, setActiveTab] = useState<string>('home');
   const router = useRouter();
   const theme = useTheme();
-
-
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -56,24 +40,11 @@ export default function Home() {
         </View>
 
         {/* FOOTER */}
-        <View style={styles.footer}>
-          <FooterItem icon="home-outline" label="Home" active={activeTab === 'home'} onPress={() => setActiveTab('home')} />
-          <FooterItem icon="briefcase-outline" label="Project" active={activeTab === 'project'} onPress={() => setActiveTab('project')} />
-          <FooterItem icon="swap-horizontal-outline" label="Transaction" active={activeTab === 'transaction'} onPress={() => setActiveTab('transaction')} />
-          <FooterItem icon="cube-outline" label="Stock" active={activeTab === 'stock'} onPress={() => setActiveTab('stock')} />
-          <FooterItem icon="person-outline" label="Profile" active={activeTab === 'profile'} onPress={() => setActiveTab('profile')} />
-        </View>
+        <Footer activeTab={activeTab} onTabChange={setActiveTab} />
       </View>
     </SafeAreaView>
   );
 }
-
-const FooterItem = ({ icon, label, onPress, active }: FooterItemProps) => (
-  <TouchableOpacity style={styles.footerItem} onPress={onPress} activeOpacity={0.7}>
-    <Ionicons name={icon} size={22} color={active ? Colors.light.primaryDark : Colors.light.icon} />
-    <Text style={[styles.footerText, active && styles.footerTextActive]}>{label}</Text>
-  </TouchableOpacity>
-);
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#fff' },
@@ -87,13 +58,5 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 28, color: Colors.light.primaryDark },
   body: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   bodyText: { fontSize: 16, color: Colors.light.text },
-  footer: {
-    height: 70, backgroundColor: Colors.light.background,
-    flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',
-    borderTopWidth: 0.5, borderTopColor: Colors.light.inputBorder,
-  },
-  footerItem: { alignItems: 'center', paddingHorizontal: 6 },
-  footerText: { fontSize: 11, marginTop: 3, color: Colors.light.icon },
-  footerTextActive: { color: Colors.light.primaryDark },
 });
 

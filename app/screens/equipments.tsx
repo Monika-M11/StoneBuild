@@ -1,65 +1,66 @@
 import Colors from '@/constants/theme';
 import { useTheme } from '@/providers/ThemeProvider';
-import React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import ScreenPage from '../../components/ScreenPage';
-
-const EQUIPMENT = [
-  { id: '1', name: 'Excavator JD 75G', status: 'Active', site: 'Site A', due: '10 Apr 2026' },
-  { id: '2', name: 'Concrete Mixer CM-500', status: 'Idle', site: 'Main Store', due: '—' },
-  { id: '3', name: 'Tower Crane TC-200', status: 'Active', site: 'Site B', due: '15 Apr 2026' },
-  { id: '4', name: 'Bulldozer BD-150', status: 'Maintenance', site: 'Workshop', due: '08 Apr 2026' },
-  { id: '5', name: 'Generator 50KVA', status: 'Active', site: 'Site A', due: '—' },
-];
-
-const statusColor: Record<string, string> = {
-  Active: '#22c55e',
-  Idle: '#f59e0b',
-  Maintenance: '#ef4444',
-};
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Footer from '../../components/Footer';
 
 export default function EquipmentsScreen() {
   const theme = useTheme();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('equipments');
+
   return (
-    <ScreenPage title="Equipments" icon="construct-outline">
-      <FlatList
-        data={EQUIPMENT}
-        keyExtractor={(i) => i.id}
-        contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={styles.top}>
-              <Text style={[styles.name, { fontFamily: theme.fonts.bold }]}>{item.name}</Text>
-              <View style={[styles.statusBadge, { backgroundColor: statusColor[item.status] + '22' }]}>
-                <Text style={[styles.statusText, { fontFamily: theme.fonts.bold, color: statusColor[item.status] }]}>{item.status}</Text>
-              </View>
-            </View>
-            <View style={styles.row}>
-              <Text style={[styles.label, { fontFamily: theme.fonts.regular }]}>Site:</Text>
-              <Text style={[styles.value, { fontFamily: theme.fonts.medium }]}>{item.site}</Text>
-              <Text style={[styles.label, { fontFamily: theme.fonts.regular, marginLeft: 20 }]}>Due:</Text>
-              <Text style={[styles.value, { fontFamily: theme.fonts.medium }]}>{item.due}</Text>
-            </View>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="arrow-back" size={24} color={Colors.light.primaryDark} />
+          </TouchableOpacity>
+          <View style={styles.headerCenter}>
+            <Ionicons name="construct-outline" size={20} color={Colors.light.primaryDark} />
+            <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Equipments</Text>
           </View>
-        )}
-      />
-    </ScreenPage>
+          <View style={{ width: 24 }} />
+        </View>
+
+        {/* BODY */}
+        <View style={styles.body}>
+          <Text style={[styles.bodyText, { fontFamily: theme.fonts.bold }]}>
+            Equipments Page
+          </Text>
+        </View>
+
+        {/* FOOTER */}
+        <Footer activeTab={activeTab} onTabChange={setActiveTab} />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  list: { padding: 16, gap: 10 },
-  card: {
-    backgroundColor: '#fff', borderRadius: 14, padding: 14,
-    elevation: 1, shadowColor: '#000', shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 1 }, shadowRadius: 4,
+  safeArea: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.light.inputBg },
+  header: {
+    height: 64, paddingHorizontal: 16, backgroundColor: Colors.light.background,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    elevation: 3, shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4,
   },
-  top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  name: { fontSize: 15, color: Colors.light.text, flex: 1 },
-  statusBadge: { borderRadius: 8, paddingHorizontal: 10, paddingVertical: 3 },
-  statusText: { fontSize: 11 },
-  row: { flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 4 },
-  label: { fontSize: 12, color: Colors.light.icon },
-  value: { fontSize: 12, color: Colors.light.text },
+  headerCenter: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerTitle: { fontSize: 20, color: Colors.light.primaryDark },
+  body: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  bodyText: { fontSize: 20, color: Colors.light.text },
 });
 

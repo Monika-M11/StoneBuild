@@ -1,37 +1,66 @@
 import Colors from '@/constants/theme';
 import { useTheme } from '@/providers/ThemeProvider';
-import { StyleSheet, Text, View } from 'react-native';
-import ScreenPage from '../../components/ScreenPage';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Footer from '../../components/Footer';
 
 export default function MaterialsScreen() {
   const theme = useTheme();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('stock');
+
   return (
-    <ScreenPage title="Materials" icon="layers-outline">
+    <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={[styles.title, { fontFamily: theme.fonts.bold }]}>Materials Page</Text>
-        <Text style={[styles.subtitle, { fontFamily: theme.fonts.regular }]}>Materials inventory will go here</Text>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="arrow-back" size={24} color={Colors.light.primaryDark} />
+          </TouchableOpacity>
+          <View style={styles.headerCenter}>
+            <Ionicons name="layers-outline" size={20} color={Colors.light.primaryDark} />
+            <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Materials</Text>
+          </View>
+          <View style={{ width: 24 }} />
+        </View>
+
+        {/* BODY */}
+        <View style={styles.body}>
+          <Text style={[styles.bodyText, { fontFamily: theme.fonts.bold }]}>
+            Materials Page
+          </Text>
+        </View>
+
+        {/* FOOTER */}
+        <Footer activeTab={activeTab} onTabChange={setActiveTab} />
       </View>
-    </ScreenPage>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.light.inputBg,
+  safeArea: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.light.inputBg },
+  header: {
+    height: 64, paddingHorizontal: 16, backgroundColor: Colors.light.background,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    elevation: 3, shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4,
   },
-  title: {
-    fontSize: 24,
-    color: Colors.light.primaryDark,
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: Colors.light.text,
-    textAlign: 'center',
-  },
+  headerCenter: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerTitle: { fontSize: 20, color: Colors.light.primaryDark },
+  body: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  bodyText: { fontSize: 20, color: Colors.light.text },
 });
 
