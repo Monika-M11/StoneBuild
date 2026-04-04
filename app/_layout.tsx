@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import SideDrawer from '../components/SideDrawer';
 import { DrawerProvider, useDrawer } from '../contexts/DrawerContext';
@@ -18,6 +19,7 @@ import { ThemeProvider } from '../providers/ThemeProvider';
 
 function DrawerOverlay() {
   const { drawerVisible, closeDrawer } = useDrawer();
+  const router = useRouter();
 
   if (!drawerVisible) return null;
 
@@ -26,7 +28,7 @@ function DrawerOverlay() {
       visible={drawerVisible}
       onClose={closeDrawer}
       onMenuPress={(id) => {
-        console.log(`Menu pressed: ${id}`);
+        router.push(`/screens/${id}` as any);
         closeDrawer();
       }}
     />
@@ -74,3 +76,4 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+

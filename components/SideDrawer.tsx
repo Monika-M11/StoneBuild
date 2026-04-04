@@ -150,6 +150,8 @@ export default function SideDrawer({
                 onMenuPress(item.id);
                 onClose();
               }}
+
+
               activeOpacity={0.75}
             >
               <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
