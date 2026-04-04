@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDrawer } from '../contexts/DrawerContext';
 
 const DRAWER_WIDTH = Dimensions.get('window').width * 0.72;
 
@@ -48,8 +49,10 @@ export default function SideDrawer({
   activeMenu,
 }: SideDrawerProps) {
   const insets = useSafeAreaInsets();
+  const { openDrawer } = useDrawer();
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
+  const previewTranslateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
 
   useEffect(() => {
     if (visible) {
@@ -107,10 +110,47 @@ export default function SideDrawer({
     })
   ).current;
 
-  if (!visible) return null;
+  // Swipe left-to-right to open gesture
+  const openPanResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) =>
+        !visible && gestureState.dx > 10 && Math.abs(gestureState.dy) < 30,
+      onPanResponderMove: (_, gestureState) => {
+        if (gestureState.dx > 0) {
+          previewTranslateX.setValue(Math.min(gestureState.dx, DRAWER_WIDTH));
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dx > 60 || gestureState.vx > 0.5) {
+          openDrawer();
+        } else {
+          Animated.spring(previewTranslateX, {
+            toValue: -DRAWER_WIDTH,
+            useNativeDriver: true,
+            tension: 65,
+            friction: 11,
+          }).start();
+        }
+      },
+    })
+  ).current;
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+      {/* Open gesture preview layer */}
+      <Animated.View
+        style={[
+          styles.drawer,
+          {
+            width: DRAWER_WIDTH,
+            transform: [{ translateX: previewTranslateX }],
+            paddingTop: insets.top + 24,
+            paddingBottom: insets.bottom + 16,
+          },
+        ]}
+        {...openPanResponder.panHandlers}
+      />
+
       {/* Dim overlay */}
       <TouchableWithoutFeedback onPress={onClose}>
         <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
@@ -150,8 +190,6 @@ export default function SideDrawer({
                 onMenuPress(item.id);
                 onClose();
               }}
-
-
               activeOpacity={0.75}
             >
               <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
