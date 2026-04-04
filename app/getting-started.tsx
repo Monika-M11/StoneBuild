@@ -1,15 +1,16 @@
 import Colors from '@/constants/theme';
+import { useTheme } from '@/providers/ThemeProvider';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import {
-    Animated,
-    Dimensions,
-    FlatList as RNFlatList,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-    ViewToken
+  Animated,
+  Dimensions,
+  FlatList as RNFlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewToken
 } from 'react-native';
 import PrimaryButton from '../components/PrimaryButton';
 
@@ -43,6 +44,7 @@ const SLIDES = [
 ];
 
 export default function GettingStarted() {
+  const theme = useTheme();
   const router = useRouter();
   const flatListRef = useRef<RNFlatList>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -66,11 +68,15 @@ export default function GettingStarted() {
     router.replace('/login');
   }, []);
 
+  const titleFont = theme.fonts.bold;
+  const subtitleFont = theme.fonts.medium;
+  const regularFont = theme.fonts.regular;
+
   return (
     <View style={styles.container}>
       {/* Skip button */}
       <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-        <Text style={styles.skipText}>Skip</Text>
+        <Text style={[styles.skipText, { fontFamily: regularFont }]}>Skip</Text>
       </TouchableOpacity>
 
       {/* Slides */}
@@ -121,9 +127,9 @@ export default function GettingStarted() {
 
               {/* Text content */}
               <Animated.View style={{ opacity, transform: [{ translateY }] }}>
-                <Text style={[styles.slideTitle, { color: item.accent }]}>{item.title}</Text>
-                <Text style={styles.slideSubtitle}>{item.subtitle}</Text>
-                <Text style={styles.slideDescription}>{item.description}</Text>
+                <Text style={[styles.slideTitle, { fontFamily: titleFont, color: item.accent }]}>{item.title}</Text>
+                <Text style={[styles.slideSubtitle, { fontFamily: subtitleFont }]}>{item.subtitle}</Text>
+                <Text style={[styles.slideDescription, { fontFamily: regularFont }]}>{item.description}</Text>
               </Animated.View>
             </View>
           );
@@ -197,7 +203,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.textSecondary,
   },
   skipText: {
-    fontFamily: 'SourceSans3_400Regular',
     color: Colors.light.text,
     fontSize: 13,
     fontWeight: '500',
@@ -237,14 +242,12 @@ const styles = StyleSheet.create({
     fontSize: 44,
   },
   slideTitle: {
-    fontFamily: 'SourceSans3_700Bold',
-    fontSize: 42,
+    fontSize: 32,
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: -1,
   },
   slideSubtitle: {
-    fontFamily: 'SourceSans3_500Medium',
     fontSize: 20,
     color: Colors.light.primaryDark,
     fontWeight: '600',
@@ -252,7 +255,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   slideDescription: {
-    fontFamily: 'SourceSans3_400Regular',
     fontSize: 15,
     color: Colors.light.textSecondary,
     textAlign: 'center',
@@ -275,5 +277,5 @@ const styles = StyleSheet.create({
     height: 5,
     borderRadius: 3,
   },
-  // ctaButton and ctaText removed - using PrimaryButton
 });
+
