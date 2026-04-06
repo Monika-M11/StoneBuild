@@ -37,7 +37,7 @@ export default function PaymentScreen() {
 
         {/* BODY */}
         <View style={styles.body}>
-          <Text style={[styles.bodyText, { fontFamily: theme.fonts.bold }]}>
+          <Text style={[styles.bodyText, { fontFamily: theme.fonts.regular }]}>
             Payment Page
           </Text>
         </View>
@@ -61,6 +61,6 @@ const styles = StyleSheet.create({
   headerCenter: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   headerTitle: { fontSize: 20, color: Colors.light.primaryDark },
   body: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  bodyText: { fontSize: 20, color: Colors.light.text },
+  bodyText: { fontSize: 16, color: Colors.light.text },
 });
 
