@@ -4,6 +4,27 @@ import { useTheme } from '@/providers/ThemeProvider';
 import React, { useRef } from 'react';
 import { Animated, StyleSheet, TextInput, View } from 'react-native';
 
+/**
+ * inputMode controls what transformation/validation is applied:
+ *
+ *  'default'        — no transformation
+ *  'allCaps'        — every character forced to UPPERCASE
+ *  'capitalize'     — first letter of each word capitalised, rest lowercase
+ *  'sentenceCase'   — only the very first letter capitalised
+ *  'amount'         — numeric with decimals; formats to X.XX on blur
+ *  'wholeNumber'    — integers only, no decimals allowed
+ *  'alphanumeric'   — strips all characters that are not A-Z, a-z, 0-9
+ */
+export type InputMode =
+  | 'default'
+  | 'allCaps'
+  | 'capitalize'
+  | 'sentenceCase'
+  | 'amount'
+  | 'phone'
+  | 'wholeNumber'
+  | 'alphanumeric';
+
 interface AuthInputProps {
   label: string;
   value: string;
@@ -11,12 +32,74 @@ interface AuthInputProps {
   onFocus: () => void;
   onBlur: () => void;
   secureTextEntry?: boolean;
-  keyboardType?: 'default' | 'email-address' | 'numeric';
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'decimal-pad' | 'number-pad';
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   autoComplete?: 'email' | 'current-password' | 'new-password' | 'username';
   focusedField: string | null;
   fieldId: string;
+  inputMode?: InputMode;
 }
+
+
+
+function applyTransform(text: string, mode: InputMode): string {
+  switch (mode) {
+    case 'allCaps':
+      return text.toUpperCase();
+
+
+      return text.replace(/(^|[ \\t\\r\\n])[a-z]/g, c => c.toUpperCase());
+
+    case 'sentenceCase':
+      // Only the very first character capitalised
+      if (text.length === 0) return text;
+      return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+
+    case 'amount':
+      // Allow only digits and a single decimal point while typing
+return text.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1');
+
+    case 'phone':
+      // Only allow 10 digits, starting with 6,7,8,9
+      let digits = text.replace(/[^0-9]/g, '');
+      if (digits.length > 10) digits = digits.slice(0, 10);
+      if (digits.length > 0 && !'6789'.includes(digits[0])) return '';
+      return digits;
+
+    case 'wholeNumber':
+      // Strip everything that isn't a digit
+      return text.replace(/[^0-9]/g, ''); 
+
+    case 'alphanumeric':
+      // Strip special characters; keep letters and digits
+      return text.replace(/[^a-zA-Z0-9]/g, '');
+
+    default:
+      return text;
+  }
+}
+
+function formatOnBlur(text: string, mode: InputMode): string {
+  if (mode === 'amount') {
+    const num = parseFloat(text);
+    if (isNaN(num)) return '';
+    return num.toFixed(2); // e.g. "5" → "5.00", "3.1" → "3.10"
+  }
+  return text;
+}
+
+// Derive best native keyboardType for each mode
+function resolveKeyboardType(
+  mode: InputMode,
+  override?: AuthInputProps['keyboardType']
+): AuthInputProps['keyboardType'] {
+  if (override) return override;
+  if (mode === 'amount') return 'decimal-pad';
+  if (mode === 'phone' || mode === 'wholeNumber') return 'number-pad';
+  return 'default';
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AuthInput({
   label,
@@ -25,11 +108,12 @@ export default function AuthInput({
   onFocus,
   onBlur,
   secureTextEntry = false,
-  keyboardType = 'default',
+  keyboardType,
   autoCapitalize = 'none',
   autoComplete,
   focusedField,
   fieldId,
+  inputMode = 'default',
 }: AuthInputProps) {
   const theme = useTheme();
   const primaryDark = Colors.light.primaryDark;
@@ -50,20 +134,26 @@ export default function AuthInput({
 
   const inputBorderDynamic = isFocused ? primaryDark : inputBorder + '66';
 
-  const labelTop = animValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [14, -9],
-  });
-
-  const labelFontSize = animValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [16, 11],
-  });
-
+  const labelTop = animValue.interpolate({ inputRange: [0, 1], outputRange: [14, -9] });
+  const labelFontSize = animValue.interpolate({ inputRange: [0, 1], outputRange: [16, 11] });
   const labelColor = animValue.interpolate({
     inputRange: [0, 1],
     outputRange: [Colors.light.icon, isFocused ? primaryDark : Colors.light.icon],
   });
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
+
+  const handleChangeText = (text: string) => {
+    const transformed = applyTransform(text, inputMode);
+    onChangeText(transformed);
+  };
+
+  const handleBlur = () => {
+    // Format amount to 2 decimal places when user leaves the field
+    const formatted = formatOnBlur(value, inputMode);
+    if (formatted !== value) onChangeText(formatted);
+    onBlur();
+  };
 
   return (
     <View style={styles.wrapper}>
@@ -95,12 +185,17 @@ export default function AuthInput({
             { color: Colors.light.text, fontFamily: theme.fonts.regular },
           ]}
           value={value}
-          onChangeText={onChangeText}
+          onChangeText={handleChangeText}
           onFocus={onFocus}
-          onBlur={onBlur}
+          onBlur={handleBlur}
           secureTextEntry={secureTextEntry}
-          keyboardType={keyboardType}
-          autoCapitalize={autoCapitalize}
+          keyboardType={resolveKeyboardType(inputMode, keyboardType)}
+          // Let our transform handle casing — disable native autoCapitalize
+          autoCapitalize={
+            inputMode === 'allCaps' || inputMode === 'capitalize' || inputMode === 'sentenceCase'
+              ? 'none'
+              : autoCapitalize
+          }
           autoComplete={autoComplete}
         />
       </View>
@@ -131,4 +226,3 @@ const styles = StyleSheet.create({
     height: 48,
   },
 });
-
