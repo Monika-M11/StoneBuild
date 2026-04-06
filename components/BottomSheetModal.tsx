@@ -1,73 +1,77 @@
-import BottomSheet, {
-    BottomSheetView,
-} from '@gorhom/bottom-sheet';
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { useTheme } from '../providers/ThemeProvider';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import React, { useCallback } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface BottomSheetModalProps {
-  ref: React.RefObject<BottomSheet>;
-  snapPoints: string[];
+  snapPoints?: string[];
   onClose?: () => void;
   children: React.ReactNode;
-  index?: number;
-  enablePanDownToClose?: boolean;
-  enableDynamicSizing?: boolean;
-  keyboardBehavior?: 'interactive' | 'extend' | 'fillParent';
-  keyboardBlurBehavior?: 'none' | 'restore';
-  android_keyboardInputMode?: 'adjustPan' | 'adjustResize';
 }
 
-const BottomSheetModal = React.forwardRef<BottomSheet, BottomSheetModalProps>(
-  ({
-    snapPoints,
-    onClose,
-    children,
-    index = -1,
-    enablePanDownToClose = true,
-    enableDynamicSizing = false,
-    keyboardBehavior = 'interactive',
-    keyboardBlurBehavior = 'restore',
-    android_keyboardInputMode = 'adjustPan',
-  }, ref) => {
-    const theme = useTheme();
+const BottomSheetModal = React.forwardRef<any, BottomSheetModalProps>(
+  (props, ref) => {
+    const { snapPoints = ['50%', '92%'], onClose, children } = props;
+
+    // bottomInset 
+    const insets = useSafeAreaInsets();
+
+    //Grey backdrop
+    const renderBackdrop = useCallback(
+      (backdropProps: any) => (
+        <BottomSheetBackdrop
+          {...backdropProps}
+          disappearsOnIndex={-1}
+          appearsOnIndex={0}
+          opacity={0.5}
+          pressBehavior="close"
+        />
+      ),
+      []
+    );
 
     return (
       <BottomSheet
         ref={ref}
-        index={index}
+        index={-1}
         snapPoints={snapPoints}
-        enablePanDownToClose={enablePanDownToClose}
-        enableDynamicSizing={enableDynamicSizing}
-        keyboardBehavior={keyboardBehavior}
-        keyboardBlurBehavior={keyboardBlurBehavior}
-        android_keyboardInputMode={android_keyboardInputMode}
+        enablePanDownToClose={true}
+        enableDynamicSizing={false}
+        // Lifts above nav
+        bottomInset={insets.bottom}
+        backdropComponent={renderBackdrop}
         onClose={onClose}
         backgroundStyle={styles.bottomSheetBackground}
         handleIndicatorStyle={styles.handleIndicator}
+        style={styles.sheetShadow}
       >
-        <BottomSheetView style={styles.sheetContent}>
+        <View style={styles.sheetContent}>
           {children}
-        </BottomSheetView>
+        </View>
       </BottomSheet>
     );
   }
 );
 
-BottomSheetModal.displayName = 'BottomSheetModal';
-
 const styles = StyleSheet.create({
-  bottomSheetBackground: StyleSheet.create({ dummy: { backgroundColor: '#FFFFFF' } }).dummy as any,
-  handleIndicator: StyleSheet.create({ dummy: { backgroundColor: '#E5E7EB', width: 40, height: 4 } }).dummy as any,
+  bottomSheetBackground: { backgroundColor: '#FFFFFF' } as ViewStyle,
+  handleIndicator: {
+    backgroundColor: '#E5E7EB',
+    width: 40,
+    height: 4,
+  } as ViewStyle,
   sheetContent: {
     flex: 1,
-    paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
     overflow: 'hidden',
   },
+  // Optional: keeps shadow visible when sheet is floating above nav bar
+  sheetShadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 16,
+  } as ViewStyle,
 });
 
 export default BottomSheetModal;
-

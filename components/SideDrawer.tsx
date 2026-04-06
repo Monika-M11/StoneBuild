@@ -1,4 +1,3 @@
-import Colors from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef } from 'react';
 import {
@@ -12,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Colors from '../constants/theme';
 import { useDrawer } from '../contexts/DrawerContext';
 
 const DRAWER_WIDTH = Dimensions.get('window').width * 0.72;
@@ -52,7 +52,12 @@ export default function SideDrawer({
   const { openDrawer } = useDrawer();
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
-  const previewTranslateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
+
+  // Keep a ref to visible so PanResponder closures always read the latest value
+  const visibleRef = useRef(visible);
+  useEffect(() => {
+    visibleRef.current = visible;
+  }, [visible]);
 
   useEffect(() => {
     if (visible) {
@@ -85,11 +90,13 @@ export default function SideDrawer({
     }
   }, [visible]);
 
-  // Swipe right-to-left to close gesture
+  // Swipe right-to-left to CLOSE — only active when drawer is open
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) =>
-        gestureState.dx < -10 && Math.abs(gestureState.dy) < 30,
+        visibleRef.current &&
+        gestureState.dx < -10 &&
+        Math.abs(gestureState.dy) < 30,
       onPanResponderMove: (_, gestureState) => {
         if (gestureState.dx < 0) {
           translateX.setValue(Math.max(gestureState.dx, -DRAWER_WIDTH));
@@ -110,26 +117,38 @@ export default function SideDrawer({
     })
   ).current;
 
-  // Swipe left-to-right to open gesture
+  // Swipe left-to-right to OPEN — only active when drawer is closed
   const openPanResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) =>
-        !visible && gestureState.dx > 10 && Math.abs(gestureState.dy) < 30,
+        !visibleRef.current &&
+        gestureState.dx > 10 &&
+        Math.abs(gestureState.dy) < 30,
       onPanResponderMove: (_, gestureState) => {
         if (gestureState.dx > 0) {
-          previewTranslateX.setValue(Math.min(gestureState.dx, DRAWER_WIDTH));
+          const newX = Math.min(-DRAWER_WIDTH + gestureState.dx, 0);
+          translateX.setValue(newX);
+          const progress = Math.min(gestureState.dx / DRAWER_WIDTH, 1);
+          overlayOpacity.setValue(progress);
         }
       },
       onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dx > 60 || gestureState.vx > 0.5) {
+        if (gestureState.dx > DRAWER_WIDTH * 0.4 || gestureState.vx > 0.5) {
           openDrawer();
         } else {
-          Animated.spring(previewTranslateX, {
-            toValue: -DRAWER_WIDTH,
-            useNativeDriver: true,
-            tension: 65,
-            friction: 11,
-          }).start();
+          Animated.parallel([
+            Animated.spring(translateX, {
+              toValue: -DRAWER_WIDTH,
+              useNativeDriver: true,
+              tension: 65,
+              friction: 11,
+            }),
+            Animated.timing(overlayOpacity, {
+              toValue: 0,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+          ]).start();
         }
       },
     })
@@ -137,26 +156,15 @@ export default function SideDrawer({
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-      {/* Open gesture preview layer */}
-      <Animated.View
-        style={[
-          styles.drawer,
-          {
-            width: DRAWER_WIDTH,
-            transform: [{ translateX: previewTranslateX }],
-            paddingTop: insets.top + 24,
-            paddingBottom: insets.bottom + 16,
-          },
-        ]}
+      <View
+        style={styles.edgeZone}
         {...openPanResponder.panHandlers}
       />
 
-      {/* Dim overlay */}
       <TouchableWithoutFeedback onPress={onClose}>
-        <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+        <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} pointerEvents={visible ? 'auto' : 'none'} />
       </TouchableWithoutFeedback>
 
-      {/* Drawer panel */}
       <Animated.View
         style={[
           styles.drawer,
@@ -169,7 +177,6 @@ export default function SideDrawer({
         ]}
         {...panResponder.panHandlers}
       >
-        {/* App brand strip */}
         <View style={styles.brandRow}>
           <View style={styles.brandIcon}>
             <Ionicons name="flash" size={18} color="#fff" />
@@ -179,8 +186,7 @@ export default function SideDrawer({
 
         <View style={styles.divider} />
 
-        {/* Menu items */}
-        {MENU_ITEMS.map((item, index) => {
+        {MENU_ITEMS.map((item) => {
           const isActive = activeMenu === item.id;
           return (
             <TouchableOpacity
@@ -214,6 +220,14 @@ const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.45)',
+  },
+  edgeZone: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 20,
+    zIndex: 10,
   },
   drawer: {
     position: 'absolute',
