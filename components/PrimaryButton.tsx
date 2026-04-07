@@ -1,6 +1,6 @@
-import { useTheme } from '@/providers/ThemeProvider';
 import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
+import { useTheme } from '../providers/ThemeProvider';
 
 interface PrimaryButtonProps {
   onPress: () => void;
