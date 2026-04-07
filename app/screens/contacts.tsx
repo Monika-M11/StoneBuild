@@ -13,12 +13,14 @@ import {
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AuthInput from '../../components/AuthInput';
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
-import ScreenPage from '../../components/ScreenPage';
-import { useFormValidation } from '../../hooks/useFormValidation'; // ← Import your hook
+import Colors from '../../constants/theme';
+import { useDrawer } from '../../contexts/DrawerContext';
+import { useFormValidation } from '../../hooks/useFormValidation';
+import { useTheme } from '../../providers/ThemeProvider';
 
 type Contact = {
   id: string;
@@ -56,6 +58,8 @@ export default function ContactsScreen() {
   });
 
   const router = useRouter();
+  const { openDrawer } = useDrawer();
+  const theme = useTheme();
   const bottomSheetRef = useRef<any>(null);
   const snapPoints = useMemo(() => ['50%', '92%'], []);
 
@@ -141,6 +145,10 @@ export default function ContactsScreen() {
     );
   };
 
+  const handleAddContact = () => {
+    router.push('/screens/addContact');
+  };
+
   const renderContactItem = useCallback(
     ({ item }: { item: Contact }) => (
       <TouchableOpacity
@@ -165,29 +173,45 @@ export default function ContactsScreen() {
     [openFormSheet]
   );
 
-  const handleAddContact = () => {
-    router.push('/screens/addContact');
-  };
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScreenPage title="Contacts" icon="people-outline" rightAction={
-          <TouchableOpacity onPress={handleAddContact} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ padding: 8 }}>
-            <Ionicons name="add" size={24} color="#3C467B" />
-          </TouchableOpacity>
-        }>
-        <View style={styles.body}>
-          <FlatList
-            data={dummyContacts}
-            keyExtractor={(item) => item.id}
-            renderItem={renderContactItem}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          {/* Custom Header - Menu icon */}
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={openDrawer}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ padding: 8 }}
+            >
+              <Ionicons name="menu" size={26} color={Colors.light.primaryDark} />
+            </TouchableOpacity>
+            <View style={styles.headerCenter}>
+              <Ionicons name="people-outline" size={20} color={Colors.light.primaryDark} />
+              <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Contacts</Text>
+            </View>
+            <TouchableOpacity 
+              onPress={handleAddContact} 
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} 
+              style={{ padding: 8 }}
+            >
+              <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
+            </TouchableOpacity>
+          </View>
 
-        <Footer activeTab={activeTab} onTabChange={setActiveTab} />
-      </ScreenPage>
+          <View style={styles.body}>
+            <FlatList
+              data={dummyContacts}
+              keyExtractor={(item) => item.id}
+              renderItem={renderContactItem}
+              contentContainerStyle={styles.listContent}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+
+          <Footer activeTab={activeTab} onTabChange={setActiveTab} />
+        </View>
+      </SafeAreaView>
 
       {/* BOTTOM SHEET */}
       <BottomSheetModal
@@ -235,7 +259,7 @@ export default function ContactsScreen() {
                 onFocus={() => handleFocus('name')}
                 onBlur={handleBlur}
                 inputMode="default"
-                error={errors.name}                    // ← Pass error
+                error={errors.name}
               />
 
               <AuthInput
@@ -302,6 +326,18 @@ export default function ContactsScreen() {
 }
 
 const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.light.inputBg },
+  header: {
+    height: 70, paddingHorizontal: 16, backgroundColor: Colors.light.background,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    elevation: 3, shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4,
+  },
+  headerCenter: {
+    flexDirection: 'row', alignItems: 'center', gap: 8
+  },
+  headerTitle: { fontSize: 20, color: Colors.light.primaryDark },
   body: { flex: 1 },
   listContent: { padding: 16 },
 

@@ -1,5 +1,3 @@
-import Colors from '@/constants/theme';
-import { useTheme } from '@/providers/ThemeProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -8,6 +6,8 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Colors from '../constants/theme';
+import { useTheme } from '../providers/ThemeProvider';
 
 interface ScreenPageProps {
   title: string;

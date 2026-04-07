@@ -66,7 +66,7 @@ function applyTransform(text: string, mode: InputMode): string {
       return text.replace(/[^0-9]/g, '');
 
     case 'email':
-      // Basic email validation - allow common characters, reject invalid
+     
       return text
         .toLowerCase()
         .replace(/[^a-z0-9@._+-]/g, '')
