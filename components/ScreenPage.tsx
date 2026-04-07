@@ -4,7 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-    StyleSheet, Text, TouchableOpacity, View,
+  StyleSheet, Text, TouchableOpacity,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -12,9 +13,10 @@ interface ScreenPageProps {
   title: string;
   icon: string;
   children: React.ReactNode;
+  rightAction?: React.ReactNode;
 }
 
-export default function ScreenPage({ title, icon, children }: ScreenPageProps) {
+export default function ScreenPage({ title, icon, children, rightAction }: ScreenPageProps) {
   const theme = useTheme();
   const router = useRouter();
   return (
@@ -25,14 +27,15 @@ export default function ScreenPage({ title, icon, children }: ScreenPageProps) {
           <TouchableOpacity
             onPress={() => router.back()}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={{ padding: 8 }}
           >
             <Ionicons name="arrow-back" size={24} color={Colors.light.primaryDark} />
           </TouchableOpacity>
-          <View style={styles.headerCenter}>
+          <View style={[styles.headerCenter, { flex: 1, justifyContent: 'center' }]}>
             <Ionicons name={icon as any} size={20} color={Colors.light.primaryDark} />
             <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>{title}</Text>
           </View>
-          <View style={{ width: 24 }} />
+          {rightAction}
         </View>
 
         {/* CONTENT */}

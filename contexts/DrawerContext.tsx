@@ -13,6 +13,7 @@ interface DrawerProviderProps {
 }
 
 export function DrawerProvider({ children }: DrawerProviderProps) {
+  
   const [drawerVisible, setDrawerVisible] = useState(false);
 
   const openDrawer = () => setDrawerVisible(true);
