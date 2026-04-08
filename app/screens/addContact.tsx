@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import AuthInput from '../../components/AuthInput';
 import Footer from '../../components/Footer';
-import NewInput from '../../components/NewInput';
 import PrimaryButton from '../../components/PrimaryButton';
 import ScreenPage from '../../components/ScreenPage';
 import Colors from '../../constants/theme';
@@ -110,7 +110,7 @@ export default function AddContactScreen() {
             <View style={styles.formCard}>
               <Text style={styles.sectionTitle}>Personal Information</Text>
 
-              <NewInput
+<AuthInput
                 label="Contact Name *"
                 fieldId="contactName"
                 focusedField={focusedField}
@@ -122,7 +122,7 @@ export default function AddContactScreen() {
                 error={errors.contactName}
               />
 
-              <NewInput
+<AuthInput
                 label="Phone Number *"
                 fieldId="phoneNumber"
                 focusedField={focusedField}
@@ -134,7 +134,7 @@ export default function AddContactScreen() {
                 error={errors.phoneNumber}
               />
 
-              <NewInput
+<AuthInput
                 label="Email ID"
                 fieldId="emailId"
                 focusedField={focusedField}
@@ -148,7 +148,7 @@ export default function AddContactScreen() {
 
               <Text style={styles.sectionTitle}>Address Details</Text>
 
-              <NewInput
+<AuthInput
                 label="Address Line 1 *"
                 fieldId="addressLine1"
                 focusedField={focusedField}
@@ -160,7 +160,7 @@ export default function AddContactScreen() {
                 error={errors.addressLine1}
               />
 
-              <NewInput
+<AuthInput
                 label="Address Line 2"
                 fieldId="addressLine2"
                 focusedField={focusedField}
@@ -172,7 +172,7 @@ export default function AddContactScreen() {
                 error={errors.addressLine2}
               />
 
-              <NewInput
+<AuthInput
                 label="City *"
                 fieldId="city"
                 focusedField={focusedField}
@@ -184,7 +184,7 @@ export default function AddContactScreen() {
                 error={errors.city}
               />
 
-              <NewInput
+<AuthInput
                 label="Pincode *"
                 fieldId="pincode"
                 focusedField={focusedField}
@@ -198,7 +198,7 @@ export default function AddContactScreen() {
 
               <Text style={styles.sectionTitle}>Bank Details</Text>
 
-              <NewInput
+<AuthInput
                 label="Bank Name"
                 fieldId="bankName"
                 focusedField={focusedField}
@@ -210,7 +210,7 @@ export default function AddContactScreen() {
                 error={errors.bankName}
               />
 
-              <NewInput
+<AuthInput
                 label="Account Name"
                 fieldId="accountName"
                 focusedField={focusedField}
@@ -222,7 +222,7 @@ export default function AddContactScreen() {
                 error={errors.accountName}
               />
 
-              <NewInput
+              <AuthInput
                 label="IFSC Code"
                 fieldId="ifscCode"
                 focusedField={focusedField}
@@ -234,7 +234,7 @@ export default function AddContactScreen() {
                 error={errors.ifscCode}
               />
 
-              <NewInput
+              <AuthInput
                 label="Branch Name"
                 fieldId="branchName"
                 focusedField={focusedField}
@@ -248,7 +248,7 @@ export default function AddContactScreen() {
 
               <Text style={styles.sectionTitle}>Tax & Identity Details</Text>
 
-              <NewInput
+              <AuthInput
                 label="GST Number"
                 fieldId="gstNumber"
                 focusedField={focusedField}
@@ -260,7 +260,7 @@ export default function AddContactScreen() {
                 error={errors.gstNumber}
               />
 
-              <NewInput
+              <AuthInput
                 label="Aadhaar Number"
                 fieldId="aadhaar"
                 focusedField={focusedField}
@@ -272,7 +272,7 @@ export default function AddContactScreen() {
                 error={errors.aadhaar}
               />
 
-              <NewInput
+              <AuthInput
                 label="PAN Number"
                 fieldId="panNumber"
                 focusedField={focusedField}
@@ -287,8 +287,8 @@ export default function AddContactScreen() {
           </ScrollView>
         </KeyboardAvoidingView>
 
-        <View style={styles.fixedButtonContainer}>
-          <PrimaryButton onPress={handleCancel} style={styles.fixedCancelButton}>
+        <View style={styles.fixedButtonContainer}>  
+        <PrimaryButton onPress={handleCancel} variant="secondary" style={styles.fixedCancelButton}>
             Cancel
           </PrimaryButton>
           <PrimaryButton onPress={handleSave} style={styles.fixedSaveButton}>

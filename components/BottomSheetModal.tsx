@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   sheetContent: {
     flex: 1,
-    overflow: 'hidden',
+    overflow: 'auto',
   },
   // Optional: keeps shadow visible when sheet is floating above nav bar
   sheetShadow: {
