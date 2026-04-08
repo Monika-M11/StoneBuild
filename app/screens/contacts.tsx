@@ -61,7 +61,7 @@ export default function ContactsScreen() {
   const { openDrawer } = useDrawer();
   const theme = useTheme();
   const bottomSheetRef = useRef<any>(null);
-  const snapPoints = useMemo(() => ['50%', '92%'], []);
+  const snapPoints = useMemo(() => ['50%', '72%'], []);
 
   // ==================== FORM VALIDATION HOOK ====================
   const { errors, validate, clearAll } = useFormValidation<keyof FormData>({

@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
+import { useDrawer } from '../../contexts/DrawerContext';
 import { useTheme } from '../../providers/ThemeProvider';
 
 type Equipment = {
@@ -58,6 +59,7 @@ type FormData = {
 export default function EquipmentsScreen() {
   const theme = useTheme();
   const router = useRouter();
+  const { openDrawer } = useDrawer();
   const [activeTab, setActiveTab] = useState('equipments');
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -133,14 +135,18 @@ export default function EquipmentsScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      {/* ✅ SafeAreaView wraps the main content — same structure as contacts.tsx */}
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
+
+          {/* ✅ Header — matches contacts.tsx exactly */}
           <View style={styles.header}>
             <TouchableOpacity
-              onPress={() => router.back()}
+              onPress={openDrawer}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ padding: 8 }}
             >
-              <Ionicons name="arrow-back" size={24} color={Colors.light.primaryDark} />
+              <Ionicons name="menu" size={26} color={Colors.light.primaryDark} />
             </TouchableOpacity>
             <View style={styles.headerCenter}>
               <Ionicons name="construct-outline" size={20} color={Colors.light.primaryDark} />
@@ -148,9 +154,16 @@ export default function EquipmentsScreen() {
                 Equipments
               </Text>
             </View>
-            <View style={{ width: 24 }} />
+            <TouchableOpacity
+              onPress={() => router.push('/screens/addEquipment' as any)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ padding: 8 }}
+            >
+              <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
+            </TouchableOpacity>
           </View>
 
+          {/* ✅ Body takes remaining space — footer stays pinned at bottom */}
           <View style={styles.body}>
             <FlatList
               data={dummyEquipments}
@@ -159,7 +172,7 @@ export default function EquipmentsScreen() {
               contentContainerStyle={styles.listContent}
               showsVerticalScrollIndicator={false}
             />
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.showEquipmentButton}
               onPress={() => openSheet(dummyEquipments[0])}
               activeOpacity={0.8}
@@ -171,169 +184,170 @@ export default function EquipmentsScreen() {
 
           <Footer activeTab={activeTab} onTabChange={setActiveTab} />
         </View>
+      </SafeAreaView>
 
-        <BottomSheetModal
-          ref={bottomSheetRef}
-          snapPoints={snapPoints}
-          onClose={() => setSelectedEquipment(null)}
-        >
-          {selectedEquipment && (
-            <KeyboardAvoidingView
-              style={{ flex: 1 }}
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
-              <View style={styles.sheetHeader}>
-                <View style={styles.sheetIconBox}>
-                  <Ionicons name="construct-outline" size={26} color={Colors.light.primaryDark} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.sheetEquipmentName, { fontFamily: theme.fonts.bold }]}>
-                    {selectedEquipment.name}
+      {/* ✅ BottomSheetModal lives OUTSIDE SafeAreaView — same as contacts.tsx */}
+      <BottomSheetModal
+        ref={bottomSheetRef}
+        snapPoints={snapPoints}
+        onClose={() => setSelectedEquipment(null)}
+      >
+        {selectedEquipment && (
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          >
+            <View style={styles.sheetHeader}>
+              <View style={styles.sheetIconBox}>
+                <Ionicons name="construct-outline" size={26} color={Colors.light.primaryDark} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.sheetEquipmentName, { fontFamily: theme.fonts.bold }]}>
+                  {selectedEquipment.name}
+                </Text>
+                <View style={styles.sheetStatusRow}>
+                  <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[selectedEquipment.status] }]} />
+                  <Text style={[styles.sheetStatusText, { color: STATUS_COLORS[selectedEquipment.status] }]}>
+                    {selectedEquipment.status}
                   </Text>
-                  <View style={styles.sheetStatusRow}>
-                    <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[selectedEquipment.status] }]} />
-                    <Text style={[styles.sheetStatusText, { color: STATUS_COLORS[selectedEquipment.status] }]}>
-                      {selectedEquipment.status}
-                    </Text>
-                  </View>
                 </View>
-                <TouchableOpacity onPress={closeSheet} style={styles.closeButton}>
-                  <Ionicons name="close" size={24} color={Colors.light.text} />
-                </TouchableOpacity>
+              </View>
+              <TouchableOpacity onPress={closeSheet} style={styles.closeButton}>
+                <Ionicons name="close" size={24} color={Colors.light.text} />
+              </TouchableOpacity>
+            </View>
+
+            <BottomSheetScrollView
+              style={styles.formScrollView}
+              contentContainerStyle={styles.formContent}
+              showsVerticalScrollIndicator={true}
+              keyboardShouldPersistTaps="handled"
+            >
+              <Text style={styles.sectionTitle}>Equipment Details</Text>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Equipment Name</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={formData.name}
+                  onChangeText={(t) => handleInputChange('name', t)}
+                  onFocus={handleFocus}
+                  placeholder="Enter equipment name"
+                  placeholderTextColor="#aaa"
+                  returnKeyType="next"
+                />
               </View>
 
-              <BottomSheetScrollView
-                style={styles.formScrollView}
-                contentContainerStyle={styles.formContent}
-                showsVerticalScrollIndicator={true}
-                keyboardShouldPersistTaps="handled"
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Serial Number</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={formData.serialNumber}
+                  onChangeText={(t) => handleInputChange('serialNumber', t)}
+                  onFocus={handleFocus}
+                  placeholder="e.g. CAT-320-2021-001"
+                  placeholderTextColor="#aaa"
+                  autoCapitalize="characters"
+                  returnKeyType="next"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Category</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={formData.category}
+                  onChangeText={(t) => handleInputChange('category', t)}
+                  onFocus={handleFocus}
+                  placeholder="e.g. Heavy Machinery"
+                  placeholderTextColor="#aaa"
+                  returnKeyType="next"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Purchase Date</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={formData.purchaseDate}
+                  onChangeText={(t) => handleInputChange('purchaseDate', t)}
+                  onFocus={handleFocus}
+                  placeholder="DD / MM / YYYY"
+                  placeholderTextColor="#aaa"
+                  keyboardType="numeric"
+                  returnKeyType="next"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Last Service Date</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={formData.lastService}
+                  onChangeText={(t) => handleInputChange('lastService', t)}
+                  onFocus={handleFocus}
+                  placeholder="DD / MM / YYYY"
+                  placeholderTextColor="#aaa"
+                  keyboardType="numeric"
+                  returnKeyType="next"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Assigned To</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={formData.assignedTo}
+                  onChangeText={(t) => handleInputChange('assignedTo', t)}
+                  onFocus={handleFocus}
+                  placeholder="Operator or team name"
+                  placeholderTextColor="#aaa"
+                  returnKeyType="next"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Site / Location</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={formData.location}
+                  onChangeText={(t) => handleInputChange('location', t)}
+                  onFocus={handleFocus}
+                  placeholder="Current site or storage location"
+                  placeholderTextColor="#aaa"
+                  returnKeyType="next"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Notes</Text>
+                <TextInput
+                  style={[styles.textInput, styles.notesInput]}
+                  value={formData.notes}
+                  onChangeText={(t) => handleInputChange('notes', t)}
+                  onFocus={handleFocus}
+                  placeholder="Any remarks, issues or service notes..."
+                  placeholderTextColor="#aaa"
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                />
+              </View>
+
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={() => {
+                  console.log('Equipment Saved:', formData);
+                  closeSheet();
+                }}
+                activeOpacity={0.8}
               >
-                <Text style={styles.sectionTitle}>Equipment Details</Text>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Equipment Name</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    value={formData.name}
-                    onChangeText={(t) => handleInputChange('name', t)}
-                    onFocus={handleFocus}
-                    placeholder="Enter equipment name"
-                    placeholderTextColor="#aaa"
-                    returnKeyType="next"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Serial Number</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    value={formData.serialNumber}
-                    onChangeText={(t) => handleInputChange('serialNumber', t)}
-                    onFocus={handleFocus}
-                    placeholder="e.g. CAT-320-2021-001"
-                    placeholderTextColor="#aaa"
-                    autoCapitalize="characters"
-                    returnKeyType="next"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Category</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    value={formData.category}
-                    onChangeText={(t) => handleInputChange('category', t)}
-                    onFocus={handleFocus}
-                    placeholder="e.g. Heavy Machinery"
-                    placeholderTextColor="#aaa"
-                    returnKeyType="next"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Purchase Date</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    value={formData.purchaseDate}
-                    onChangeText={(t) => handleInputChange('purchaseDate', t)}
-                    onFocus={handleFocus}
-                    placeholder="DD / MM / YYYY"
-                    placeholderTextColor="#aaa"
-                    keyboardType="numeric"
-                    returnKeyType="next"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Last Service Date</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    value={formData.lastService}
-                    onChangeText={(t) => handleInputChange('lastService', t)}
-                    onFocus={handleFocus}
-                    placeholder="DD / MM / YYYY"
-                    placeholderTextColor="#aaa"
-                    keyboardType="numeric"
-                    returnKeyType="next"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Assigned To</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    value={formData.assignedTo}
-                    onChangeText={(t) => handleInputChange('assignedTo', t)}
-                    onFocus={handleFocus}
-                    placeholder="Operator or team name"
-                    placeholderTextColor="#aaa"
-                    returnKeyType="next"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Site / Location</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    value={formData.location}
-                    onChangeText={(t) => handleInputChange('location', t)}
-                    onFocus={handleFocus}
-                    placeholder="Current site or storage location"
-                    placeholderTextColor="#aaa"
-                    returnKeyType="next"
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Notes</Text>
-                  <TextInput
-                    style={[styles.textInput, styles.notesInput]}
-                    value={formData.notes}
-                    onChangeText={(t) => handleInputChange('notes', t)}
-                    onFocus={handleFocus}
-                    placeholder="Any remarks, issues or service notes..."
-                    placeholderTextColor="#aaa"
-                    multiline
-                    numberOfLines={4}
-                    textAlignVertical="top"
-                  />
-                </View>
-
-                <TouchableOpacity
-                  style={styles.submitButton}
-                  onPress={() => {
-                    console.log('Equipment Saved:', formData);
-                    closeSheet();
-                  }}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.submitButtonText}>Save Equipment</Text>
-                </TouchableOpacity>
-              </BottomSheetScrollView>
-            </KeyboardAvoidingView>
-          )}
-        </BottomSheetModal>
-      </SafeAreaView>
+                <Text style={styles.submitButtonText}>Save Equipment</Text>
+              </TouchableOpacity>
+            </BottomSheetScrollView>
+          </KeyboardAvoidingView>
+        )}
+      </BottomSheetModal>
     </GestureHandlerRootView>
   );
 }
@@ -343,11 +357,17 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.inputBg },
 
   header: {
-    height: 64, paddingHorizontal: 16,
+    height: 70,
+    paddingHorizontal: 16,
     backgroundColor: Colors.light.background,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    elevation: 3, shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
   },
   headerCenter: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   headerTitle: { fontSize: 20, color: Colors.light.primaryDark },
@@ -469,7 +489,8 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   notesInput: {
-    height: 100,
+    
+    height: 100, 
     paddingTop: 12,
   },
 
