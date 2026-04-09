@@ -33,6 +33,9 @@ interface AuthInputProps {
   error?: string | null;
   placeholder?: string; 
   editable?: boolean;
+  multiline?: boolean;
+  numberOfLines?: number;
+  textAlignVertical?: 'auto' | 'top' | 'center' ;
 }
 
 function applyTransform(text: string, mode: InputMode): string {
@@ -129,7 +132,7 @@ export default function AuthInput({
     }).start();
   }, [isActive, animValue]);
 
-  // Dynamic border color (Red on error → Primary on focus → Gray default like NewInput)
+  // Dynamic border color 
   const borderColor = hasError
     ? '#ef4444'
     : isFocused
@@ -209,26 +212,26 @@ export default function AuthInput({
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginBottom: 12,        // Same as NewInput
+    marginBottom: 12,       
   },
   inputContainer: {
     backgroundColor: Colors.light.background,
-    borderWidth: 1,          // Changed from 1.5 to match NewInput style
-    borderRadius: 12,        // Changed from 14 to match NewInput
-    paddingHorizontal: 14,   // From NewInput
-    paddingVertical: 12,     // From NewInput (gives better height)
-    minHeight: 52,           // From NewInput - this is what you wanted
+    borderWidth: 1,         
+    borderRadius: 12,        
+    paddingHorizontal: 14,   
+    paddingVertical: 12,     
+    minHeight: 52,           
   },
   floatingLabel: {
     position: 'absolute',
-    left: 14,                // Adjusted to match padding
+    left: 14,                
     zIndex: 10,
   },
   textInput: {
     fontSize: 16,
     color: Colors.light.text,
     paddingVertical: 0,
-    // The container's paddingVertical + minHeight will control overall height
+    
   },
   errorText: {
     marginTop: 4,

@@ -1,4 +1,9 @@
+
+import AuthInput from '@/components/AuthInput';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
@@ -13,8 +18,6 @@ import {
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-import AuthInput from '@/components/AuthInput';
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import PrimaryButton from '../../components/PrimaryButton';
@@ -56,6 +59,8 @@ export default function AddExpensesScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('expense');
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const [formData, setFormData] = useState<FormData>({
     date: '',
@@ -123,7 +128,33 @@ const selectBank = (bank: string) => {
     ]);
   };
 
+
   const handleCancel = () => router.back();
+
+//date
+  const formatDate = (date: Date) => {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+  //Datechange
+const handleDateChange = (
+  event: DateTimePickerEvent,
+  date?: Date
+) => {
+  if (event.type === 'dismissed') {
+    setShowDatePicker(false);
+    return;
+  }
+
+  if (date) {
+    setShowDatePicker(false);
+    setSelectedDate(date);
+    handleInputChange('date')(formatDate(date));
+  }
+};
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -140,7 +171,7 @@ const selectBank = (bank: string) => {
             <View style={styles.formContainer}>
              <Text style={styles.sectionTitle}>New expense</Text>
 
-              <AuthInput
+              {/* <AuthInput
                 label="Date(DD/MM/YYYY) *"
                 fieldId="date"
                 focusedField={focusedField}
@@ -151,7 +182,22 @@ const selectBank = (bank: string) => {
                 
                 inputMode="default"
                 error={errors.date}
-              />
+              /> */}
+              <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+  <View pointerEvents="none">
+    <AuthInput
+      label="Date (DD/MM/YYYY) *"
+      fieldId="date"
+      focusedField={focusedField}
+      value={formData.date}
+      onChangeText={handleInputChange('date')}
+      onFocus={() => handleFocus('date')}
+      onBlur={handleBlur}
+      editable={false}
+      error={errors.date}
+    />
+  </View>
+</TouchableOpacity>
 
               {/* Category Field with Bottom Sheet */}
               <TouchableOpacity onPress={openCategorySheet}>
@@ -164,7 +210,6 @@ const selectBank = (bank: string) => {
                     onChangeText={handleInputChange('category')}
                     onFocus={() => handleFocus('category')}
                     onBlur={handleBlur}
-                    
                     editable={false}
                     error={errors.category}
                   />
@@ -192,7 +237,7 @@ const selectBank = (bank: string) => {
                     value={formData.bankAccount}
                     onChangeText={handleInputChange('bankAccount')}
                     onFocus={() => handleFocus('bankAccount')}
-                    onBlur={handleBlur}                   
+                    onBlur={handleBlur}
                     editable={false}
                     error={errors.bankAccount}
                   />
@@ -244,6 +289,17 @@ const selectBank = (bank: string) => {
             Save Expense
           </PrimaryButton>
         </View>
+
+
+        {showDatePicker && (
+  <DateTimePicker
+    value={selectedDate}
+    mode="date"
+    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+    onChange={handleDateChange}
+    maximumDate={new Date()}
+  />
+)}
 
         <Footer activeTab={activeTab} onTabChange={setActiveTab} />
       </ScreenPage>

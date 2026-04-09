@@ -121,7 +121,7 @@ export default function AddEquipmentScreen() {
     model: formData.model,
     name: formData.name,
     totalCount: formData.totalCount,
-    serialNumbers: serialNumbers, // or serialNumbers.serialNumbers if it's nested
+    serialNumbers: serialNumbers, 
   };
 
   console.log('✅ New Equipment Saved:', payload);
@@ -146,7 +146,7 @@ export default function AddEquipmentScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.formCard}>
-<AuthInput
+             <AuthInput
                 label="Name *"
                 fieldId="name"
                 focusedField={focusedField}
