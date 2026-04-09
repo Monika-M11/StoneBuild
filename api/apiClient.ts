@@ -5,20 +5,26 @@ export const postApi = async (
   token: string,
   data: any
 ) => {
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  });
+  try {
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        Token: token,
+        Data: data,
+      }),
+    });
 
-  const result = await response.json();
+    const result = await response.json();
 
-  if (!response.ok) {
-    throw new Error(result.message || 'API Error');
+    if (!response.ok) {
+      throw new Error(result.message || 'API Error');
+    }
+
+    return result;
+  } catch (error: any) {
+    throw error;
   }
-
-  return result;
 };

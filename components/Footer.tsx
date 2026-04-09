@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Colors from '../constants/theme';
-import { useDrawer } from '../contexts/DrawerContext';
 
 type IconName =
   | 'menu'
@@ -18,39 +17,79 @@ interface FooterProps {
   onTabChange?: (tab: string) => void;
 }
 
-const FooterItem = ({ icon, label, onPress, active }: { icon: IconName; label: string; onPress: () => void; active: boolean }) => (
+const FooterItem = ({ 
+  icon, 
+  label, 
+  onPress, 
+  active 
+}: { 
+  icon: IconName; 
+  label: string; 
+  onPress: () => void; 
+  active: boolean 
+}) => (
   <TouchableOpacity style={styles.footerItem} onPress={onPress} activeOpacity={0.7}>
-    <Ionicons name={icon} size={22} color={active ? Colors.light.primaryDark : Colors.light.icon} />
-    <Text style={[styles.footerText, active && styles.footerTextActive]}>{label}</Text>
+    <Ionicons 
+      name={icon} 
+      size={24} 
+      color={active ? Colors.light.primaryDark : Colors.light.icon} 
+    />
+    <Text style={[styles.footerText, active && styles.footerTextActive]}>
+      {label}
+    </Text>
   </TouchableOpacity>
 );
 
 export default function Footer({ activeTab = 'home', onTabChange }: FooterProps) {
-  const { openDrawer } = useDrawer();
   const router = useRouter();
 
   const tabs = [
-    { icon: 'home-outline' as IconName, label: 'Home', tab: 'home' },
-    { icon: 'briefcase-outline' as IconName, label: 'Project', tab: 'project' },
-    { icon: 'swap-horizontal-outline' as IconName, label: 'Transaction', tab: 'transaction' },
-    { icon: 'cube-outline' as IconName, label: 'Stock', tab: 'stock' },
-    { icon: 'person-outline' as IconName, label: 'Profile', tab: 'profile' },
+    { 
+      icon: 'home-outline' as IconName, 
+      label: 'Home', 
+      tab: 'home',
+      path: '/home' 
+    },
+    { 
+      icon: 'briefcase-outline' as IconName, 
+      label: 'Project', 
+      tab: 'project',
+      path: '/project' 
+    },
+    { 
+      icon: 'swap-horizontal-outline' as IconName, 
+      label: 'Transaction', 
+      tab: 'transaction',
+      path: '/transaction' 
+    },
+    { 
+      icon: 'cube-outline' as IconName, 
+      label: 'Stock', 
+      tab: 'stock',
+      path: '/stock' 
+    },
+    { 
+      icon: 'person-outline' as IconName, 
+      label: 'Profile', 
+      tab: 'profile',
+      path: '/profileScreen'          // Change to '/screens/profile' if needed
+    },
   ];
 
-  const handleTabPress = (tab: string) => {
+  const handleTabPress = (tab: string, path: string) => {
     onTabChange?.(tab);
-    // Future: navigate to tab screens
+    router.push(path as any);
   };
 
   return (
     <View style={styles.footer}>
-      {tabs.map(({ icon, label, tab }) => (
+      {tabs.map(({ icon, label, tab, path }) => (
         <FooterItem
           key={tab}
           icon={icon}
           label={label}
           active={activeTab === tab}
-          onPress={() => handleTabPress(tab)}
+          onPress={() => handleTabPress(tab, path)}
         />
       ))}
     </View>
@@ -64,20 +103,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    borderTopWidth: 0.5,
-    borderTopColor: Colors.light.inputBorder,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',        // Light border like in image
+    // NO shadow / elevation
   },
   footerItem: {
     alignItems: 'center',
-    paddingHorizontal: 6,
+    flex: 1,
+    paddingVertical: 8,
   },
   footerText: {
-    fontSize: 11,
-    marginTop: 3,
+    fontSize: 10,
+    marginTop: 4,
     color: Colors.light.icon,
+    fontWeight: '500',
   },
   footerTextActive: {
     color: Colors.light.primaryDark,
+    fontWeight: '600',
   },
 });
-
