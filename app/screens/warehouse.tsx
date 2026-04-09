@@ -22,7 +22,7 @@ export default function WarehouseScreen() {
   const { openDrawer } = useDrawer();
   const [activeTab, setActiveTab] = useState('warehouse');
 
-  // Dummy data for now (you can replace with real data later)
+
   const dummyWarehouses = [
     { id: '1', name: 'Main Warehouse - Coimbatore', location: 'Coimbatore', incharge: 'Ramesh Kumar' },
     { id: '2', name: 'North Zone Warehouse', location: 'Chennai', incharge: 'Priya Sharma' },
@@ -48,8 +48,7 @@ export default function WarehouseScreen() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          {/* Consistent Header - Same as EquipmentsScreen */}
-          <View style={styles.header}>
+            <View style={styles.header}>
             <TouchableOpacity
               onPress={openDrawer}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}

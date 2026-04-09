@@ -22,7 +22,7 @@ export default function ExpenseScreen() {
   const { openDrawer } = useDrawer();
   const [activeTab, setActiveTab] = useState('expense');
 
-  // Dummy data for expenses (you can replace later)
+
   const dummyExpenses = [
     { 
       id: '1', 
@@ -76,7 +76,7 @@ export default function ExpenseScreen() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          {/* Consistent Header - Same as Warehouse & Equipments */}
+         
           <View style={styles.header}>
             <TouchableOpacity
               onPress={openDrawer}
@@ -112,7 +112,6 @@ export default function ExpenseScreen() {
               showsVerticalScrollIndicator={false}
             />
           </View>
-
           <Footer activeTab={activeTab} onTabChange={setActiveTab} />
         </View>
       </SafeAreaView>
