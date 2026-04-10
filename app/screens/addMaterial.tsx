@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
@@ -100,7 +101,7 @@ export default function AddMaterialScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScreenPage title="Add New Material" icon="layers-outline">
+      <ScreenPage title="Add New Material" icon="">
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -334,7 +335,7 @@ const styles = StyleSheet.create({
     paddingBottom: 60,
   },
 
-  // Clean GST Option - No shadow, no background change
+
   gstOptionRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -367,8 +368,6 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     marginTop: 3,
   },
-
-  // Only tick - No shadow or background highlight
   selectedBadge: {
     width: 28,
     height: 28,

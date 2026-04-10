@@ -1,18 +1,18 @@
+import AuthInput from '@/components/AuthInput';
 import { Ionicons } from '@expo/vector-icons';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   Alert,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import BottomSheetModal from '../components/BottomSheetModal';
 import Footer from '../components/Footer';
 import PrimaryButton from '../components/PrimaryButton';
@@ -26,7 +26,6 @@ export default function ProfileScreen() {
   const { openDrawer } = useDrawer();
   const [activeTab, setActiveTab] = useState('profile');
 
-  // Profile Data
   const [user, setUser] = useState({
     name: 'UserName',
     email: 'abc@gmail.com',
@@ -35,10 +34,12 @@ export default function ProfileScreen() {
     role: 'Admin',
   });
 
-  // Bottom Sheet State
   const [showEditSheet, setShowEditSheet] = useState(false);
   const [editForm, setEditForm] = useState({ ...user });
-  const editSheetRef = React.useRef<any>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
+  const editSheetRef = useRef<any>(null);
+  const blurTimeoutRef = useRef<any>(null);
 
   const openEditSheet = () => {
     setEditForm({ ...user });
@@ -50,16 +51,27 @@ export default function ProfileScreen() {
     setEditForm((prev) => ({ ...prev, [field]: text }));
   };
 
+  const handleFocus = useCallback((fieldId: string) => {
+    if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
+    setFocusedField(fieldId);
+    editSheetRef.current?.snapToIndex(1);
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    blurTimeoutRef.current = setTimeout(() => {
+      setFocusedField(null);
+      editSheetRef.current?.snapToIndex(0);
+    }, 150);
+  }, []);
+
   const saveProfile = () => {
     if (!editForm.name || !editForm.email || !editForm.phone) {
       Alert.alert('Error', 'Name, Email and Phone are required');
       return;
     }
-
     setUser({ ...editForm });
     editSheetRef.current?.close();
     setShowEditSheet(false);
-
     Alert.alert('Success', 'Profile updated successfully!');
   };
 
@@ -87,9 +99,14 @@ export default function ProfileScreen() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
+
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={openDrawer} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ padding: 8 }}>
+            <TouchableOpacity
+              onPress={openDrawer}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ padding: 8 }}
+            >
               <Ionicons name="menu" size={26} color={Colors.light.primaryDark} />
             </TouchableOpacity>
 
@@ -102,13 +119,13 @@ export default function ProfileScreen() {
           </View>
 
           <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+
             {/* Profile Card */}
             <View style={styles.profileCard}>
               <View style={styles.avatarContainer}>
                 <View style={styles.avatar}>
                   <Ionicons name="person" size={80} color="#9ca3af" />
                 </View>
-
                 <TouchableOpacity style={styles.editAvatarButton} onPress={openEditSheet}>
                   <Ionicons name="camera" size={18} color="#fff" />
                 </TouchableOpacity>
@@ -128,23 +145,42 @@ export default function ProfileScreen() {
             {/* Menu Items */}
             <View style={styles.menuContainer}>
               {menuItems.map((item) => (
-                <TouchableOpacity key={item.id} style={styles.menuItem} activeOpacity={0.7}>
+                <TouchableOpacity key={item.id} style={styles.menuItem} activeOpacity={0.7}
+                  onPress={() => {
+                    if (item.title === 'Change Password') {
+                      router.push('/screens/changePassword');
+                    } else if (item.title === 'Support') {
+                      router.push('/screens/support');
+                    }
+                     else if (item.title === 'Terms and Conditions') {
+                      router.push('/screens/termsAndConditions');
+                    }
+                  }} >
                   <View style={styles.menuIconContainer}>
                     <Ionicons name={item.icon as any} size={24} color={Colors.light.primaryDark} />
                   </View>
-                  <Text style={[styles.menuText, { fontFamily: theme.fonts.medium }]}>{item.title}</Text>
+                  <Text style={[styles.menuText, { fontFamily: theme.fonts.medium }]}>
+                    {item.title}
+                  </Text>
                   <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                 </TouchableOpacity>
               ))}
 
               {/* Logout */}
-              <TouchableOpacity style={[styles.menuItem, styles.logoutItem]} onPress={handleLogout} activeOpacity={0.7}>
+              <TouchableOpacity
+                style={[styles.menuItem, styles.logoutItem]}
+                onPress={handleLogout}
+                activeOpacity={0.7}
+              >
                 <View style={styles.menuIconContainer}>
                   <Ionicons name="log-out-outline" size={24} color="#ef4444" />
                 </View>
-                <Text style={[styles.menuText, styles.logoutText, { fontFamily: theme.fonts.medium }]}>Logout</Text>
+                <Text style={[styles.menuText, styles.logoutText, { fontFamily: theme.fonts.medium }]}>
+                  Logout
+                </Text>
               </TouchableOpacity>
             </View>
+
           </ScrollView>
 
           <Footer activeTab={activeTab} onTabChange={setActiveTab} />
@@ -152,51 +188,73 @@ export default function ProfileScreen() {
       </SafeAreaView>
 
       {/* Edit Profile Bottom Sheet */}
-      <BottomSheetModal ref={editSheetRef} snapPoints={['65%', '80%']}>
-        <View style={styles.bottomSheetContent}>
+      <BottomSheetModal ref={editSheetRef} snapPoints={['65%', '92%']}>
+        <BottomSheetScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={styles.bottomSheetContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           <Text style={styles.bottomSheetTitle}>Edit Profile</Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name"
+          <AuthInput
+            label="Full Name"
+            fieldId="name"
+            focusedField={focusedField}
             value={editForm.name}
             onChangeText={handleEditInputChange('name')}
+            onFocus={() => handleFocus('name')}
+            onBlur={handleBlur}
+            inputMode="default"
           />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Email Address"
+          <AuthInput
+            label="Email Address"
+            fieldId="email"
+            focusedField={focusedField}
             value={editForm.email}
             onChangeText={handleEditInputChange('email')}
-            keyboardType="email-address"
-            autoCapitalize="none"
+            onFocus={() => handleFocus('email')}
+            onBlur={handleBlur}
+            inputMode="email"
           />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Phone Number"
+          <AuthInput
+            label="Phone Number"
+            fieldId="phone"
+            focusedField={focusedField}
             value={editForm.phone}
             onChangeText={handleEditInputChange('phone')}
-            keyboardType="number-pad"
+            onFocus={() => handleFocus('phone')}
+            onBlur={handleBlur}
+            inputMode="numeric"
           />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Company Name"
+          <AuthInput
+            label="Company Name"
+            fieldId="company"
+            focusedField={focusedField}
             value={editForm.company}
             onChangeText={handleEditInputChange('company')}
+            onFocus={() => handleFocus('company')}
+            onBlur={handleBlur}
+            inputMode="default"
           />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Role"
+          <AuthInput
+            label="Role"
+            fieldId="role"
+            focusedField={focusedField}
             value={editForm.role}
             onChangeText={handleEditInputChange('role')}
+            onFocus={() => handleFocus('role')}
+            onBlur={handleBlur}
+            inputMode="default"
           />
 
           <View style={styles.buttonRow}>
-            <PrimaryButton 
-              onPress={() => editSheetRef.current?.close()} 
+            <PrimaryButton
+              onPress={() => editSheetRef.current?.close()}
               variant="secondary"
               style={styles.cancelBtn}
             >
@@ -206,8 +264,10 @@ export default function ProfileScreen() {
               Save Changes
             </PrimaryButton>
           </View>
-        </View>
+
+        </BottomSheetScrollView>
       </BottomSheetModal>
+
     </GestureHandlerRootView>
   );
 }
@@ -308,7 +368,6 @@ const styles = StyleSheet.create({
   logoutItem: { marginTop: 20 },
   logoutText: { color: '#ef4444' },
 
-  // Bottom Sheet Styles
   bottomSheetContent: {
     padding: 20,
     paddingBottom: 40,
@@ -319,15 +378,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 24,
     color: Colors.light.text,
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    marginBottom: 12,
   },
   buttonRow: {
     flexDirection: 'row',
