@@ -1,6 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
-import { useTheme } from '../providers/ThemeProvider';
+import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
+import { DefaultText, useTheme } from '../providers/ThemeProvider';
 
 interface PrimaryButtonProps {
   onPress: () => void;
@@ -42,7 +42,7 @@ export default function PrimaryButton({
       {loading ? (
         <ActivityIndicator color="#FFFFFF" size="small" />
       ) : (
-        <Text style={styles.text}>{children}</Text>
+        <DefaultText style={styles.text} variant="bold">{children}</DefaultText>
       )}
     </Pressable>
   );
@@ -59,11 +59,9 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   text: {
-    fontFamily: 'SourceSans3_700Bold',
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.2,
   },
 });
-

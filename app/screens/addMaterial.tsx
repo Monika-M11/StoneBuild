@@ -10,9 +10,8 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -23,6 +22,7 @@ import PrimaryButton from '../../components/PrimaryButton';
 import ScreenPage from '../../components/ScreenPage';
 import Colors from '../../constants/theme';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { DefaultText } from '../../providers/ThemeProvider';
 
 const GST_OPTIONS = ['0', '5', '12', '18', '28'];
 
@@ -67,7 +67,7 @@ export default function AddMaterialScreen() {
     closeGstSheet();
   }, [closeGstSheet]);
 
-  const { errors, validate } = useFormValidation<keyof FormData>({
+const formValidation = useFormValidation({
     materialName: { required: true, requiredMessage: 'Material name is required' },
     hsn: {},
     shortCode: {},
@@ -75,6 +75,8 @@ export default function AddMaterialScreen() {
     gst: {},
     cess: {},
   });
+  const { errors, validate }: { errors: Partial<Record<keyof FormData, string>>; validate: (data: FormData) => boolean } = formValidation;
+
 
   const handleInputChange = (field: keyof FormData) => (text: string) => {
     setFormData((prev) => ({ ...prev, [field]: text }));
@@ -101,8 +103,10 @@ export default function AddMaterialScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScreenPage title="Add New Material" icon="">
+      <ScreenPage title="Add New Material" icon="layers-outline">
         <KeyboardAvoidingView
+
+
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
@@ -112,7 +116,7 @@ export default function AddMaterialScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.formCard}>
-              <Text style={styles.sectionTitle}>Material Details</Text>
+              <DefaultText style={styles.sectionTitle} variant="bold">Material Details</DefaultText>
 
               <AuthInput
                 label="Material Name *"
@@ -223,10 +227,10 @@ export default function AddMaterialScreen() {
             <Ionicons name="receipt-outline" size={26} color={Colors.light.primaryDark} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.sheetTitle}>Select GST Rate</Text>
-            <Text style={styles.sheetSubtitle}>
+            <DefaultText style={styles.sheetTitle} variant="bold">Select GST Rate</DefaultText>
+            <DefaultText style={styles.sheetSubtitle} variant="regular">
               {formData.gst ? `Currently: ${formData.gst}%` : 'No rate selected'}
-            </Text>
+            </DefaultText>
           </View>
           <TouchableOpacity onPress={closeGstSheet} style={styles.closeButton}>
             <Ionicons name="close" size={24} color={Colors.light.text} />
@@ -256,16 +260,16 @@ export default function AddMaterialScreen() {
                 </View>
 
                 <View style={styles.gstOptionInfo}>
-                  <Text style={styles.gstOptionLabel}>
+                  <DefaultText style={styles.gstOptionLabel} variant="bold">
                     {rate}% GST
-                  </Text>
-                  <Text style={styles.gstOptionSub}>
+                  </DefaultText>
+                  <DefaultText style={styles.gstOptionSub} variant="regular">
                     {rate === '0' ? 'Exempted / Nil rated'
                       : rate === '5' ? 'Essential goods & services'
                       : rate === '12' ? 'Standard goods & services'
                       : rate === '18' ? 'Standard rate (most common)'
                       : 'Luxury / demerit goods'}
-                  </Text>
+                  </DefaultText>
                 </View>
 
                 {/* Only show tick for selected item - No shadow */}

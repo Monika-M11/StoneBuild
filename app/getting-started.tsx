@@ -1,5 +1,5 @@
 import Colors from '@/constants/theme';
-import { useTheme } from '@/providers/ThemeProvider';
+import { DefaultText, useTheme } from '@/providers/ThemeProvider';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import {
@@ -7,7 +7,6 @@ import {
   Dimensions,
   FlatList as RNFlatList,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   ViewToken
@@ -76,7 +75,7 @@ export default function GettingStarted() {
     <View style={styles.container}>
       {/* Skip button */}
       <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-        <Text style={[styles.skipText, { fontFamily: regularFont }]}>Skip</Text>
+        <DefaultText style={styles.skipText} variant="regular">Skip</DefaultText>
       </TouchableOpacity>
 
       {/* Slides */}
@@ -120,16 +119,16 @@ export default function GettingStarted() {
               {/* Icon circle */}
               <Animated.View style={[styles.iconWrapper, { opacity, transform: [{ translateY }] }]}>
                 <View style={[styles.iconCircle, { borderColor: item.accent + '44' }]}>
-                  <Text style={[styles.iconText, { color: item.accent }]}>{item.icon}</Text>
+                  <DefaultText style={[styles.iconText, { color: item.accent }]} variant="regular">{item.icon}</DefaultText>
                 </View>
                 <View style={[styles.iconGlow, { backgroundColor: item.accent + '18' }]} />
               </Animated.View>
 
               {/* Text content */}
               <Animated.View style={{ opacity, transform: [{ translateY }] }}>
-                <Text style={[styles.slideTitle, { fontFamily: titleFont, color: item.accent }]}>{item.title}</Text>
-                <Text style={[styles.slideSubtitle, { fontFamily: subtitleFont }]}>{item.subtitle}</Text>
-                <Text style={[styles.slideDescription, { fontFamily: regularFont }]}>{item.description}</Text>
+                <DefaultText style={[styles.slideTitle, { color: item.accent }]} variant="bold">{item.title}</DefaultText>
+                <DefaultText style={styles.slideSubtitle} variant="medium">{item.subtitle}</DefaultText>
+                <DefaultText style={styles.slideDescription} variant="regular">{item.description}</DefaultText>
               </Animated.View>
             </View>
           );
@@ -278,4 +277,3 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
 });
-

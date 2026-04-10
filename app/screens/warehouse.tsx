@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import {
   FlatList,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -14,14 +13,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
 import { useDrawer } from '../../contexts/DrawerContext';
-import { useTheme } from '../../providers/ThemeProvider';
+import { DefaultText, useTheme } from '../../providers/ThemeProvider';
 
 export default function WarehouseScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { openDrawer } = useDrawer();
   const [activeTab, setActiveTab] = useState('warehouse');
-
 
   const dummyWarehouses = [
     { id: '1', name: 'Main Warehouse - Coimbatore', location: 'Coimbatore', incharge: 'Ramesh Kumar' },
@@ -35,11 +33,17 @@ export default function WarehouseScreen() {
         <Ionicons name="business-outline" size={24} color={Colors.light.primaryDark} />
       </View>
       <View style={styles.warehouseInfo}>
-        <Text style={[styles.warehouseName, { fontFamily: theme.fonts.bold }]}>
+        <DefaultText 
+          style={[styles.warehouseName, { fontFamily: theme.fonts.bold }]}
+        >
           {item.name}
-        </Text>
-        <Text style={styles.warehouseLocation}>{item.location}</Text>
-        <Text style={styles.warehouseIncharge}>Incharge: {item.incharge}</Text>
+        </DefaultText>
+        <DefaultText style={styles.warehouseLocation}>
+          {item.location}
+        </DefaultText>
+        <DefaultText style={styles.warehouseIncharge}>
+          Incharge: {item.incharge}
+        </DefaultText>
       </View>
     </TouchableOpacity>
   );
@@ -48,7 +52,7 @@ export default function WarehouseScreen() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-            <View style={styles.header}>
+          <View style={styles.header}>
             <TouchableOpacity
               onPress={openDrawer}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -59,9 +63,11 @@ export default function WarehouseScreen() {
 
             <View style={styles.headerCenter}>
               <Ionicons name="business-outline" size={20} color={Colors.light.primaryDark} />
-              <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
+              <DefaultText 
+                style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}
+              >
                 Warehouse
-              </Text>
+              </DefaultText>
             </View>
 
             <TouchableOpacity

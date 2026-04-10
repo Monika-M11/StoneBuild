@@ -15,7 +15,10 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { ToastProvider } from '@/providers/ToastProvider';
+import { LoaderProvider } from '../providers/LoaderProvider';
 import { ThemeProvider } from '../providers/ThemeProvider';
+
 
 function DrawerOverlay() {
   const { drawerVisible, closeDrawer } = useDrawer();
@@ -58,20 +61,24 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style="auto" />
       <ThemeProvider>
+          <LoaderProvider>
+        <ToastProvider>
         <DrawerProvider>
           <Stack
             screenOptions={{
               headerShown: false,
               animation: 'fade',
-              // contentStyle bg removed for white child screens
             }}
           >
             <Stack.Screen name="getting-started" />
             <Stack.Screen name="login" />
             <Stack.Screen name="home" />
+            <Stack.Screen name="profileScreen" />
           </Stack>
           <DrawerOverlay />
         </DrawerProvider>
+        </ToastProvider>
+        </LoaderProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );

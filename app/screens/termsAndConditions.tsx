@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../../constants/theme';
-import { useTheme } from '../../providers/ThemeProvider';
+import { DefaultText, useTheme } from '../../providers/ThemeProvider';
+
 
 export default function TermsAndConditionsScreen() {
   const theme = useTheme();
@@ -21,9 +22,9 @@ export default function TermsAndConditionsScreen() {
           </TouchableOpacity>
           <View style={styles.headerCenter}>
             <Ionicons name="document-text-outline" size={20} color={Colors.light.primaryDark} />
-            <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
+            <DefaultText style={[styles.headerTitle]}  variant="bold">
               Terms & Conditions
-            </Text>
+            </DefaultText>
           </View>
           <View style={{ width: 40 }} />
         </View>
@@ -32,32 +33,32 @@ export default function TermsAndConditionsScreen() {
           
           {/* Replace everything inside here with your real content later */}
 
-          <Text style={styles.lastUpdated}>Last updated: April 2025</Text>
+          <DefaultText style={styles.lastUpdated} variant='regular'>Last updated: April 2025</DefaultText>
 
-          <Text style={styles.sectionTitle}>1. Introduction</Text>
-          <Text style={styles.body}>
+          <DefaultText  style={styles.sectionTitle} variant='regular'>1. Introduction</DefaultText >
+          <DefaultText style={styles.body}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </Text>
+          </DefaultText >
 
-          <Text style={styles.sectionTitle}>2. Use of the App</Text>
-          <Text style={styles.body}>
+          <DefaultText style={styles.sectionTitle}>2. Use of the App</DefaultText >
+          <DefaultText  style={styles.body}>
             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-          </Text>
+          </DefaultText >
 
-          <Text style={styles.sectionTitle}>3. Privacy Policy</Text>
-          <Text style={styles.body}>
+          <DefaultText  style={styles.sectionTitle}>3. Privacy Policy</DefaultText >
+          <DefaultText  style={styles.body}>
             Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-          </Text>
+          </DefaultText >
 
-          <Text style={styles.sectionTitle}>4. Data Collection</Text>
-          <Text style={styles.body}>
+          <DefaultText  style={styles.sectionTitle}>4. Data Collection</DefaultText >
+          <DefaultText  style={styles.body}>
             Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-          </Text>
+          </DefaultText >
 
-          <Text style={styles.sectionTitle}>5. Contact Us</Text>
-          <Text style={styles.body}>
+          <DefaultText  style={styles.sectionTitle}>5. Contact Us</DefaultText >
+          <DefaultText  style={styles.body}>
             If you have any questions about these Terms, please contact us at support@yourapp.com.
-          </Text>
+          </DefaultText >
 
         </ScrollView>
       </View>

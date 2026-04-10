@@ -1,15 +1,13 @@
+import ScreenPage from '@/components/ScreenPage';
 import Colors from '@/constants/theme';
-import { useTheme } from '@/providers/ThemeProvider';
-import { Ionicons } from '@expo/vector-icons';
+import { DefaultText, useTheme } from '@/providers/ThemeProvider';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Footer from '../components/Footer';
 import { useDrawer } from '../contexts/DrawerContext';
 
@@ -20,29 +18,35 @@ export default function Home() {
   const theme = useTheme();
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        {/* HEADER */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={openDrawer}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Ionicons name="menu" size={26} color={Colors.light.primaryDark} />
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Home</Text>
-          <View style={{ width: 26 }} />
-        </View>
+    // <SafeAreaView style={styles.safeArea}>
+    //   <View style={styles.container}>
+    //     {/* HEADER */}
+    //     <View style={styles.header}>
+    //       <TouchableOpacity
+    //         onPress={openDrawer}
+    //         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    //       >
+    //         <Ionicons name="menu" size={26} color={Colors.light.primaryDark} />
+    //       </TouchableOpacity>
+    //       <DefaultText style={styles.headerTitle} variant="bold">Home</DefaultText>
+    //       <View style={{ width: 26 }} />
+    //     </View>
+     <GestureHandlerRootView style={{ flex: 1 }}>
+          <ScreenPage title="Home" onMenuPress={openDrawer} icon="home">
+           
 
         {/* BODY */}
         <View style={styles.body}>
-          <Text style={[styles.bodyText, { fontFamily: theme.fonts.regular }]}>Home Screen Content</Text>
+          <DefaultText style={styles.bodyText} variant="regular">Home Screen Content</DefaultText>
         </View>
 
+  
         {/* FOOTER */}
         <Footer activeTab={activeTab} onTabChange={setActiveTab} />
-      </View>
-    </SafeAreaView>
+        </ScreenPage>
+</GestureHandlerRootView>
+
+    
   );
 }
 
@@ -59,4 +63,3 @@ const styles = StyleSheet.create({
   body: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   bodyText: { fontSize: 16, color: Colors.light.text },
 });
-
