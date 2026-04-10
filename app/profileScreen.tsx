@@ -1,4 +1,5 @@
 import AuthInput from '@/components/AuthInput';
+import ScreenPage from '@/components/ScreenPage';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
@@ -12,7 +13,9 @@ import {
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useToast } from '../providers/ToastProvider'; // temporarily disabled due to broken ToastProvider
+
+
 import BottomSheetModal from '../components/BottomSheetModal';
 import Footer from '../components/Footer';
 import PrimaryButton from '../components/PrimaryButton';
@@ -24,6 +27,8 @@ export default function ProfileScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { openDrawer } = useDrawer();
+  const { showToast } = useToast(); // disabled - ToastProvider not working
+
   const [activeTab, setActiveTab] = useState('profile');
 
   const [user, setUser] = useState({
@@ -34,7 +39,6 @@ export default function ProfileScreen() {
     role: 'Admin',
   });
 
-  const [showEditSheet, setShowEditSheet] = useState(false);
   const [editForm, setEditForm] = useState({ ...user });
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
@@ -43,7 +47,6 @@ export default function ProfileScreen() {
 
   const openEditSheet = () => {
     setEditForm({ ...user });
-    setShowEditSheet(true);
     editSheetRef.current?.snapToIndex(0);
   };
 
@@ -66,13 +69,14 @@ export default function ProfileScreen() {
 
   const saveProfile = () => {
     if (!editForm.name || !editForm.email || !editForm.phone) {
-      Alert.alert('Error', 'Name, Email and Phone are required');
+      // Alert.alert('Error', 'Name, Email and Phone are required');
+       showToast('Error', 'Name, Email and Phone are required', 'error');
       return;
     }
     setUser({ ...editForm });
     editSheetRef.current?.close();
-    setShowEditSheet(false);
-    Alert.alert('Success', 'Profile updated successfully!');
+    // Alert.alert('Success', 'Profile updated successfully!');
+     showToast('Success', 'Profile updated successfully!','success');
   };
 
   const handleLogout = () => {
@@ -97,95 +101,88 @@ export default function ProfileScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
+      <ScreenPage title="Profile" onMenuPress={openDrawer}>
+       
 
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={openDrawer}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
-            >
-              <Ionicons name="menu" size={26} color={Colors.light.primaryDark} />
-            </TouchableOpacity>
-
-            <View style={styles.headerCenter}>
-              <Ionicons name="person-circle-outline" size={24} color={Colors.light.primaryDark} />
-              <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Profile</Text>
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.contentContainer}
+        >
+          {/* Profile Card */}
+          <View style={styles.profileCard}>
+            <View style={styles.avatarContainer}>
+              <View style={styles.avatar}>
+                <Ionicons name="person" size={80} color="#9ca3af" />
+              </View>
+              <TouchableOpacity 
+                style={styles.editAvatarButton} 
+                onPress={openEditSheet}
+              >
+                <Ionicons name="camera" size={18} color="#fff" />
+              </TouchableOpacity>
             </View>
 
-            <View style={{ width: 40 }} />
+            <Text style={[styles.userName, { fontFamily: theme.fonts.bold }]}>
+              {user.name}
+            </Text>
+            <Text style={styles.userRole}>{user.role}</Text>
+            <Text style={styles.userEmail}>{user.email}</Text>
+            <Text style={styles.userPhone}>{user.phone}</Text>
+
+            <TouchableOpacity style={styles.editButton} onPress={openEditSheet}>
+              <Ionicons name="create-outline" size={18} color={Colors.light.primary} />
+              <Text style={styles.editButtonText}>Edit Profile</Text>
+            </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-
-            {/* Profile Card */}
-            <View style={styles.profileCard}>
-              <View style={styles.avatarContainer}>
-                <View style={styles.avatar}>
-                  <Ionicons name="person" size={80} color="#9ca3af" />
-                </View>
-                <TouchableOpacity style={styles.editAvatarButton} onPress={openEditSheet}>
-                  <Ionicons name="camera" size={18} color="#fff" />
-                </TouchableOpacity>
-              </View>
-
-              <Text style={[styles.userName, { fontFamily: theme.fonts.bold }]}>{user.name}</Text>
-              <Text style={styles.userRole}>{user.role}</Text>
-              <Text style={styles.userEmail}>{user.email}</Text>
-              <Text style={styles.userPhone}>{user.phone}</Text>
-
-              <TouchableOpacity style={styles.editButton} onPress={openEditSheet}>
-                <Ionicons name="create-outline" size={18} color={Colors.light.primary} />
-                <Text style={styles.editButtonText}>Edit Profile</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Menu Items */}
-            <View style={styles.menuContainer}>
-              {menuItems.map((item) => (
-                <TouchableOpacity key={item.id} style={styles.menuItem} activeOpacity={0.7}
-                  onPress={() => {
-                    if (item.title === 'Change Password') {
-                      router.push('/screens/changePassword');
-                    } else if (item.title === 'Support') {
-                      router.push('/screens/support');
-                    }
-                     else if (item.title === 'Terms and Conditions') {
-                      router.push('/screens/termsAndConditions');
-                    }
-                  }} >
-                  <View style={styles.menuIconContainer}>
-                    <Ionicons name={item.icon as any} size={24} color={Colors.light.primaryDark} />
-                  </View>
-                  <Text style={[styles.menuText, { fontFamily: theme.fonts.medium }]}>
-                    {item.title}
-                  </Text>
-                  <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-                </TouchableOpacity>
-              ))}
-
-              {/* Logout */}
+          {/* Menu Items */}
+          <View style={styles.menuContainer}>
+            {menuItems.map((item) => (
               <TouchableOpacity
-                style={[styles.menuItem, styles.logoutItem]}
-                onPress={handleLogout}
+                key={item.id}
+                style={styles.menuItem}
                 activeOpacity={0.7}
+                onPress={() => {
+                  if (item.title === 'Change Password') {
+                    router.push('/screens/changePassword');
+                  } else if (item.title === 'Support') {
+                    router.push('/screens/support');
+                  } else if (item.title === 'Terms and Conditions') {
+                    router.push('/screens/termsAndConditions');
+                  }
+                }}
               >
                 <View style={styles.menuIconContainer}>
-                  <Ionicons name="log-out-outline" size={24} color="#ef4444" />
+                  <Ionicons name={item.icon as any} size={24} color={Colors.light.primaryDark} />
                 </View>
-                <Text style={[styles.menuText, styles.logoutText, { fontFamily: theme.fonts.medium }]}>
-                  Logout
+                <Text style={[styles.menuText, { fontFamily: theme.fonts.medium }]}>
+                  {item.title}
                 </Text>
+                <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
               </TouchableOpacity>
-            </View>
+            ))}
 
-          </ScrollView>
+            {/* Logout */}
+            <TouchableOpacity
+              style={[styles.menuItem, styles.logoutItem]}
+              onPress={handleLogout}
+              activeOpacity={0.7}
+            >
+              <View style={styles.menuIconContainer}>
+                <Ionicons name="log-out-outline" size={24} color="#ef4444" />
+              </View>
+              <Text
+                style={[styles.menuText, styles.logoutText, { fontFamily: theme.fonts.medium }]}
+              >
+                Logout
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
 
-          <Footer activeTab={activeTab} onTabChange={setActiveTab} />
-        </View>
-      </SafeAreaView>
+        <Footer activeTab={activeTab} onTabChange={setActiveTab} />
+      </ScreenPage>
 
       {/* Edit Profile Bottom Sheet */}
       <BottomSheetModal ref={editSheetRef} snapPoints={['65%', '92%']}>
@@ -264,35 +261,20 @@ export default function ProfileScreen() {
               Save Changes
             </PrimaryButton>
           </View>
-
         </BottomSheetScrollView>
       </BottomSheetModal>
-
     </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#fff' },
-  container: { flex: 1, backgroundColor: Colors.light.inputBg },
-
-  header: {
-    height: 70,
-    paddingHorizontal: 16,
-    backgroundColor: Colors.light.background,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-  },
-  headerCenter: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  headerTitle: { fontSize: 20, color: Colors.light.primaryDark },
-
   scrollView: { flex: 1 },
+
+  contentContainer: {
+    paddingBottom: 120,
+    paddingHorizontal: 12,
+    paddingTop: 20,
+  },
 
   profileCard: {
     backgroundColor: '#fff',
@@ -317,6 +299,9 @@ const styles = StyleSheet.create({
     borderRadius: 55,
     borderWidth: 4,
     borderColor: '#fff',
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   editAvatarButton: {
     position: 'absolute',
@@ -352,7 +337,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 
-  menuContainer: { paddingHorizontal: 16, paddingBottom: 100 },
+  menuContainer: { paddingHorizontal: 16 },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',

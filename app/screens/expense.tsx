@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import {
   FlatList,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -14,14 +13,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
 import { useDrawer } from '../../contexts/DrawerContext';
-import { useTheme } from '../../providers/ThemeProvider';
+import { DefaultText, useTheme } from '../../providers/ThemeProvider';
 
 export default function ExpenseScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { openDrawer } = useDrawer();
   const [activeTab, setActiveTab] = useState('expense');
-
 
   const dummyExpenses = [
     { 
@@ -60,14 +58,14 @@ export default function ExpenseScreen() {
         <Ionicons name="wallet-outline" size={24} color={Colors.light.primaryDark} />
       </View>
       <View style={styles.expenseInfo}>
-        <Text style={[styles.expenseCategory, { fontFamily: theme.fonts.bold }]}>
+        <DefaultText style={[styles.expenseCategory, { fontFamily: theme.fonts.bold }]}>
           {item.category}
-        </Text>
-        <Text style={styles.expenseDate}>{item.date}</Text>
+        </DefaultText>
+        <DefaultText style={styles.expenseDate}>{item.date}</DefaultText>
       </View>
       <View style={styles.amountContainer}>
-        <Text style={styles.amount}>₹{item.amount}</Text>
-        <Text style={styles.mode}>{item.mode}</Text>
+        <DefaultText style={styles.amount}>₹{item.amount}</DefaultText>
+        <DefaultText style={styles.mode}>{item.mode}</DefaultText>
       </View>
     </TouchableOpacity>
   );
@@ -88,9 +86,9 @@ export default function ExpenseScreen() {
 
             <View style={styles.headerCenter}>
               <Ionicons name="wallet-outline" size={20} color={Colors.light.primaryDark} />
-              <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
+              <DefaultText style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
                 Expense
-              </Text>
+              </DefaultText>
             </View>
 
             <TouchableOpacity

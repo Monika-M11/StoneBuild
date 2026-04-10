@@ -6,8 +6,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
-  View
+  View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -17,6 +16,7 @@ import PrimaryButton from '../../components/PrimaryButton';
 import ScreenPage from '../../components/ScreenPage';
 import Colors from '../../constants/theme';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { DefaultText } from '../../providers/ThemeProvider'; // ← Added this
 
 type FormData = {
   name: string;
@@ -36,9 +36,7 @@ export default function AddEquipmentScreen() {
     totalCount: '',
   });
 
-  // Dynamic serial number fields — length driven by totalCount
   const [serialNumbers, setSerialNumbers] = useState<string[]>([]);
-
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const { errors, validate } = useFormValidation<keyof FormData>({
@@ -57,14 +55,12 @@ export default function AddEquipmentScreen() {
     setFormData((prev) => ({ ...prev, [field]: text }));
   };
 
-  // When totalCount changes, grow or shrink the serialNumbers array
   const handleTotalCountChange = (text: string) => {
     handleInputChange('totalCount')(text);
 
     const parsed = parseInt(text, 10);
 
     if (!text || isNaN(parsed) || parsed < 1) {
-      // No valid count — clear all serial fields
       setSerialNumbers([]);
       return;
     }
@@ -73,10 +69,8 @@ export default function AddEquipmentScreen() {
 
     setSerialNumbers((prev) => {
       if (count > prev.length) {
-        // Add empty slots for new fields
         return [...prev, ...Array(count - prev.length).fill('')];
       } else {
-        // Trim extra fields (removing from the end)
         return prev.slice(0, count);
       }
     });
@@ -93,43 +87,26 @@ export default function AddEquipmentScreen() {
   const handleFocus = useCallback((fieldId: string) => setFocusedField(fieldId), []);
   const handleBlur = useCallback(() => setFocusedField(null), []);
 
-  // const handleSave = () => {
-  //   if (!validate(formData)) {
-  //     Alert.alert('Validation Error', 'Please fix the errors highlighted below');
-  //     return;
-  //   }
-
-  //   const payload = {
-  //     ...formData,
-  //     ...serialNumbers,
-  //   };
-
-  //   console.log('✅ New Equipment Saved:', payload);
-  //   Alert.alert('Success', 'Equipment added successfully!', [
-  //     { text: 'OK', onPress: () => router.back() }
-  //   ]);
-  // };
-
   const handleSave = () => {
-  if (!validate(formData)) {
-    Alert.alert('Validation Error', 'Please fix the errors highlighted below');
-    return;
-  }
+    if (!validate(formData)) {
+      Alert.alert('Validation Error', 'Please fix the errors highlighted below');
+      return;
+    }
 
-  const payload = {
-    brand: formData.brand,
-    model: formData.model,
-    name: formData.name,
-    totalCount: formData.totalCount,
-    serialNumbers: serialNumbers, 
+    const payload = {
+      brand: formData.brand,
+      model: formData.model,
+      name: formData.name,
+      totalCount: formData.totalCount,
+      serialNumbers: serialNumbers,
+    };
+
+    console.log('✅ New Equipment Saved:', payload);
+
+    Alert.alert('Success', 'Equipment added successfully!', [
+      { text: 'OK', onPress: () => router.back() }
+    ]);
   };
-
-  console.log('✅ New Equipment Saved:', payload);
-
-  Alert.alert('Success', 'Equipment added successfully!', [
-    { text: 'OK', onPress: () => router.back() }
-  ]);
-};
 
   const handleCancel = () => router.back();
 
@@ -146,7 +123,7 @@ export default function AddEquipmentScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.formCard}>
-             <AuthInput
+              <AuthInput
                 label="Name *"
                 fieldId="name"
                 focusedField={focusedField}
@@ -198,10 +175,12 @@ export default function AddEquipmentScreen() {
             {/* Dynamic Serial Number Fields */}
             {serialNumbers.length > 0 && (
               <View style={styles.serialSection}>
-                <Text style={styles.serialSectionTitle}>Serial Numbers</Text>
-                <Text style={styles.serialSectionSubtitle}>
+                <DefaultText style={styles.serialSectionTitle} variant="bold">
+                  Serial Numbers
+                </DefaultText>
+                <DefaultText style={styles.serialSectionSubtitle}>
                   Enter the serial number for each unit
-                </Text>
+                </DefaultText>
 
                 <View style={styles.serialCard}>
                   {serialNumbers.map((serial, index) => (

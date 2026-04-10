@@ -1,9 +1,12 @@
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+
+import { useTheme } from "../providers/ThemeProvider";
 
 export default function SplashScreen() {
   const router = useRouter();
+  const theme = useTheme();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -17,6 +20,12 @@ export default function SplashScreen() {
     <View style={styles.container}>
       <Text style={styles.logo}>StoneBuild</Text>
       <Text style={styles.loading}>Loading...</Text>
+
+       <ActivityIndicator
+        size="large"
+        color={theme.colors.primary}
+        style={styles.loader}
+      />
     </View>
   );
 }
@@ -37,5 +46,8 @@ const styles = StyleSheet.create({
   loading: {
     color: '#574964',
     fontSize: 16,
+  },
+   loader: {
+    marginTop: 16, // 👈 spacing below "Loading..."
   },
 });

@@ -1,9 +1,8 @@
-
 import Colors from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { useTheme } from '@/providers/ThemeProvider';
+import { DefaultText, useTheme } from '@/providers/ThemeProvider';
 import React, { useRef } from 'react';
-import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, StyleSheet, TextInput, View } from 'react-native';
 
 export type InputMode =
   | 'default'
@@ -205,7 +204,7 @@ export default function AuthInput({
         />
       </View>
 
-      {hasError && <Text style={styles.errorText}>{error}</Text>}
+      {hasError && <DefaultText style={styles.errorText} variant="regular">{error}</DefaultText>}
     </View>
   );
 }

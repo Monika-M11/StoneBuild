@@ -1,4 +1,3 @@
-
 import AuthInput from '@/components/AuthInput';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import DateTimePicker, {
@@ -13,17 +12,18 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import PrimaryButton from '../../components/PrimaryButton';
 import ScreenPage from '../../components/ScreenPage';
 import Colors from '../../constants/theme';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { DefaultText } from '../../providers/ThemeProvider'; // ← Added
 
 type FormData = {
   date: string;
@@ -34,16 +34,8 @@ type FormData = {
 };
 
 const CATEGORY_OPTIONS = [
-  'Fuel',
-  'Maintenance',
-  'Salary',
-  'Rent',
-  'Travel',
-  'Office Supplies',
-  'Utilities',
-  'Food & Refreshment',
-  'Transportation',
-  
+  'Fuel', 'Maintenance', 'Salary', 'Rent', 'Travel', 
+  'Office Supplies', 'Utilities', 'Food & Refreshment', 'Transportation',
 ];
 
 const BANK_OPTIONS = [
@@ -70,11 +62,11 @@ export default function AddExpensesScreen() {
     paymentMode: '',
   });
 
-const bankSheetRef = useRef<any>(null);
-const bankSnapPoints = useMemo(() => ['50%', '55%'], []);
+  const bankSheetRef = useRef<any>(null);
+  const bankSnapPoints = useMemo(() => ['50%', '55%'], []);
 
-const categorySheetRef = useRef<any>(null);
-const categorySnapPoints = useMemo(() => ['50%', '92%'], []);
+  const categorySheetRef = useRef<any>(null);
+  const categorySnapPoints = useMemo(() => ['50%', '92%'], []);
 
   const { errors, validate } = useFormValidation<keyof FormData>({
     date: { required: true, requiredMessage: 'Date is required' },
@@ -96,9 +88,8 @@ const categorySnapPoints = useMemo(() => ['50%', '92%'], []);
     setFocusedField(null);
   };
 
-  // Open Category Bottom Sheet
   const openCategorySheet = useCallback(() => {
-    Keyboard.dismiss();                    
+    Keyboard.dismiss();
     categorySheetRef.current?.snapToIndex(0);
   }, []);
 
@@ -106,16 +97,16 @@ const categorySnapPoints = useMemo(() => ['50%', '92%'], []);
     handleInputChange('category')(category);
     categorySheetRef.current?.close();
   };
-  //open banksheet
-  const openBankSheet = useCallback(() => {
-  Keyboard.dismiss();
-  bankSheetRef.current?.snapToIndex(0);
-}, []);
 
-const selectBank = (bank: string) => {
-  handleInputChange('bankAccount')(bank);
-  bankSheetRef.current?.close();
-};
+  const openBankSheet = useCallback(() => {
+    Keyboard.dismiss();
+    bankSheetRef.current?.snapToIndex(0);
+  }, []);
+
+  const selectBank = (bank: string) => {
+    handleInputChange('bankAccount')(bank);
+    bankSheetRef.current?.close();
+  };
 
   const handleSave = () => {
     if (!validate(formData)) {
@@ -128,33 +119,30 @@ const selectBank = (bank: string) => {
     ]);
   };
 
-
   const handleCancel = () => router.back();
 
-//date
   const formatDate = (date: Date) => {
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
-  //Datechange
-const handleDateChange = (
-  event: DateTimePickerEvent,
-  date?: Date
-) => {
-  if (event.type === 'dismissed') {
-    setShowDatePicker(false);
-    return;
-  }
+  const handleDateChange = (
+    event: DateTimePickerEvent,
+    date?: Date
+  ) => {
+    if (event.type === 'dismissed') {
+      setShowDatePicker(false);
+      return;
+    }
 
-  if (date) {
-    setShowDatePicker(false);
-    setSelectedDate(date);
-    handleInputChange('date')(formatDate(date));
-  }
-};
+    if (date) {
+      setShowDatePicker(false);
+      setSelectedDate(date);
+      handleInputChange('date')(formatDate(date));
+    }
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -169,37 +157,28 @@ const handleDateChange = (
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.formContainer}>
-             <Text style={styles.sectionTitle}>New expense</Text>
+              <DefaultText style={styles.sectionTitle} variant="bold">
+                New expense
+              </DefaultText>
 
-              {/* <AuthInput
-                label="Date(DD/MM/YYYY) *"
-                fieldId="date"
-                focusedField={focusedField}
-                value={formData.date}
-                onChangeText={handleInputChange('date')}
-                onFocus={() => handleFocus('date')}
-                onBlur={handleBlur}
-                
-                inputMode="default"
-                error={errors.date}
-              /> */}
+              {/* Date Picker */}
               <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-  <View pointerEvents="none">
-    <AuthInput
-      label="Date (DD/MM/YYYY) *"
-      fieldId="date"
-      focusedField={focusedField}
-      value={formData.date}
-      onChangeText={handleInputChange('date')}
-      onFocus={() => handleFocus('date')}
-      onBlur={handleBlur}
-      editable={false}
-      error={errors.date}
-    />
-  </View>
-</TouchableOpacity>
+                <View pointerEvents="none">
+                  <AuthInput
+                    label="Date (DD/MM/YYYY) *"
+                    fieldId="date"
+                    focusedField={focusedField}
+                    value={formData.date}
+                    onChangeText={handleInputChange('date')}
+                    onFocus={() => handleFocus('date')}
+                    onBlur={handleBlur}
+                    editable={false}
+                    error={errors.date}
+                  />
+                </View>
+              </TouchableOpacity>
 
-              {/* Category Field with Bottom Sheet */}
+              {/* Category Field */}
               <TouchableOpacity onPress={openCategorySheet}>
                 <View pointerEvents="none">
                   <AuthInput
@@ -228,6 +207,7 @@ const handleDateChange = (
                 error={errors.amount}
               />
 
+              {/* Bank Account Field */}
               <TouchableOpacity onPress={openBankSheet} activeOpacity={0.7}>
                 <View pointerEvents="none">
                   <AuthInput
@@ -244,32 +224,37 @@ const handleDateChange = (
                 </View>
               </TouchableOpacity>
 
+              {/* Payment Mode */}
               <View style={styles.radioGroupContainer}>
-  <Text style={styles.radioGroupLabel}>Payment Mode *</Text>
+                <DefaultText style={styles.radioGroupLabel} variant="bold">
+                  Payment Mode *
+                </DefaultText>
 
-  {PAYMENT_OPTIONS.map((mode) => {
-    const selected = formData.paymentMode === mode;
+                {PAYMENT_OPTIONS.map((mode) => {
+                  const selected = formData.paymentMode === mode;
 
-    return (
-      <TouchableOpacity
-        key={mode}
-        style={styles.radioOption}
-        onPress={() => handleInputChange('paymentMode')(mode)}
-        activeOpacity={0.7}
-      >
-        <View style={styles.radioOuter}>
-          {selected && <View style={styles.radioInner} />}
-        </View>
+                  return (
+                    <TouchableOpacity
+                      key={mode}
+                      style={styles.radioOption}
+                      onPress={() => handleInputChange('paymentMode')(mode)}
+                      activeOpacity={0.7}
+                    >
+                      <View style={styles.radioOuter}>
+                        {selected && <View style={styles.radioInner} />}
+                      </View>
 
-        <Text style={styles.radioText}>{mode}</Text>
-      </TouchableOpacity>
-    );
-  })}
+                      <DefaultText style={styles.radioText}>{mode}</DefaultText>
+                    </TouchableOpacity>
+                  );
+                })}
 
-  {errors.paymentMode && (
-    <Text style={styles.errorText}>{errors.paymentMode}</Text>
-  )}
-</View>
+                {errors.paymentMode && (
+                  <DefaultText style={styles.errorText}>
+                    {errors.paymentMode}
+                  </DefaultText>
+                )}
+              </View>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -290,16 +275,15 @@ const handleDateChange = (
           </PrimaryButton>
         </View>
 
-
         {showDatePicker && (
-  <DateTimePicker
-    value={selectedDate}
-    mode="date"
-    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-    onChange={handleDateChange}
-    maximumDate={new Date()}
-  />
-)}
+          <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={handleDateChange}
+            maximumDate={new Date()}
+          />
+        )}
 
         <Footer activeTab={activeTab} onTabChange={setActiveTab} />
       </ScreenPage>
@@ -313,7 +297,9 @@ const handleDateChange = (
           contentContainerStyle={styles.bottomSheetContent}
           showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.bottomSheetTitle}>Select Category</Text>
+          <DefaultText style={styles.bottomSheetTitle} variant="bold">
+            Select Category
+          </DefaultText>
 
           {CATEGORY_OPTIONS.map((category) => (
             <TouchableOpacity
@@ -322,39 +308,41 @@ const handleDateChange = (
               onPress={() => selectCategory(category)}
               activeOpacity={0.7}
             >
-              <Text style={styles.bottomSheetOptionText}>
+              <DefaultText style={styles.bottomSheetOptionText}>
                 {category}
-              </Text>
+              </DefaultText>
             </TouchableOpacity>
           ))}
         </BottomSheetScrollView>
-        {/* Bank Bottom Sheet */}
-       
       </BottomSheetModal>
-       <BottomSheetModal
-          ref={bankSheetRef}
-          snapPoints={bankSnapPoints}
-        >
-          <BottomSheetScrollView
-            contentContainerStyle={styles.bottomSheetContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <Text style={styles.bottomSheetTitle}>Select Bank Account</Text>
 
-            {BANK_OPTIONS.map((bank) => (
-              <TouchableOpacity
-                key={bank}
-                style={styles.bottomSheetOption}
-                onPress={() => selectBank(bank)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.bottomSheetOptionText}>
-                  {bank}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </BottomSheetScrollView>
-        </BottomSheetModal>
+      {/* Bank Bottom Sheet */}
+      <BottomSheetModal
+        ref={bankSheetRef}
+        snapPoints={bankSnapPoints}
+      >
+        <BottomSheetScrollView
+          contentContainerStyle={styles.bottomSheetContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <DefaultText style={styles.bottomSheetTitle} variant="bold">
+            Select Bank Account
+          </DefaultText>
+
+          {BANK_OPTIONS.map((bank) => (
+            <TouchableOpacity
+              key={bank}
+              style={styles.bottomSheetOption}
+              onPress={() => selectBank(bank)}
+              activeOpacity={0.7}
+            >
+              <DefaultText style={styles.bottomSheetOptionText}>
+                {bank}
+              </DefaultText>
+            </TouchableOpacity>
+          ))}
+        </BottomSheetScrollView>
+      </BottomSheetModal>
     </GestureHandlerRootView>
   );
 }
@@ -372,13 +360,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.light.inputBorder || '#e5e7eb',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.light.text,
-    marginBottom: 24,
-    textAlign: 'center',
-  },
+
   buttonContainer: {
     flexDirection: 'row',
     gap: 12,
@@ -418,54 +400,53 @@ const styles = StyleSheet.create({
   },
 
   radioGroupContainer: {
-  marginTop: 16,
-},
-
-radioGroupLabel: {
-  fontSize: 14,
-  fontWeight: '600',
-  color: Colors.light.text,
-  marginBottom: 10,
-},
- sectionTitle: {
+    marginTop: 16,
+  },
+  radioGroupLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.light.text,
+    marginBottom: 10,
+  },
+  sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: Colors.light.text,
     marginBottom: 16,
   },
 
-radioOption: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  paddingVertical: 10,
-},
+  radioOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
 
-radioOuter: {
-  width: 20,
-  height: 20,
-  borderRadius: 10,
-  borderWidth: 2,
-  borderColor: Colors.light.primary || '#2563eb',
-  justifyContent: 'center',
-  alignItems: 'center',
-  marginRight: 10,
-},
+  radioOuter: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: Colors.light.primary || '#2563eb',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
 
-radioInner: {
-  width: 10,
-  height: 10,
-  borderRadius: 5,
-  backgroundColor: Colors.light.primary || '#2563eb',
-},
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: Colors.light.primary || '#2563eb',
+  },
 
-radioText: {
-  fontSize: 15,
-  color: Colors.light.text,
-},
+  radioText: {
+    fontSize: 15,
+    color: Colors.light.text,
+  },
 
-errorText: {
-  marginTop: 4,
-  color: 'red',
-  fontSize: 12,
-},
+  errorText: {
+    marginTop: 4,
+    color: 'red',
+    fontSize: 12,
+  },
 });

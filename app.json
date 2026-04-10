@@ -8,16 +8,19 @@
     "experiments": {
       "typedRoutes": true
     },
-
     "splash": {
       "image": "./assets/images/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-
     "android": {
       "package": "com.monika.stonebuild",
       "versionCode": 1
+    },
+    "extra": {
+      "eas": {
+        "projectId": "cad0c098-8b15-4b1a-bd02-bb85a22a79ef"
+      }
     }
   }
 }

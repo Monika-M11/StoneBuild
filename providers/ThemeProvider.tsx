@@ -40,6 +40,7 @@ export function useTheme() {
   return context;
 }
 
+
 // DefaultText component to apply base font
 import { Text, TextProps } from 'react-native';
 

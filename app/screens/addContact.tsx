@@ -6,7 +6,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -17,6 +16,7 @@ import PrimaryButton from '../../components/PrimaryButton';
 import ScreenPage from '../../components/ScreenPage';
 import Colors from '../../constants/theme';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { DefaultText } from '../../providers/ThemeProvider'; // ← Added
 
 type FormData = {
   contactName: string;
@@ -40,9 +40,20 @@ export default function AddContactScreen() {
   const [activeTab, setActiveTab] = useState('contacts');
 
   const [formData, setFormData] = useState<FormData>({
-    contactName: '', phoneNumber: '', emailId: '', addressLine1: '',
-    addressLine2: '', city: '', pincode: '', bankName: '', accountName: '',
-    ifscCode: '', branchName: '', gstNumber: '', aadhaar: '', panNumber: '',
+    contactName: '', 
+    phoneNumber: '', 
+    emailId: '', 
+    addressLine1: '',
+    addressLine2: '', 
+    city: '', 
+    pincode: '', 
+    bankName: '', 
+    accountName: '',
+    ifscCode: '', 
+    branchName: '', 
+    gstNumber: '', 
+    aadhaar: '', 
+    panNumber: '',
   });
 
   const [focusedField, setFocusedField] = useState<string | null>(null);
@@ -108,9 +119,11 @@ export default function AddContactScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.formCard}>
-              <Text style={styles.sectionTitle}>Personal Information</Text>
+              <DefaultText style={styles.sectionTitle} variant="bold">
+                Personal Information
+              </DefaultText>
 
-<AuthInput
+              <AuthInput
                 label="Contact Name *"
                 fieldId="contactName"
                 focusedField={focusedField}
@@ -122,7 +135,7 @@ export default function AddContactScreen() {
                 error={errors.contactName}
               />
 
-<AuthInput
+              <AuthInput
                 label="Phone Number *"
                 fieldId="phoneNumber"
                 focusedField={focusedField}
@@ -134,7 +147,7 @@ export default function AddContactScreen() {
                 error={errors.phoneNumber}
               />
 
-<AuthInput
+              <AuthInput
                 label="Email ID"
                 fieldId="emailId"
                 focusedField={focusedField}
@@ -146,9 +159,11 @@ export default function AddContactScreen() {
                 error={errors.emailId}
               />
 
-              <Text style={styles.sectionTitle}>Address Details</Text>
+              <DefaultText style={styles.sectionTitle} variant="bold">
+                Address Details
+              </DefaultText>
 
-<AuthInput
+              <AuthInput
                 label="Address Line 1 *"
                 fieldId="addressLine1"
                 focusedField={focusedField}
@@ -160,7 +175,7 @@ export default function AddContactScreen() {
                 error={errors.addressLine1}
               />
 
-<AuthInput
+              <AuthInput
                 label="Address Line 2"
                 fieldId="addressLine2"
                 focusedField={focusedField}
@@ -172,7 +187,7 @@ export default function AddContactScreen() {
                 error={errors.addressLine2}
               />
 
-<AuthInput
+              <AuthInput
                 label="City *"
                 fieldId="city"
                 focusedField={focusedField}
@@ -184,7 +199,7 @@ export default function AddContactScreen() {
                 error={errors.city}
               />
 
-<AuthInput
+              <AuthInput
                 label="Pincode *"
                 fieldId="pincode"
                 focusedField={focusedField}
@@ -196,9 +211,11 @@ export default function AddContactScreen() {
                 error={errors.pincode}
               />
 
-              <Text style={styles.sectionTitle}>Bank Details</Text>
+              <DefaultText style={styles.sectionTitle} variant="bold">
+                Bank Details
+              </DefaultText>
 
-<AuthInput
+              <AuthInput
                 label="Bank Name"
                 fieldId="bankName"
                 focusedField={focusedField}
@@ -210,7 +227,7 @@ export default function AddContactScreen() {
                 error={errors.bankName}
               />
 
-<AuthInput
+              <AuthInput
                 label="Account Name"
                 fieldId="accountName"
                 focusedField={focusedField}
@@ -246,7 +263,9 @@ export default function AddContactScreen() {
                 error={errors.branchName}
               />
 
-              <Text style={styles.sectionTitle}>Tax & Identity Details</Text>
+              <DefaultText style={styles.sectionTitle} variant="bold">
+                Tax & Identity Details
+              </DefaultText>
 
               <AuthInput
                 label="GST Number"
@@ -288,10 +307,17 @@ export default function AddContactScreen() {
         </KeyboardAvoidingView>
 
         <View style={styles.fixedButtonContainer}>  
-        <PrimaryButton onPress={handleCancel} variant="secondary" style={styles.fixedCancelButton}>
+          <PrimaryButton 
+            onPress={handleCancel} 
+            variant="secondary" 
+            style={styles.fixedCancelButton}
+          >
             Cancel
           </PrimaryButton>
-          <PrimaryButton onPress={handleSave} style={styles.fixedSaveButton}>
+          <PrimaryButton 
+            onPress={handleSave} 
+            style={styles.fixedSaveButton}
+          >
             Save Contact
           </PrimaryButton>
         </View>

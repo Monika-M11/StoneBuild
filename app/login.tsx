@@ -1,4 +1,3 @@
-
 import Colors from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useRouter } from 'expo-router';
@@ -9,14 +8,13 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import AuthInput from '../components/AuthInput';
 import PrimaryButton from '../components/PrimaryButton';
-import { useTheme } from '../providers/ThemeProvider';
+import { DefaultText, useTheme } from '../providers/ThemeProvider';
 
 export default function Login() {
   const router = useRouter();
@@ -102,14 +100,14 @@ export default function Login() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.centeredContent}>
-            <Text style={[styles.title, { color: primaryDark }]}>
+            <DefaultText style={[styles.title, { color: primaryDark }]} variant="bold">
               {isSignUp ? 'Create account' : 'Welcome back'}
-            </Text>
-            <Text style={[styles.subtitle, { color: icon }]}>
+            </DefaultText>
+            <DefaultText style={[styles.subtitle, { color: icon }]} variant="regular">
               {isSignUp
                 ? 'Sign up to get started today'
                 : 'Sign in to continue your journey'}
-            </Text>
+            </DefaultText>
           </View>
         </View>
 
@@ -182,7 +180,7 @@ export default function Login() {
 
           {!isSignUp && (
             <TouchableOpacity style={styles.forgotButton}>
-              <Text style={[styles.forgotText, { color: primaryDark }]}>Forgot password?</Text>
+              <DefaultText style={[styles.forgotText, { color: primaryDark }]} variant="medium">Forgot password?</DefaultText>
             </TouchableOpacity>
           )}
 
@@ -224,14 +222,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontFamily: 'SourceSans3_700Bold',
     fontSize: 32,
     fontWeight: '600',
     letterSpacing: -0.8,
     textAlign: 'center',
   },
   subtitle: {
-    fontFamily: 'SourceSans3_400Regular',
     fontSize: 15,
     letterSpacing: 0.1,
     textAlign: 'center',
@@ -266,7 +262,6 @@ const styles = StyleSheet.create({
     marginTop: -4,
   },
   forgotText: {
-    fontFamily: 'SourceSans3_500Medium',
     fontSize: 13,
     fontWeight: '500',
   },

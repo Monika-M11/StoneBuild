@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -20,7 +19,7 @@ import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
 import { useDrawer } from '../../contexts/DrawerContext';
 import { useFormValidation } from '../../hooks/useFormValidation';
-import { useTheme } from '../../providers/ThemeProvider';
+import { DefaultText, useTheme } from '../../providers/ThemeProvider';
 
 type Contact = {
   id: string;
@@ -158,14 +157,14 @@ export default function ContactsScreen() {
       >
         <View style={styles.avatarContainer}>
           <View style={styles.avatarPlaceholder}>
-            <Text style={styles.avatarText}>
+            <DefaultText style={styles.avatarText} variant="medium">
               {item.name.split(' ').map((n) => n[0]).join('').toUpperCase()}
-            </Text>
+            </DefaultText>
           </View>
         </View>
         <View style={styles.contactInfo}>
-          <Text style={styles.contactName}>{item.name}</Text>
-          {item.status && <Text style={styles.contactStatus}>{item.status}</Text>}
+          <DefaultText style={styles.contactName} variant="regular">{item.name}</DefaultText>
+          {item.status && <DefaultText style={styles.contactStatus} variant="regular">{item.status}</DefaultText>}
         </View>
         <Ionicons name="person-outline" size={24} color="#2563eb" />
       </TouchableOpacity>
@@ -188,7 +187,7 @@ export default function ContactsScreen() {
             </TouchableOpacity>
             <View style={styles.headerCenter}>
               <Ionicons name="people-outline" size={20} color={Colors.light.primaryDark} />
-              <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Contacts</Text>
+              <DefaultText style={styles.headerTitle} variant="bold">Contacts</DefaultText>
             </View>
             <TouchableOpacity 
               onPress={handleAddContact} 
@@ -228,14 +227,14 @@ export default function ContactsScreen() {
             <View style={styles.sheetHeader}>
               <View style={styles.sheetAvatarContainer}>
                 <View style={styles.sheetAvatarPlaceholder}>
-                  <Text style={styles.sheetAvatarText}>
+                  <DefaultText style={styles.sheetAvatarText} variant="bold">
                     {selectedContact.name.split(' ').map((n) => n[0]).join('').toUpperCase()}
-                  </Text>
+                  </DefaultText>
                 </View>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.sheetContactName}>{selectedContact.name}</Text>
-                <Text style={styles.sheetStatus}>Fill User Details</Text>
+                <DefaultText style={styles.sheetContactName} variant="regular">{selectedContact.name}</DefaultText>
+                <DefaultText style={styles.sheetStatus} variant="regular">Fill User Details</DefaultText>
               </View>
               <TouchableOpacity onPress={closeSheet} style={styles.closeButton}>
                 <Ionicons name="close" size={24} color="#6b7280" />
@@ -248,7 +247,7 @@ export default function ContactsScreen() {
               showsVerticalScrollIndicator={true}
               keyboardShouldPersistTaps="handled"
             >
-              <Text style={styles.sectionTitle}>Personal Information</Text>
+              <DefaultText style={styles.sectionTitle} variant="bold">Personal Information</DefaultText>
 
               <AuthInput
                 label="Name *"
@@ -315,7 +314,7 @@ export default function ContactsScreen() {
                 onPress={handleSave}
                 activeOpacity={0.8}
               >
-                <Text style={styles.submitButtonText}>Save Details</Text>
+                <DefaultText style={styles.submitButtonText} variant="bold">Save Details</DefaultText>
               </TouchableOpacity>
             </BottomSheetScrollView>
           </KeyboardAvoidingView>

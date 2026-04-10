@@ -1,13 +1,12 @@
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -17,6 +16,7 @@ import PrimaryButton from '../../components/PrimaryButton';
 import ScreenPage from '../../components/ScreenPage';
 import Colors from '../../constants/theme';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { DefaultText } from '../../providers/ThemeProvider'; // ← Added
 
 type FormData = {
   name: string;
@@ -98,7 +98,10 @@ export default function AddWarehouseScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.formCard}>        
-            <Text style={styles.sectionTitle}>Warehouse Details</Text>
+              <DefaultText style={styles.sectionTitle} variant="bold">
+                Warehouse Details
+              </DefaultText>
+
               <AuthInput
                 label="Warehouse Name *"
                 fieldId="name"
@@ -151,10 +154,17 @@ export default function AddWarehouseScreen() {
         </KeyboardAvoidingView>
 
         <View style={styles.fixedButtonContainer}>
-          <PrimaryButton onPress={handleCancel} variant="secondary" style={styles.fixedCancelButton}>
+          <PrimaryButton 
+            onPress={handleCancel} 
+            variant="secondary" 
+            style={styles.fixedCancelButton}
+          >
             Cancel
           </PrimaryButton>
-          <PrimaryButton onPress={handleSave} style={styles.fixedSaveButton}>
+          <PrimaryButton 
+            onPress={handleSave} 
+            style={styles.fixedSaveButton}
+          >
             Save Warehouse
           </PrimaryButton>
         </View>
