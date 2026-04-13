@@ -1,11 +1,10 @@
 import Colors from '@/constants/theme';
-import { useTheme } from '@/providers/ThemeProvider';
+import { DefaultText, useTheme } from '@/providers/ThemeProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -30,16 +29,16 @@ export default function LedgerScreen() {
           </TouchableOpacity>
           <View style={styles.headerCenter}>
             <Ionicons name="book-outline" size={20} color={Colors.light.primaryDark} />
-            <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Ledger</Text>
+            <DefaultText  style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Ledger</DefaultText >
           </View>
           <View style={{ width: 24 }} />
         </View>
 
         {/* BODY */}
         <View style={styles.body}>
-          <Text style={[styles.bodyText, { fontFamily: theme.fonts.regular }]}>
+          <DefaultText  style={[styles.bodyText, { fontFamily: theme.fonts.regular }]}>
             Ledger Page
-          </Text>
+          </DefaultText >
         </View>
 
         {/* FOOTER */}

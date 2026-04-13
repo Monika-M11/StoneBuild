@@ -1,3 +1,6 @@
+import { postApi } from '@/api/apiClient';
+import { ENDPOINTS } from '@/api/endpoints';
+import { saveToken } from '@/auth/authStorage';
 import Colors from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useRouter } from 'expo-router';
@@ -15,10 +18,14 @@ import {
 import AuthInput from '../components/AuthInput';
 import PrimaryButton from '../components/PrimaryButton';
 import { DefaultText, useTheme } from '../providers/ThemeProvider';
+import { useToast } from '../providers/ToastProvider';
+
+
 
 export default function Login() {
   const router = useRouter();
   const theme = useTheme();
+  const { showToast } = useToast();
 
   const primaryDark = Colors.light.primaryDark;
   const inputBorder = useThemeColor({ light: 'inputBorder', dark: 'inputBorder' }, 'inputBorder');
@@ -31,6 +38,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const shakeAnim = useRef(new Animated.Value(0)).current;
+
+
 
   // Floating label animation for Full Name field
   const nameAnimValue = useRef(new Animated.Value(name.length > 0 ? 1 : 0)).current;
@@ -72,16 +81,69 @@ export default function Login() {
     ]).start();
   };
 
-  const handleSubmit = async () => {
-    if (!email || !password || (isSignUp && !name)) {
+  // const handleSubmit = async () => {
+  //   if (!email || !password || (isSignUp && !name)) {
+  //     shake();
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   await new Promise((res) => setTimeout(res, 1500));
+  //   setLoading(false);
+  //   router.replace('/home');
+  // };
+
+  //backend url logic
+const handleSubmit = async () => {
+  if (loading) return;
+
+  if (!email || !password || (isSignUp && !name)) {
+    showToast('Validation Error', 'Please fill all required fields', 'error');
+    shake();
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const payload = {
+      userName: email.trim(),
+      password: password.trim(),
+    };
+
+    const response = await postApi(
+      ENDPOINTS.LOGIN,
+      'checkUser',
+      payload
+    );
+
+    console.log('API RESPONSE:', response);
+   
+    if (response?.status !== 'success') {
+      showToast('Login Failed', response?.message || 'Something went wrong', 'error');
       shake();
       return;
     }
-    setLoading(true);
-    await new Promise((res) => setTimeout(res, 1500));
+
+    //Save token
+    if (response?.token) {
+      await saveToken(response.token);
+    }
+
+    
+    showToast('Welcome!', 'Successfully logged in', 'success');
+    
+    setTimeout(() => {
+      router.replace('/home');
+    }, 1000); 
+
+  } catch (error: any) {
+    showToast('Error', error?.message || 'Something went wrong', 'error');
+    shake();
+  } finally {
     setLoading(false);
-    router.replace('/home');
-  };
+  }
+};
+
 
   const nameInputBorder =
     focusedField === 'name' ? primaryDark : inputBorder + '66';
@@ -183,6 +245,8 @@ export default function Login() {
               <DefaultText style={[styles.forgotText, { color: primaryDark }]} variant="medium">Forgot password?</DefaultText>
             </TouchableOpacity>
           )}
+
+
 
           <PrimaryButton onPress={handleSubmit} loading={loading}>
             {isSignUp ? 'Create Account' : 'Sign In'}

@@ -3,22 +3,21 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-    Alert,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '../../components/PrimaryButton';
 import Colors from '../../constants/theme';
-import { useTheme } from '../../providers/ThemeProvider';
+import { DefaultText, useTheme } from '../../providers/ThemeProvider';
 
 import * as ImagePicker from 'expo-image-picker';
 
@@ -94,7 +93,7 @@ export default function SupportScreen() {
             </TouchableOpacity>
             <View style={styles.headerCenter}>
               <Ionicons name="help-circle-outline" size={20} color={Colors.light.primaryDark} />
-              <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Support</Text>
+              <DefaultText  style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Support</DefaultText >
             </View>
             <View style={{ width: 40 }} />
           </View>
@@ -113,17 +112,17 @@ export default function SupportScreen() {
                 <View style={styles.bannerIconCircle}>
                   <Ionicons name="chatbubbles-outline" size={44} color={Colors.light.primaryDark} />
                 </View>
-                <Text style={[styles.bannerTitle, { fontFamily: theme.fonts.bold }]}>
+                <DefaultText  style={[styles.bannerTitle, { fontFamily: theme.fonts.bold }]}>
                   How can we help?
-                </Text>
-                <Text style={styles.bannerSubtitle}>
+                </DefaultText >
+                <DefaultText  style={styles.bannerSubtitle}>
                   Fill in the details below and our team will respond within 24 hours.
-                </Text>
+                </DefaultText >
               </View>
 
               {/* Query Form Card */}
               <View style={styles.formCard}>
-                <Text style={styles.sectionTitle}>Submit a Query</Text>
+                <DefaultText  style={styles.sectionTitle}>Submit a Query</DefaultText >
 
                 {/* Query Title */}
                 <AuthInput
@@ -144,12 +143,12 @@ export default function SupportScreen() {
 
                 {/* Query Description */}
                 <View style={styles.textAreaGroup}>
-                  <Text style={[
+                  <DefaultText  style={[
                     styles.textAreaLabel,
                     focusedField === 'queryDescription' && styles.textAreaLabelFocused,
                   ]}>
                     Query Description
-                  </Text>
+                  </DefaultText >
                   <TextInput
                     style={[
                       styles.textArea,
@@ -170,12 +169,12 @@ export default function SupportScreen() {
                     textAlignVertical="top"
                   />
                   {errors.description && (
-                    <Text style={styles.errorText}>{errors.description}</Text>
+                    <DefaultText  style={styles.errorText}>{errors.description}</DefaultText >
                   )}
                 </View>
 
                 {/* Image Upload */}
-                <Text style={styles.uploadLabel}>Attach Screenshot (optional)</Text>
+                <DefaultText  style={styles.uploadLabel}>Attach Screenshot (optional)</DefaultText >
                 <TouchableOpacity
                   style={styles.uploadBox}
                   onPress={handleImageUpload}
@@ -186,8 +185,8 @@ export default function SupportScreen() {
                   ) : (
                     <View style={styles.uploadPlaceholder}>
                       <Ionicons name="cloud-upload-outline" size={32} color={Colors.light.primaryDark + '80'} />
-                      <Text style={styles.uploadText}>Tap to upload image</Text>
-                      <Text style={styles.uploadSubText}>PNG, JPG up to 5MB</Text>
+                      <DefaultText  style={styles.uploadText}>Tap to upload image</DefaultText >
+                      <DefaultText  style={styles.uploadSubText}>PNG, JPG up to 5MB</DefaultText >
                     </View>
                   )}
                 </TouchableOpacity>
@@ -199,9 +198,9 @@ export default function SupportScreen() {
 
               {/* Contact Card */}
               <View style={styles.contactCard}>
-                <Text style={[styles.contactTitle, { fontFamily: theme.fonts.bold }]}>
+                <DefaultText  style={[styles.contactTitle, { fontFamily: theme.fonts.bold }]}>
                   Contact Us Directly
-                </Text>
+                </DefaultText >
                
 
                 {/* Email */}
@@ -210,8 +209,8 @@ export default function SupportScreen() {
                     <Ionicons name="mail-outline" size={22} color={Colors.light.primaryDark} />
                   </View>
                   <View style={styles.contactInfo}>
-                    <Text style={styles.contactLabel}>Email Support</Text>
-                    <Text style={styles.contactValue}>support@yourapp.com</Text>
+                    <DefaultText  style={styles.contactLabel}>Email Support</DefaultText >
+                    <DefaultText  style={styles.contactValue}>support@yourapp.com</DefaultText >
                   </View>
                 </TouchableOpacity>
 
@@ -221,8 +220,8 @@ export default function SupportScreen() {
                     <Ionicons name="call-outline" size={22} color={Colors.light.primaryDark} />
                   </View>
                   <View style={styles.contactInfo}>
-                    <Text style={styles.contactLabel}>Phone Support</Text>
-                    <Text style={styles.contactValue}>+91 98765 43210</Text>
+                    <DefaultText style={styles.contactLabel}>Phone Support</DefaultText >
+                    <DefaultText  style={styles.contactValue}>+91 98765 43210</DefaultText >
                   </View>
                   
                 </TouchableOpacity>

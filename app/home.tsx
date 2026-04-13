@@ -18,19 +18,7 @@ export default function Home() {
   const theme = useTheme();
 
   return (
-    // <SafeAreaView style={styles.safeArea}>
-    //   <View style={styles.container}>
-    //     {/* HEADER */}
-    //     <View style={styles.header}>
-    //       <TouchableOpacity
-    //         onPress={openDrawer}
-    //         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-    //       >
-    //         <Ionicons name="menu" size={26} color={Colors.light.primaryDark} />
-    //       </TouchableOpacity>
-    //       <DefaultText style={styles.headerTitle} variant="bold">Home</DefaultText>
-    //       <View style={{ width: 26 }} />
-    //     </View>
+ 
      <GestureHandlerRootView style={{ flex: 1 }}>
           <ScreenPage title="Home" onMenuPress={openDrawer} icon="home">
            

@@ -1,3 +1,4 @@
+import { removeToken } from '@/auth/authStorage';
 import AuthInput from '@/components/AuthInput';
 import ScreenPage from '@/components/ScreenPage';
 import { Ionicons } from '@expo/vector-icons';
@@ -5,23 +6,19 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import {
-  Alert,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useToast } from '../providers/ToastProvider'; // temporarily disabled due to broken ToastProvider
-
-
 import BottomSheetModal from '../components/BottomSheetModal';
 import Footer from '../components/Footer';
 import PrimaryButton from '../components/PrimaryButton';
 import Colors from '../constants/theme';
 import { useDrawer } from '../contexts/DrawerContext';
-import { useTheme } from '../providers/ThemeProvider';
+import { DefaultText, useTheme } from '../providers/ThemeProvider';
+import { useToast } from '../providers/ToastProvider';
 
 export default function ProfileScreen() {
   const theme = useTheme();
@@ -79,16 +76,23 @@ export default function ProfileScreen() {
      showToast('Success', 'Profile updated successfully!','success');
   };
 
-  const handleLogout = () => {
-    Alert.alert('Logout', 'Are you sure you want to logout?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Logout',
-        style: 'destructive',
-        onPress: () => router.replace('/login'),
-      },
-    ]);
-  };
+  // const handleLogout = () => {
+  //   Alert.alert('Logout', 'Are you sure you want to logout?', [
+  //     { text: 'Cancel', style: 'cancel' },
+  //     {
+  //       text: 'Logout',
+  //       style: 'destructive',
+  //       onPress: () => router.replace('/login'),
+  //     },
+  //   ]);
+  // };
+
+  const handleLogout = async () => {
+  await removeToken();
+  console.log("Logged-out Successfully")
+  router.replace('/login');
+};
+
 
   const menuItems = [
     { id: '1', title: 'User Details', icon: 'person-outline' },
@@ -123,16 +127,16 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </View>
 
-            <Text style={[styles.userName, { fontFamily: theme.fonts.bold }]}>
+            <DefaultText  style={[styles.userName, { fontFamily: theme.fonts.bold }]}>
               {user.name}
-            </Text>
-            <Text style={styles.userRole}>{user.role}</Text>
-            <Text style={styles.userEmail}>{user.email}</Text>
-            <Text style={styles.userPhone}>{user.phone}</Text>
+            </DefaultText >
+            <DefaultText  style={styles.userRole}>{user.role}</DefaultText >
+            <DefaultText  style={styles.userEmail}>{user.email}</DefaultText >
+            <DefaultText  style={styles.userPhone}>{user.phone}</DefaultText >
 
             <TouchableOpacity style={styles.editButton} onPress={openEditSheet}>
               <Ionicons name="create-outline" size={18} color={Colors.light.primary} />
-              <Text style={styles.editButtonText}>Edit Profile</Text>
+              <DefaultText  style={styles.editButtonText}>Edit Profile</DefaultText >
             </TouchableOpacity>
           </View>
 
@@ -156,9 +160,9 @@ export default function ProfileScreen() {
                 <View style={styles.menuIconContainer}>
                   <Ionicons name={item.icon as any} size={24} color={Colors.light.primaryDark} />
                 </View>
-                <Text style={[styles.menuText, { fontFamily: theme.fonts.medium }]}>
+                <DefaultText style={[styles.menuText, { fontFamily: theme.fonts.medium }]}>
                   {item.title}
-                </Text>
+                </DefaultText >
                 <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
               </TouchableOpacity>
             ))}
@@ -172,11 +176,11 @@ export default function ProfileScreen() {
               <View style={styles.menuIconContainer}>
                 <Ionicons name="log-out-outline" size={24} color="#ef4444" />
               </View>
-              <Text
+              <DefaultText 
                 style={[styles.menuText, styles.logoutText, { fontFamily: theme.fonts.medium }]}
               >
                 Logout
-              </Text>
+              </DefaultText >
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -192,7 +196,7 @@ export default function ProfileScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.bottomSheetTitle}>Edit Profile</Text>
+          <DefaultText  style={styles.bottomSheetTitle}>Edit Profile</DefaultText >
 
           <AuthInput
             label="Full Name"
