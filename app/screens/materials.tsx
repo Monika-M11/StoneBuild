@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -18,7 +17,7 @@ import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
 import { useDrawer } from '../../contexts/DrawerContext';
-import { useTheme } from '../../providers/ThemeProvider';
+import { DefaultText, useTheme } from '../../providers/ThemeProvider';
 
 type Material = {
   id: string;
@@ -175,15 +174,15 @@ export default function MaterialsScreen() {
         </View>
 
         <View style={styles.materialInfo}>
-          <Text style={[styles.materialName, { fontFamily: theme.fonts.bold }]}>
+          <DefaultText style={[styles.materialName, { fontFamily: theme.fonts.bold }]}>
             {item.name}
-          </Text>
-          <Text style={styles.materialShort}>{item.shortCode} | {item.printingName}</Text>
-          <Text style={styles.materialTax}>GST: {item.gst}% | HSN: {item.hsn}</Text>
+          </DefaultText >
+          <DefaultText  style={styles.materialShort}>{item.shortCode} | {item.printingName}</DefaultText >
+          <DefaultText  style={styles.materialTax}>GST: {item.gst}% | HSN: {item.hsn}</DefaultText >
         </View>
 
         <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>{item.cess}% Cess</Text>
+          <DefaultText  style={styles.statusText}>{item.cess}% Cess</DefaultText >
         </View>
       </TouchableOpacity>
     ),
@@ -204,9 +203,9 @@ export default function MaterialsScreen() {
             </TouchableOpacity>
             <View style={styles.headerCenter}>
               <Ionicons name="layers-outline" size={20} color={Colors.light.primaryDark} />
-              <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
+              <DefaultText  style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
                 Materials
-              </Text>
+              </DefaultText >
             </View>
             <TouchableOpacity
               onPress={() => router.push('/screens/addMaterial' as any)}
@@ -246,14 +245,14 @@ export default function MaterialsScreen() {
                 <Ionicons name="layers-outline" size={26} color={Colors.light.primaryDark} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={[styles.sheetMaterialName, { fontFamily: theme.fonts.bold }]}>
+                <DefaultText style={[styles.sheetMaterialName, { fontFamily: theme.fonts.bold }]}>
                   {selectedMaterial.name}
-                </Text>
+                </DefaultText >
                 <View style={styles.sheetStatusRow}>
                   <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[selectedMaterial.status ?? ''] }]} />
-                  <Text style={[styles.sheetStatusText, { color: STATUS_COLORS[selectedMaterial.status ?? ''] }]}>  
+                  <DefaultText  style={[styles.sheetStatusText, { color: STATUS_COLORS[selectedMaterial.status ?? ''] }]}>  
                     {selectedMaterial.status ?? 'Unknown'}
-                  </Text>
+                  </DefaultText >
                 </View>
               </View>
               <TouchableOpacity onPress={closeSheet} style={styles.closeButton}>
@@ -267,10 +266,10 @@ export default function MaterialsScreen() {
               showsVerticalScrollIndicator={true}
               keyboardShouldPersistTaps="handled"
             >
-              <Text style={styles.sectionTitle}>Material Details</Text>
+              <DefaultText style={styles.sectionTitle}>Material Details</DefaultText >
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Material Name</Text>
+                <DefaultText  style={styles.label}>Material Name</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.name}
@@ -283,7 +282,7 @@ export default function MaterialsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Category</Text>
+                <DefaultText  style={styles.label}>Category</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.category}
@@ -296,7 +295,7 @@ export default function MaterialsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Current Stock</Text>
+                <DefaultText style={styles.label}>Current Stock</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.currentStock}
@@ -309,7 +308,7 @@ export default function MaterialsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Unit Price (₹)</Text>
+                <DefaultText style={styles.label}>Unit Price (₹)</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.unitPrice}
@@ -322,7 +321,7 @@ export default function MaterialsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Supplier</Text>
+                <DefaultText  style={styles.label}>Supplier</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.supplier}
@@ -334,7 +333,7 @@ export default function MaterialsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Reorder Level</Text>
+                <DefaultText  style={styles.label}>Reorder Level</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.reorderLevel}
@@ -347,7 +346,7 @@ export default function MaterialsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Location</Text>
+                <DefaultText  style={styles.label}>Location</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.location}
@@ -359,7 +358,7 @@ export default function MaterialsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Notes</Text>
+                <DefaultText  style={styles.label}>Notes</DefaultText >
                 <TextInput
                   style={[styles.textInput, styles.notesInput]}
                   value={formData.notes}
@@ -381,7 +380,7 @@ export default function MaterialsScreen() {
                 }}
                 activeOpacity={0.8}
               >
-                <Text style={styles.submitButtonText}>Update Material</Text>
+                <DefaultText  style={styles.submitButtonText}>Update Material</DefaultText >
               </TouchableOpacity>
             </BottomSheetScrollView>
           </KeyboardAvoidingView>

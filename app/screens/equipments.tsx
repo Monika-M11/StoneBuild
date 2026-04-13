@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Text,
+
   TextInput,
   TouchableOpacity,
   View,
@@ -18,7 +18,7 @@ import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
 import { useDrawer } from '../../contexts/DrawerContext';
-import { useTheme } from '../../providers/ThemeProvider';
+import { DefaultText, useTheme } from '../../providers/ThemeProvider';
 
 type Equipment = {
   id: string;
@@ -116,17 +116,17 @@ export default function EquipmentsScreen() {
         </View>
 
         <View style={styles.equipmentInfo}>
-          <Text style={[styles.equipmentName, { fontFamily: theme.fonts.bold }]}>
+          <DefaultText style={[styles.equipmentName, { fontFamily: theme.fonts.bold }]}>
             {item.name}
-          </Text>
-          <Text style={styles.equipmentCategory}>{item.category}</Text>
+          </DefaultText >
+          <DefaultText  style={styles.equipmentCategory}>{item.category}</DefaultText >
         </View>
 
         <View style={[styles.statusBadge, { backgroundColor: STATUS_COLORS[item.status] + '20' }]}>
           <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[item.status] }]} />
-          <Text style={[styles.statusText, { color: STATUS_COLORS[item.status] }]}>
+          <DefaultText  style={[styles.statusText, { color: STATUS_COLORS[item.status] }]}>
             {item.status}
-          </Text>
+          </DefaultText >
         </View>
       </TouchableOpacity>
     ),
@@ -150,9 +150,9 @@ export default function EquipmentsScreen() {
             </TouchableOpacity>
             <View style={styles.headerCenter}>
               <Ionicons name="construct-outline" size={20} color={Colors.light.primaryDark} />
-              <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
+              <DefaultText  style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
                 Equipments
-              </Text>
+              </DefaultText >
             </View>
             <TouchableOpacity
               onPress={() => router.push('/screens/addEquipment' as any)}
@@ -178,7 +178,7 @@ export default function EquipmentsScreen() {
               activeOpacity={0.8}
             >
               <Ionicons name="add-circle-outline" size={24} color="#fff" />
-              <Text style={styles.showEquipmentButtonText}>Show Equipment</Text>
+              <DefaultText style={styles.showEquipmentButtonText}>Show Equipment</DefaultText >
             </TouchableOpacity>
           </View>
 
@@ -202,14 +202,14 @@ export default function EquipmentsScreen() {
                 <Ionicons name="construct-outline" size={26} color={Colors.light.primaryDark} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={[styles.sheetEquipmentName, { fontFamily: theme.fonts.bold }]}>
+                <DefaultText  style={[styles.sheetEquipmentName, { fontFamily: theme.fonts.bold }]}>
                   {selectedEquipment.name}
-                </Text>
+                </DefaultText >
                 <View style={styles.sheetStatusRow}>
                   <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[selectedEquipment.status] }]} />
-                  <Text style={[styles.sheetStatusText, { color: STATUS_COLORS[selectedEquipment.status] }]}>
+                  <DefaultText  style={[styles.sheetStatusText, { color: STATUS_COLORS[selectedEquipment.status] }]}>
                     {selectedEquipment.status}
-                  </Text>
+                  </DefaultText >
                 </View>
               </View>
               <TouchableOpacity onPress={closeSheet} style={styles.closeButton}>
@@ -223,10 +223,10 @@ export default function EquipmentsScreen() {
               showsVerticalScrollIndicator={true}
               keyboardShouldPersistTaps="handled"
             >
-              <Text style={styles.sectionTitle}>Equipment Details</Text>
+              <DefaultText  style={styles.sectionTitle}>Equipment Details</DefaultText >
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Equipment Name</Text>
+                <DefaultText  style={styles.label}>Equipment Name</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.name}
@@ -239,7 +239,7 @@ export default function EquipmentsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Serial Number</Text>
+                <DefaultText  style={styles.label}>Serial Number</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.serialNumber}
@@ -253,7 +253,7 @@ export default function EquipmentsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Category</Text>
+                <DefaultText  style={styles.label}>Category</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.category}
@@ -266,7 +266,7 @@ export default function EquipmentsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Purchase Date</Text>
+                <DefaultText  style={styles.label}>Purchase Date</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.purchaseDate}
@@ -280,7 +280,7 @@ export default function EquipmentsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Last Service Date</Text>
+                <DefaultText  style={styles.label}>Last Service Date</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.lastService}
@@ -294,7 +294,7 @@ export default function EquipmentsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Assigned To</Text>
+                <DefaultText  style={styles.label}>Assigned To</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.assignedTo}
@@ -307,7 +307,7 @@ export default function EquipmentsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Site / Location</Text>
+                <DefaultText  style={styles.label}>Site / Location</DefaultText >
                 <TextInput
                   style={styles.textInput}
                   value={formData.location}
@@ -320,7 +320,7 @@ export default function EquipmentsScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Notes</Text>
+                <DefaultText  style={styles.label}>Notes</DefaultText >
                 <TextInput
                   style={[styles.textInput, styles.notesInput]}
                   value={formData.notes}
@@ -342,7 +342,7 @@ export default function EquipmentsScreen() {
                 }}
                 activeOpacity={0.8}
               >
-                <Text style={styles.submitButtonText}>Save Equipment</Text>
+                <DefaultText  style={styles.submitButtonText}>Save Equipment</DefaultText >
               </TouchableOpacity>
             </BottomSheetScrollView>
           </KeyboardAvoidingView>

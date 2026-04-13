@@ -50,7 +50,7 @@ export const ToastProvider = ({ children }: any) => {
 const styles = StyleSheet.create({
   toastWrapper: {
     position: 'absolute',
-    top: 50,
+    bottom: 50,
     width: '100%',
     zIndex: 999,
   },

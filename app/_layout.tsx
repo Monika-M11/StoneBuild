@@ -15,6 +15,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { getToken } from '@/auth/authStorage';
 import { ToastProvider } from '@/providers/ToastProvider';
 import { LoaderProvider } from '../providers/LoaderProvider';
 import { ThemeProvider } from '../providers/ThemeProvider';
@@ -23,6 +24,20 @@ import { ThemeProvider } from '../providers/ThemeProvider';
 function DrawerOverlay() {
   const { drawerVisible, closeDrawer } = useDrawer();
   const router = useRouter();
+
+  //Checks authentication
+   useEffect(() => {
+    const checkAuth = async () => {
+      const token = await getToken();
+      console.log('STORED TOKEN:', token);
+      if (token) {
+        router.replace('/home'); //token exists → already logged in → go home
+      } else {
+        router.replace('/login');
+      }
+    };
+    checkAuth();
+  }, []);
 
   if (!drawerVisible) return null;
 

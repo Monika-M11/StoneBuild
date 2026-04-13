@@ -70,7 +70,6 @@ import React, { useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -80,7 +79,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
 import { useDrawer } from '../../contexts/DrawerContext';
-import { useTheme } from '../../providers/ThemeProvider';
+import { DefaultText, useTheme } from '../../providers/ThemeProvider';
 
 export default function ReportsScreen() {
   const theme = useTheme();
@@ -141,9 +140,9 @@ export default function ReportsScreen() {
 
             <View style={styles.headerCenter}>
               <Ionicons name="bar-chart-outline" size={24} color={Colors.light.primaryDark} />
-              <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
+              <DefaultText  style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
                 Reports
-              </Text>
+              </DefaultText >
             </View>
 
             <View style={{ width: 40 }} />
@@ -156,7 +155,7 @@ export default function ReportsScreen() {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.body}>
-              <Text style={styles.sectionTitle}>Available Reports</Text>
+              <DefaultText  style={styles.sectionTitle}>Available Reports</DefaultText >
 
               {reportCards.map((report) => (
                 <TouchableOpacity
@@ -170,8 +169,8 @@ export default function ReportsScreen() {
                   </View>
 
                   <View style={styles.cardContent}>
-                    <Text style={styles.reportTitle}>{report.title}</Text>
-                    <Text style={styles.reportSubtitle}>{report.subtitle}</Text>
+                    <DefaultText style={styles.reportTitle}>{report.title}</DefaultText >
+                    <DefaultText  style={styles.reportSubtitle}>{report.subtitle}</DefaultText >
                   </View>
 
                   <Ionicons name="chevron-forward" size={24} color="#9ca3af" />
