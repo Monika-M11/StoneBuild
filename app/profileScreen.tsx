@@ -91,6 +91,7 @@ export default function ProfileScreen() {
   await removeToken();
   console.log("Logged-out Successfully")
   router.replace('/login');
+  
 };
 
 
@@ -287,11 +288,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
+    
   },
   avatarContainer: {
     position: 'relative',

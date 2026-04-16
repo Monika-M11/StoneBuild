@@ -1,3 +1,4 @@
+import Footer from '@/components/Footer';
 import Colors from '@/constants/theme';
 import { DefaultText, useTheme } from '@/providers/ThemeProvider';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,7 +10,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Footer from '../../components/Footer';
 
 export default function PaymentScreen() {
   const theme = useTheme();
