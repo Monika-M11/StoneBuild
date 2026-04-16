@@ -1,3 +1,7 @@
+import { postApi } from '@/api/apiClient';
+import { ENDPOINTS } from '@/api/endpoints';
+import Loader from '@/components/Loader';
+import { useToast } from '@/providers/ToastProvider';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
@@ -9,17 +13,18 @@ import {
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
 import AuthInput from '../../components/AuthInput';
 import Footer from '../../components/Footer';
 import PrimaryButton from '../../components/PrimaryButton';
 import ScreenPage from '../../components/ScreenPage';
 import Colors from '../../constants/theme';
 import { useFormValidation } from '../../hooks/useFormValidation';
-import { DefaultText } from '../../providers/ThemeProvider'; // ← Added
+import { DefaultText } from '../../providers/ThemeProvider';
+
 
 type FormData = {
   name: string;
+  // contactName: string;
   incharge_number: string;
   address: string;
   pincode: string;
@@ -28,18 +33,25 @@ type FormData = {
 export default function AddWarehouseScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('warehouses');
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     name: '',
+    // contactName: '',
     incharge_number: '',
     address: '',
     pincode: '',
   });
+    const { showToast } = useToast();
 
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const { errors, validate } = useFormValidation<keyof FormData>({
     name: { required: true, requiredMessage: 'Warehouse name is required' },
+    // contactName: { 
+    //   required: true, 
+    //   requiredMessage: 'Contact name is required' 
+    // },
     incharge_number: { 
       required: true, 
       requiredMessage: 'Incharge number is required' 
@@ -63,31 +75,56 @@ export default function AddWarehouseScreen() {
   const handleFocus = useCallback((fieldId: string) => setFocusedField(fieldId), []);
   const handleBlur = useCallback(() => setFocusedField(null), []);
 
-  const handleSave = () => {
-    if (!validate(formData)) {
-      Alert.alert('Validation Error', 'Please fix the errors highlighted below');
-      return;
-    }
+ const handleSave = async () => {
+  if (!validate(formData)) {
+    Alert.alert('Validation Error', 'Please fix the errors highlighted below');
+    return;
+  }
+ setIsLoading(true);
+  try {
+    console.log('🔍 ENDPOINT:', ENDPOINTS.ADDWAREHOUSE);
 
     const payload = {
-      name: formData.name,
-      incharge_number: formData.incharge_number,
+      warehouseName: formData.name,
+     
+      inchargeNumber: formData.incharge_number,
       address: formData.address,
       pincode: formData.pincode,
     };
 
-    console.log('✅ New Warehouse Saved:', payload);
+    console.log('📤 Warehouse Payload:', payload);
 
-    Alert.alert('Success', 'Warehouse added successfully!', [
-      { text: 'OK', onPress: () => router.back() }
-    ]);
-  };
+    const response = await postApi(ENDPOINTS.ADDWAREHOUSE, payload);
+
+    console.log('📥 Warehouse Response:', response);
+
+  
+
+     if (response.status === 'success') {
+      showToast('Success', response.message || 'Warehouse added successfully!', 'success');
+
+      setTimeout(() => {
+        router.back();
+      }, 800); // slight delay so user sees toast
+    } else {
+      showToast('Error', response.message || 'Failed to add warehouse', 'error');
+    }
+
+  } catch (error: any) {
+    console.error('❌ Warehouse API Error:', error);
+    Alert.alert('Error', 'Something went wrong');
+  }
+   finally {
+    setIsLoading(false); // ← stop loader always
+  }
+};
 
   const handleCancel = () => router.back();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ScreenPage title="Add New Warehouse" icon="business-outline">
+        {isLoading && <Loader />} 
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -126,6 +163,18 @@ export default function AddWarehouseScreen() {
                 error={errors.incharge_number}
               />
 
+              {/* <AuthInput
+                label="Contact Name *"
+                fieldId="contactName"
+                focusedField={focusedField}
+                value={formData.contactName}
+                onChangeText={handleInputChange('contactName')}
+                onFocus={() => handleFocus('contactName')}
+                onBlur={handleBlur}
+                inputMode="default"
+                error={errors.contactName}
+              /> */}
+
               <AuthInput
                 label="Address *"
                 fieldId="address"
@@ -158,6 +207,7 @@ export default function AddWarehouseScreen() {
             onPress={handleCancel} 
             variant="secondary" 
             style={styles.fixedCancelButton}
+            disabled={isLoading}  
           >
             Cancel
           </PrimaryButton>

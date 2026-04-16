@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
   },
   formContainer: {
-    backgroundColor: Colors.light.inputBg,
+  backgroundColor: Colors.light.white || '#fff',   
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
