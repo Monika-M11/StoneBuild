@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -12,13 +11,15 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { postApi } from '@/api/apiClient';
 import { ENDPOINTS } from '@/api/endpoints';
+import Loader from '@/components/Loader';
 import AuthInput from '../../components/AuthInput';
 import Footer from '../../components/Footer';
 import PrimaryButton from '../../components/PrimaryButton';
 import ScreenPage from '../../components/ScreenPage';
 import Colors from '../../constants/theme';
 import { useFormValidation } from '../../hooks/useFormValidation';
-import { DefaultText } from '../../providers/ThemeProvider'; // ← Added
+import { DefaultText } from '../../providers/ThemeProvider';
+import { useToast } from '../../providers/ToastProvider';
 
 type FormData = {
   contactName: string;
@@ -40,6 +41,8 @@ type FormData = {
 export default function AddContactScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('contacts');
+  const { showToast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     contactName: '', 
@@ -94,71 +97,61 @@ export default function AddContactScreen() {
   const handleFocus = useCallback((fieldId: string) => setFocusedField(fieldId), []);
   const handleBlur = useCallback(() => setFocusedField(null), []);
 
-  // const handleSave = () => {
-  //   if (!validate(formData)) {
-  //     Alert.alert('Validation Error', 'Please fix the errors highlighted below');
-  //     return;
-  //   }
-
-  //   console.log('✅ New Contact Saved:', formData);
-  //   Alert.alert('Success', 'Contact added successfully!', [
-  //     { text: 'OK', onPress: () => router.back() }
-  //   ]);
-  // };
-
-
   const handleSave = async () => {
-  if (!validate(formData)) {
-    Alert.alert('Validation Error', 'Please fix the errors highlighted below');
-    return;
-  }
-
-  try {
-    const payload = {
-      contactName: formData.contactName,
-      phoneNumber: formData.phoneNumber,
-      email: formData.emailId,
-
-      addressLine1: formData.addressLine1,
-      addressLine2: formData.addressLine2,
-      city: formData.city,
-      pincode: formData.pincode,
-
-      bankName: formData.bankName,
-      branchName: formData.branchName,
-      bankAccountNumber: formData.accountName,
-      ifscCode: formData.ifscCode,
-
-      gstin: formData.gstNumber,
-      aadhaarNumber: formData.aadhaar,
-      panNumber: formData.panNumber,
-    };
-
-    console.log('📤 Payload:', payload); // ✅ debug
-
-    const response = await postApi(ENDPOINTS.ADDCONTACT, payload);
-
-    console.log('📥 Response:', response);
-
-    if (response.status === 'success') {
-      Alert.alert('Success', response.message || 'Contact added successfully', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
-    } else {
-      Alert.alert('Error', response.message || 'Failed to add contact');
+    if (!validate(formData)) {
+      showToast('Validation Error', 'Please fix the errors highlighted below', 'error');
+      return;
     }
 
-  } catch (error) {
-    console.error('❌ API Error:', error);
-    Alert.alert('Error', 'Something went wrong');
-  }
-};
+    setIsLoading(true);
+
+    try {
+      const payload = {
+        contactName: formData.contactName,
+        phoneNumber: formData.phoneNumber,
+        email: formData.emailId,
+        addressLine1: formData.addressLine1,
+        addressLine2: formData.addressLine2,
+        city: formData.city,
+        pincode: formData.pincode,
+        bankName: formData.bankName,
+        branchName: formData.branchName,
+        bankAccountNumber: formData.accountName,
+        ifscCode: formData.ifscCode,
+        gstin: formData.gstNumber,
+        aadhaarNumber: formData.aadhaar,
+        panNumber: formData.panNumber,
+      };
+
+      console.log('📤 Payload:', payload);
+
+      const response = await postApi(ENDPOINTS.ADDCONTACT, payload);
+
+      console.log('📥 Response:', response);
+
+      if (response.status === 'success') {
+        showToast('Success', response.message || 'Contact added successfully', 'success');
+        setTimeout(() => {
+          router.back();
+        }, 800);
+      } else {
+        showToast('Error', response.message || 'Failed to add contact', 'error');
+      }
+    } catch (error: any) {
+      console.error('❌ API Error:', error);
+      showToast('Error', error?.message || 'Something went wrong', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleCancel = () => router.back();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ScreenPage title="Add New Contact" icon="person-add-outline">
+        {isLoading && <Loader />}
+
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -168,6 +161,7 @@ export default function AddContactScreen() {
             contentContainerStyle={styles.contentContainer}
             keyboardShouldPersistTaps="handled"
           >
+            {/* Interchanged Colors Applied Here */}
             <View style={styles.formCard}>
               <DefaultText style={styles.sectionTitle} variant="bold">
                 Personal Information
@@ -361,14 +355,16 @@ export default function AddContactScreen() {
             onPress={handleCancel} 
             variant="secondary" 
             style={styles.fixedCancelButton}
+            disabled={isLoading}
           >
             Cancel
           </PrimaryButton>
           <PrimaryButton 
             onPress={handleSave} 
             style={styles.fixedSaveButton}
+            disabled={isLoading}
           >
-            Save Contact
+            {isLoading ? 'Saving...' : 'Save Contact'}
           </PrimaryButton>
         </View>
 
@@ -388,7 +384,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   formCard: {
-    backgroundColor: Colors.light.inputBg,
+    backgroundColor: Colors.light.white || '#fff',     // ← Changed to white
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 20,
@@ -408,7 +404,7 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: Colors.light.white || '#fff',
+    backgroundColor: Colors.light.white || '#fff',     // ← Also updated for consistency
     borderTopWidth: 1,
     borderTopColor: Colors.light.border || '#e5e7eb',
   },

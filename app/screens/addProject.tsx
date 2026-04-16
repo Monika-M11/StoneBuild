@@ -1,17 +1,17 @@
 import AuthInput from '@/components/AuthInput';
 import DateTimePicker, {
-    DateTimePickerEvent,
+  DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
   formContainer: {
-    backgroundColor: Colors.light.inputBg,
+    backgroundColor: Colors.light.white || '#fff',   
     padding: 20,
     borderRadius: 16,
     shadowColor: '#000',

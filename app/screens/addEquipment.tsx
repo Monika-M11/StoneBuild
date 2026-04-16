@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   formCard: {
-    backgroundColor: Colors.light.inputBg,
+    backgroundColor: Colors.light.white || '#fff', 
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 20,

@@ -195,9 +195,9 @@ const [page, setPage] = useState(1);
     setError('');
 
     const response = await postApi(
-      ENDPOINTS.CONTACTS,
-      'contactlist',
+      ENDPOINTS.CONTACT_LIST,
       {
+        action: 'contactlist',
         page: pageNumber,
         count: 10,
       }

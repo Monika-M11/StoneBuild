@@ -166,68 +166,14 @@ import { BASE_URL } from './endpoints';
 // };
 
 
-// import { getToken } from '@/auth/authStorage';
-// import * as SecureStore from 'expo-secure-store';
-
-// const TOKEN_KEY = 'user_jwt_token';
-
-// export const postApi = async (
-//   endpoint: string,
-//   data: any
-// ) => {
-//   try {
-//     // ✅ Use your clean getToken helper
-//     const jwt = await getToken();
-
-//     console.log(`📤 API Call → ${endpoint}`);
-
-//     const response = await fetch(`${BASE_URL}${endpoint}`, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//         ...(jwt && { Authorization: `Bearer ${jwt}` }),   // ← This stays exactly as you wanted
-//       },
-//       body: JSON.stringify({
-//         data: data,        // ← Wrapper that works for both login & add-contact
-//       }),
-//     });
-
-//     const text = await response.text();
-//     console.log(`📥 Raw Response from ${endpoint}:`, text.substring(0, 300)); // limit log size
-
-//     try {
-//       const result = JSON.parse(text);
-//       const finalResult = { ...result, httpStatus: response.status };
-
-//       console.log(`✅ Success Response:`, finalResult);
-//       return finalResult;
-
-//     } catch {
-//       return {
-//         status: 'error',
-//         message: text || 'Invalid server response',
-//         httpStatus: response.status,
-//       };
-//     }
-//   } catch (error: any) {
-//     console.error(`❌ Network Error on ${endpoint}:`, error?.message || error);
-
-//     return {
-//       status: 'error',
-//       message: error?.message || 'Network request failed',
-//       httpStatus: 0,
-//     };
-//   }
-// };
-
 import * as SecureStore from 'expo-secure-store';
 
 export const postApi = async (endpoint: string, data: any) => {
   if (!endpoint || endpoint === 'undefined') {
-    console.warn(`⚠️ Invalid endpoint "${endpoint}", using fallback '/add-contact'`);
-    endpoint = '/add-contact';
-  }
+  throw new Error(`Invalid endpoint: ${endpoint}`);
+}
   const TOKEN_KEY = 'user_jwt_token';
+
   try {
     const jwt = await SecureStore.getItemAsync(TOKEN_KEY);
     const fullUrl = `${BASE_URL}${endpoint}`;
