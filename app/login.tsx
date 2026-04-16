@@ -92,7 +92,7 @@ export default function Login() {
   //   router.replace('/home');
   // };
 
-  //backend url logic
+//   //backend url logic
 const handleSubmit = async () => {
   if (loading) return;
 
@@ -112,7 +112,7 @@ const handleSubmit = async () => {
 
     const response = await postApi(
       ENDPOINTS.LOGIN,
-      'checkUser',
+
       payload
     );
 

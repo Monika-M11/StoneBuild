@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { postApi } from '@/api/apiClient';
+import { ENDPOINTS } from '@/api/endpoints';
 import AuthInput from '../../components/AuthInput';
 import Footer from '../../components/Footer';
 import PrimaryButton from '../../components/PrimaryButton';
@@ -92,17 +94,65 @@ export default function AddContactScreen() {
   const handleFocus = useCallback((fieldId: string) => setFocusedField(fieldId), []);
   const handleBlur = useCallback(() => setFocusedField(null), []);
 
-  const handleSave = () => {
-    if (!validate(formData)) {
-      Alert.alert('Validation Error', 'Please fix the errors highlighted below');
-      return;
+  // const handleSave = () => {
+  //   if (!validate(formData)) {
+  //     Alert.alert('Validation Error', 'Please fix the errors highlighted below');
+  //     return;
+  //   }
+
+  //   console.log('✅ New Contact Saved:', formData);
+  //   Alert.alert('Success', 'Contact added successfully!', [
+  //     { text: 'OK', onPress: () => router.back() }
+  //   ]);
+  // };
+
+
+  const handleSave = async () => {
+  if (!validate(formData)) {
+    Alert.alert('Validation Error', 'Please fix the errors highlighted below');
+    return;
+  }
+
+  try {
+    const payload = {
+      contactName: formData.contactName,
+      phoneNumber: formData.phoneNumber,
+      email: formData.emailId,
+
+      addressLine1: formData.addressLine1,
+      addressLine2: formData.addressLine2,
+      city: formData.city,
+      pincode: formData.pincode,
+
+      bankName: formData.bankName,
+      branchName: formData.branchName,
+      bankAccountNumber: formData.accountName,
+      ifscCode: formData.ifscCode,
+
+      gstin: formData.gstNumber,
+      aadhaarNumber: formData.aadhaar,
+      panNumber: formData.panNumber,
+    };
+
+    console.log('📤 Payload:', payload); // ✅ debug
+
+    const response = await postApi(ENDPOINTS.ADDCONTACT, payload);
+
+    console.log('📥 Response:', response);
+
+    if (response.status === 'success') {
+      Alert.alert('Success', response.message || 'Contact added successfully', [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
+    } else {
+      Alert.alert('Error', response.message || 'Failed to add contact');
     }
 
-    console.log('✅ New Contact Saved:', formData);
-    Alert.alert('Success', 'Contact added successfully!', [
-      { text: 'OK', onPress: () => router.back() }
-    ]);
-  };
+  } catch (error) {
+    console.error('❌ API Error:', error);
+    Alert.alert('Error', 'Something went wrong');
+  }
+};
 
   const handleCancel = () => router.back();
 

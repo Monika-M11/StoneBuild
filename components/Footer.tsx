@@ -54,7 +54,7 @@ export default function Footer({ activeTab = 'home', onTabChange }: FooterProps)
       icon: 'briefcase-outline' as IconName, 
       label: 'Project', 
       tab: 'project',
-      path: '/project' 
+      path: '/screens/Projects' 
     },
     { 
       icon: 'swap-horizontal-outline' as IconName, 
