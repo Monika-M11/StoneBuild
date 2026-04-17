@@ -8,8 +8,8 @@ import {
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import ScreenPage from '@/components/ScreenPage';
 import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
 import { useDrawer } from '../../contexts/DrawerContext';
@@ -23,36 +23,19 @@ export default function PurchaseScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          {/* HEADER - Same as Warehouse Screen */}
-          <View style={styles.header}>
-            {/* Menu Button (Drawer) */}
-            <TouchableOpacity
-              onPress={openDrawer}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
-            >
-              <Ionicons name="menu" size={26} color={Colors.light.primaryDark} />
-            </TouchableOpacity>
+       <ScreenPage
+        title="Purchase"
+        onMenuPress={openDrawer} // ✅ Menu on LEFT
+        rightAction={            // ✅ + icon on RIGHT
+          <TouchableOpacity
+            onPress={() => router.push('/screens/addPurchase' as any)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
+          </TouchableOpacity>
+        }
+      >
 
-            {/* Center Title */}
-            <View style={styles.headerCenter}>
-              <Ionicons name="cart-outline" size={20} color={Colors.light.primaryDark} />
-              <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
-                Purchase
-              </Text>
-            </View>
-
-            {/* Add Button */}
-            <TouchableOpacity
-              onPress={() => router.push('/screens/addPurchase' as any)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
-            >
-              <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
-            </TouchableOpacity>
-          </View>
 
           {/* BODY */}
           <View style={styles.body}>
@@ -63,8 +46,7 @@ export default function PurchaseScreen() {
 
           {/* FOOTER */}
           <Footer activeTab={activeTab} onTabChange={setActiveTab} />
-        </View>
-      </SafeAreaView>
+        </ScreenPage>
     </GestureHandlerRootView>
   );
 }

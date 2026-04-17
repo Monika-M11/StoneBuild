@@ -20,7 +20,7 @@ export default function Home() {
   return (
  
      <GestureHandlerRootView style={{ flex: 1 }}>
-          <ScreenPage title="Home" onMenuPress={openDrawer} icon="home">
+          <ScreenPage title="Home" onMenuPress={openDrawer} >
            
 
         {/* BODY */}

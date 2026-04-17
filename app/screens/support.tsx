@@ -1,9 +1,11 @@
 import AuthInput from '@/components/AuthInput';
+import ScreenPage from '@/components/ScreenPage';
+import { useToast } from '@/providers/ToastProvider';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -14,16 +16,14 @@ import {
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '../../components/PrimaryButton';
 import Colors from '../../constants/theme';
 import { DefaultText, useTheme } from '../../providers/ThemeProvider';
 
-import * as ImagePicker from 'expo-image-picker';
-
 export default function SupportScreen() {
   const theme = useTheme();
   const router = useRouter();
+  const {showToast} = useToast();
 
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [queryTitle, setQueryTitle] = useState('');
@@ -44,7 +44,7 @@ export default function SupportScreen() {
   const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
   if (!permissionResult.granted) {
-    Alert.alert('Permission required', 'Allow access to photos to upload image');
+      showToast('Permission required', 'Allow access to photos to upload image', 'info');
     return;
   }
 
@@ -72,31 +72,29 @@ export default function SupportScreen() {
   const handleSubmit = () => {
     if (!validate()) return;
     // TODO: call your support API here
-    Alert.alert('Submitted', 'Your query has been submitted. We will get back to you shortly.', [
-      { text: 'OK', onPress: () => router.back() },
-    ]);
-  };
+showToast('Submitted', 'Your query has been submitted. We will get back to you shortly', 'info');
 
+  // ✅ Navigate back after toast is visible
+  setTimeout(() => {
+    router.back();
+  }, 1500); // adjust timing if needed
+};
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-
           {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={() => router.back()}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
-            >
-              <Ionicons name="arrow-back" size={24} color={Colors.light.primaryDark} />
-            </TouchableOpacity>
-            <View style={styles.headerCenter}>
-              <Ionicons name="help-circle-outline" size={20} color={Colors.light.primaryDark} />
-              <DefaultText  style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>Support</DefaultText >
-            </View>
-            <View style={{ width: 40 }} />
-          </View>
+          <ScreenPage
+                  title="Change Password"
+                  // onMenuPress={openDrawer} // ✅ Menu on LEFT
+                  // rightAction={            // ✅ + icon on RIGHT
+                  //   // <TouchableOpacity
+                  //   //   onPress={() => router.push('/screens/' as any)}
+                  //   //   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  //   // >
+                  //     <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
+                  //   </TouchableOpacity>}
+                  
+                >
+                  
 
           <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -230,8 +228,7 @@ export default function SupportScreen() {
             </ScrollView>
           </KeyboardAvoidingView>
 
-        </View>
-      </SafeAreaView>
+       </ScreenPage>
     </GestureHandlerRootView>
   );
 }

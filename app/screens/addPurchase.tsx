@@ -6,7 +6,6 @@ import DateTimePicker, {
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -18,6 +17,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { useToast } from '@/providers/ToastProvider';
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import PrimaryButton from '../../components/PrimaryButton';
@@ -48,6 +48,7 @@ const VEHICLE_TYPES = ['OWN', 'RENTED'] as const;
 
 export default function AddPurchaseScreen() {
   const router = useRouter();
+  const {showToast} = useToast();
   const [activeTab, setActiveTab] = useState('purchase');
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
@@ -132,7 +133,7 @@ export default function AddPurchaseScreen() {
 
   const saveMaterial = () => {
     if (!materialForm.material || !materialForm.qty || !materialForm.rate) {
-      Alert.alert('Error', 'Material, Quantity and Rate are required');
+      showToast('Error','Material, Quantity and Rate are required','error');
       return;
     }
 
@@ -162,19 +163,22 @@ export default function AddPurchaseScreen() {
     };
     
     if (!validate(validatedFormData as any)) {
-      Alert.alert('Validation Error', 'Please fix the errors highlighted below');
+         showToast('Validation Error','Please fix the errors highlighted below','error');
       return;
     }
     if (materials.length === 0) {
-      Alert.alert('Error', 'Please add at least one material');
+       showToast('Error','Please add at least one material','error');
       return;
     }
 
     console.log('✅ New Purchase Saved:', { ...formData, materials });
-    Alert.alert('Success', 'Purchase added successfully!', [
-      { text: 'OK', onPress: () => router.back() },
-    ]);
-  };
+     showToast('Success', 'Purchase saved successfully!', 'success');
+
+  // ✅ Navigate back after toast is visible
+  setTimeout(() => {
+    router.back();
+  }, 1500); // adjust timing if needed
+};
 
   const handleCancel = () => router.back();
 
@@ -211,7 +215,7 @@ export default function AddPurchaseScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScreenPage title="Add Purchase" icon="cart-outline">
+      <ScreenPage title="Add Purchase" >
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <ScrollView
             style={styles.scrollView}
@@ -320,8 +324,7 @@ export default function AddPurchaseScreen() {
     onFocus={() => handleFocus('remarks')}
     onBlur={handleBlur}
     multiline
-    numberOfLines={4}
-    textAlignVertical="top"
+    numberOfLines={4} 
     error={errors.remarks}
   />
 </View>
@@ -480,17 +483,17 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   contentContainer: { padding: 20, paddingBottom: 140 },
   formContainer: {
-    backgroundColor: Colors.light.inputBg,
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: Colors.light.inputBorder || '#e5e7eb',
+   paddingHorizontal: 16,
+    paddingVertical: 20,
+   
+    width: '100%',
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: Colors.light.text,
     marginBottom: 16,
+    
   },
 
   radioGroupContainer: { marginTop: 16 },
@@ -612,9 +615,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     padding: 16,
-    backgroundColor: Colors.light.background,
-    borderTopWidth: 1,
-    borderTopColor: Colors.light.inputBorder || '#e5e7eb',
+   
   },
   saveButton: { flex: 1 },
   cancelButton: { flex: 1 },

@@ -8,8 +8,8 @@ import {
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
+import ScreenPage from '@/components/ScreenPage';
 import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
 import { useDrawer } from '../../contexts/DrawerContext';
@@ -50,34 +50,18 @@ export default function WarehouseScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={openDrawer}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
-            >
-              <Ionicons name="menu" size={26} color={Colors.light.primaryDark} />
-            </TouchableOpacity>
-
-            <View style={styles.headerCenter}>
-              <Ionicons name="business-outline" size={20} color={Colors.light.primaryDark} />
-              <DefaultText 
-                style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}
-              >
-                Warehouse
-              </DefaultText>
-            </View>
-
-            <TouchableOpacity
-              onPress={() => router.push('/screens/addWarehouse' as any)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
-            >
-              <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
-            </TouchableOpacity>
-          </View>
+       <ScreenPage
+        title="Warehouse"
+        onMenuPress={openDrawer} // ✅ Menu on LEFT
+        rightAction={            // ✅ + icon on RIGHT
+          <TouchableOpacity
+            onPress={() => router.push('/screens/addWarehouse' as any)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
+          </TouchableOpacity>
+        }
+      >
 
           {/* Body */}
           <View style={styles.body}>
@@ -91,8 +75,9 @@ export default function WarehouseScreen() {
           </View>
 
           <Footer activeTab={activeTab} onTabChange={setActiveTab} />
-        </View>
-      </SafeAreaView>
+          
+       </ScreenPage>
+    
     </GestureHandlerRootView>
   );
 }

@@ -1,6 +1,6 @@
-import React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
-import { DefaultText, useTheme } from '../providers/ThemeProvider';
+import React from "react";
+import { ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import { DefaultText, useTheme } from "../providers/ThemeProvider";
 
 interface PrimaryButtonProps {
   onPress: () => void;
@@ -8,7 +8,7 @@ interface PrimaryButtonProps {
   loading?: boolean;
   disabled?: boolean;
   style?: object;
-  variant?: 'primary' | 'secondary';
+  variant?: "primary" | "secondary";
 }
 
 export default function PrimaryButton({
@@ -17,17 +17,18 @@ export default function PrimaryButton({
   loading = false,
   disabled = false,
   style,
-  variant = 'primary',
+  variant = "primary",
 }: PrimaryButtonProps) {
   const theme = useTheme();
 
   const buttonStyle = [
     styles.button,
     {
-      backgroundColor: variant === 'secondary' 
-        ? theme.colors.primaryDark + '66' 
-        : theme.colors.primaryDark,
-      opacity: variant === 'secondary' ? 0.8 : 1,
+      backgroundColor:
+        variant === "secondary"
+          ? theme.colors.primaryDark + "66"
+          : theme.colors.primaryDark,
+      opacity: variant === "secondary" ? 0.8 : 1,
     },
     disabled && styles.disabled,
     style,
@@ -42,7 +43,9 @@ export default function PrimaryButton({
       {loading ? (
         <ActivityIndicator color="#FFFFFF" size="small" />
       ) : (
-        <DefaultText style={styles.text} variant="bold">{children}</DefaultText>
+        <DefaultText style={styles.text} variant="bold">
+          {children}
+        </DefaultText>
       )}
     </Pressable>
   );
@@ -50,18 +53,18 @@ export default function PrimaryButton({
 
 const styles = StyleSheet.create({
   button: {
-    height: 44,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: 38,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
   disabled: {
     opacity: 0.6,
   },
   text: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "500",
     letterSpacing: 0.2,
   },
 });

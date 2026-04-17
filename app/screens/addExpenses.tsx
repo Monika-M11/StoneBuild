@@ -6,17 +6,17 @@ import DateTimePicker, {
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
-  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { useToast } from '@/providers/ToastProvider';
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import PrimaryButton from '../../components/PrimaryButton';
@@ -53,6 +53,8 @@ export default function AddExpensesScreen() {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const { showToast } = useToast();
+  
 
   const [formData, setFormData] = useState<FormData>({
     date: '',
@@ -110,14 +112,17 @@ export default function AddExpensesScreen() {
 
   const handleSave = () => {
     if (!validate(formData)) {
-      Alert.alert('Validation Error', 'Please fix the errors highlighted below');
+      showToast('Validation  Error','Please fix the errors highlighted below','error')
       return;
     }
     console.log('✅ New Expense Saved:', formData);
-    Alert.alert('Success', 'Expense added successfully!', [
-      { text: 'OK', onPress: () => router.back() }
-    ]);
-  };
+     showToast('Success', 'Expense added successfully!', 'success');
+
+  // ✅ Navigate back after toast is visible
+  setTimeout(() => {
+    router.back();
+  }, 1500); // adjust timing if needed
+};
 
   const handleCancel = () => router.back();
 
@@ -146,7 +151,7 @@ export default function AddExpensesScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScreenPage title="Add Expense" icon="add-circle-outline">
+      <ScreenPage title="Add Expense" >
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -354,20 +359,18 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
   },
   formContainer: {
-  backgroundColor: Colors.light.white || '#fff',   
+   
     borderRadius: 16,
     padding: 20,
-    borderWidth: 1,
-    borderColor: Colors.light.inputBorder || '#e5e7eb',
+   
   },
 
   buttonContainer: {
     flexDirection: 'row',
     gap: 12,
     padding: 16,
-    backgroundColor: Colors.light.background,
-    borderTopWidth: 1,
-    borderTopColor: Colors.light.inputBorder || '#e5e7eb',
+    
+    
   },
   saveButton: { flex: 1 },
   cancelButton: { flex: 1 },

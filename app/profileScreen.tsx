@@ -66,13 +66,13 @@ export default function ProfileScreen() {
 
   const saveProfile = () => {
     if (!editForm.name || !editForm.email || !editForm.phone) {
-      // Alert.alert('Error', 'Name, Email and Phone are required');
+      
        showToast('Error', 'Name, Email and Phone are required', 'error');
       return;
     }
     setUser({ ...editForm });
     editSheetRef.current?.close();
-    // Alert.alert('Success', 'Profile updated successfully!');
+    
      showToast('Success', 'Profile updated successfully!','success');
   };
 
