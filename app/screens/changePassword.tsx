@@ -1,19 +1,18 @@
 import AuthInput from '@/components/AuthInput';
+import ScreenPage from '@/components/ScreenPage';
+import { useToast } from '@/providers/ToastProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryButton from '../../components/PrimaryButton';
 import Colors from '../../constants/theme';
 import { useTheme } from '../../providers/ThemeProvider';
@@ -27,6 +26,7 @@ type FormData = {
 export default function ChangePasswordScreen() {
   const theme = useTheme();
   const router = useRouter();
+  const {showToast} = useToast();
 
   const [formData, setFormData] = useState<FormData>({
     currentPassword: '',
@@ -80,36 +80,29 @@ export default function ChangePasswordScreen() {
     if (!validate()) return;
 
     // TODO: call your API here
-    Alert.alert('Success', 'Password updated successfully!', [
-      { text: 'OK', onPress: () => router.back() },
-    ]);
-  };
+    showToast('Success', 'Password Updated successfully!', 'success');
+
+  // ✅ Navigate back after toast is visible
+  setTimeout(() => {
+    router.back();
+  }, 1500); // adjust timing if needed
+};
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={() => router.back()}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
-            >
-              <Ionicons name="arrow-back" size={24} color={Colors.light.primaryDark} />
-            </TouchableOpacity>
-
-            <View style={styles.headerCenter}>
-              <Ionicons name="key-outline" size={20} color={Colors.light.primaryDark} />
-              <Text style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
-                Change Password
-              </Text>
-            </View>
-
-            <View style={{ width: 40 }} />
-          </View>
-
+     <ScreenPage
+        title="Change Password"
+        
+        // onMenuPress={openDrawer} // ✅ Menu on LEFT
+        // rightAction={            // ✅ + icon on RIGHT
+        //   // <TouchableOpacity
+        //   //   onPress={() => router.push('/screens/' as any)}
+        //   //   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        //   // >
+        //     <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
+        //   </TouchableOpacity>}
+        
+      >
           {/* Body */}
           <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -186,8 +179,7 @@ export default function ChangePasswordScreen() {
             </ScrollView>
           </KeyboardAvoidingView>
 
-        </View>
-      </SafeAreaView>
+       </ScreenPage>
     </GestureHandlerRootView>
   );
 }

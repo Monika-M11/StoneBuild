@@ -1,3 +1,4 @@
+import ScreenPage from '@/components/ScreenPage';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
@@ -13,7 +14,6 @@ import {
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
@@ -136,32 +136,18 @@ export default function EquipmentsScreen() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       {/* ✅ SafeAreaView wraps the main content — same structure as contacts.tsx */}
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-
-          {/* ✅ Header — matches contacts.tsx exactly */}
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={openDrawer}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
-            >
-              <Ionicons name="menu" size={26} color={Colors.light.primaryDark} />
-            </TouchableOpacity>
-            <View style={styles.headerCenter}>
-              <Ionicons name="construct-outline" size={20} color={Colors.light.primaryDark} />
-              <DefaultText  style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
-                Equipments
-              </DefaultText >
-            </View>
-            <TouchableOpacity
-              onPress={() => router.push('/screens/addEquipment' as any)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
-            >
-              <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
-            </TouchableOpacity>
-          </View>
+       <ScreenPage
+        title="Equipments"
+        onMenuPress={openDrawer} // ✅ Menu on LEFT
+        rightAction={            // ✅ + icon on RIGHT
+          <TouchableOpacity
+            onPress={() => router.push('/screens/addEquipment' as any)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
+          </TouchableOpacity>
+        }
+      >
 
           {/* ✅ Body takes remaining space — footer stays pinned at bottom */}
           <View style={styles.body}>
@@ -183,8 +169,7 @@ export default function EquipmentsScreen() {
           </View>
 
           <Footer activeTab={activeTab} onTabChange={setActiveTab} />
-        </View>
-      </SafeAreaView>
+     </ScreenPage>
 
       {/* ✅ BottomSheetModal lives OUTSIDE SafeAreaView — same as contacts.tsx */}
       <BottomSheetModal

@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -10,6 +9,7 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { useToast } from '@/providers/ToastProvider';
 import AuthInput from '../../components/AuthInput';
 import Footer from '../../components/Footer';
 import PrimaryButton from '../../components/PrimaryButton';
@@ -27,6 +27,7 @@ type FormData = {
 
 export default function AddEquipmentScreen() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState('equipments');
 
   const [formData, setFormData] = useState<FormData>({
@@ -89,7 +90,7 @@ export default function AddEquipmentScreen() {
 
   const handleSave = () => {
     if (!validate(formData)) {
-      Alert.alert('Validation Error', 'Please fix the errors highlighted below');
+      showToast('Validation Error','Please fix the errors highlighted below','error');
       return;
     }
 
@@ -102,17 +103,21 @@ export default function AddEquipmentScreen() {
     };
 
     console.log('✅ New Equipment Saved:', payload);
+     showToast('Success', 'Equipments added successfully!', 'success');
 
-    Alert.alert('Success', 'Equipment added successfully!', [
-      { text: 'OK', onPress: () => router.back() }
-    ]);
-  };
+  // ✅ Navigate back after toast is visible
+  setTimeout(() => {
+    router.back();
+  }, 1500); // adjust timing if needed
+};
+
+   
 
   const handleCancel = () => router.back();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScreenPage title="Add New Equipment" icon="construct-outline">
+      <ScreenPage title="New Equipment">
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -133,6 +138,7 @@ export default function AddEquipmentScreen() {
                 onBlur={handleBlur}
                 inputMode="default"
                 error={errors.name}
+                placeholder="Enter Name"
               />
 
               <AuthInput
@@ -145,6 +151,7 @@ export default function AddEquipmentScreen() {
                 onBlur={handleBlur}
                 inputMode="default"
                 error={errors.brand}
+                placeholder="Enter Brand"
               />
 
               <AuthInput
@@ -157,6 +164,7 @@ export default function AddEquipmentScreen() {
                 onBlur={handleBlur}
                 inputMode="alphanumeric"
                 error={errors.model}
+                placeholder="Enter Model"
               />
 
               <AuthInput
@@ -169,6 +177,7 @@ export default function AddEquipmentScreen() {
                 onBlur={handleBlur}
                 inputMode="wholeNumber"
                 error={errors.totalCount}
+                placeholder="Enter Total Count"
               />
             </View>
 
@@ -228,12 +237,10 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   formCard: {
-    backgroundColor: Colors.light.white || '#fff', 
-    borderRadius: 16,
+    
     paddingHorizontal: 16,
     paddingVertical: 20,
-    borderWidth: 1,
-    borderColor: Colors.light.inputBorder || '#e5e7eb',
+   
     width: '100%',
   },
 
@@ -269,9 +276,7 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: Colors.light.white || '#fff',
-    borderTopWidth: 1,
-    borderTopColor: Colors.light.border || '#e5e7eb',
+    
   },
   fixedSaveButton: { flex: 1 },
   fixedCancelButton: { flex: 1 },

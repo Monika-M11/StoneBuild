@@ -1,3 +1,4 @@
+import ScreenPage from '@/components/ScreenPage';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
@@ -12,7 +13,6 @@ import {
   View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
@@ -191,30 +191,18 @@ export default function MaterialsScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={openDrawer}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
-            >
-              <Ionicons name="menu" size={26} color={Colors.light.primaryDark} />
-            </TouchableOpacity>
-            <View style={styles.headerCenter}>
-              <Ionicons name="layers-outline" size={20} color={Colors.light.primaryDark} />
-              <DefaultText  style={[styles.headerTitle, { fontFamily: theme.fonts.bold }]}>
-                Materials
-              </DefaultText >
-            </View>
-            <TouchableOpacity
-              onPress={() => router.push('/screens/addMaterial' as any)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ padding: 8 }}
-            >
-              <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
-            </TouchableOpacity>
-          </View>
+      <ScreenPage
+        title="Materials"
+        onMenuPress={openDrawer} // ✅ Menu on LEFT
+        rightAction={            // ✅ + icon on RIGHT
+          <TouchableOpacity
+            onPress={() => router.push('/screens/addMaterial' as any)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
+          </TouchableOpacity>
+        }
+      >
 
           <View style={styles.body}>
             <FlatList
@@ -227,8 +215,9 @@ export default function MaterialsScreen() {
           </View>
 
           <Footer activeTab={activeTab} onTabChange={setActiveTab} />
-        </View>
-      </SafeAreaView>
+
+        </ScreenPage>
+      
 
       <BottomSheetModal
         ref={bottomSheetRef}

@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
+import AuthInput from '@/components/AuthInput';
+import { useToast } from '@/providers/ToastProvider';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
-  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -14,8 +15,6 @@ import {
   View
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-import AuthInput from '@/components/AuthInput';
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import PrimaryButton from '../../components/PrimaryButton';
@@ -38,6 +37,7 @@ type FormData = {
 export default function AddMaterialScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('materials');
+  const {showToast} = useToast();
 
   const [formData, setFormData] = useState<FormData>({
     materialName: '',
@@ -90,20 +90,24 @@ const formValidation = useFormValidation({
 
   const handleSave = () => {
     if (!validate(formData)) {
-      Alert.alert('Validation Error', 'Please fix the errors highlighted below');
+    
+      showToast('Validation Error','Please fix the errors highlighted below','error');
       return;
     }
     console.log('✅ New Material Saved:', formData);
-    Alert.alert('Success', 'Material added successfully!', [
-      { text: 'OK', onPress: () => router.back() }
-    ]);
-  };
+      showToast('Success', 'New Material Saved successfully!', 'success');
+
+  // ✅ Navigate back after toast is visible
+  setTimeout(() => {
+    router.back();
+  }, 1500); // adjust timing if needed
+};
 
   const handleCancel = () => router.back();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScreenPage title="Add New Material" icon="layers-outline">
+      <ScreenPage title="New Material" >
         <KeyboardAvoidingView
 
 
@@ -295,12 +299,11 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   formCard: {
-    backgroundColor: Colors.light.white || '#fff',   
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    borderWidth: 1,
-    borderColor: Colors.light.inputBorder || '#e5e7eb',
+
+   paddingHorizontal: 16,
+   paddingVertical: 20,
+   width: '100%',
+    
   },
   sectionTitle: {
     fontSize: 18,
@@ -386,9 +389,6 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: Colors.light.white || '#fff',
-    borderTopWidth: 1,
-    borderTopColor: Colors.light.border || '#e5e7eb',
   },
   fixedSaveButton: { flex: 1 },
   fixedCancelButton: { flex: 1 },

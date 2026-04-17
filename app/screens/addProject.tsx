@@ -1,11 +1,11 @@
 import AuthInput from '@/components/AuthInput';
+import { useToast } from '@/providers/ToastProvider';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -32,7 +32,7 @@ type FormData = {
 
 export default function AddProjectScreen() {
   const router = useRouter();
-
+  const {showToast} = useToast();
   const [activeTab, setActiveTab] = useState('projects');
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
@@ -96,22 +96,26 @@ export default function AddProjectScreen() {
 
   const handleSave = () => {
     if (!validate(formData)) {
-      Alert.alert('Validation Error', 'Please fill all required fields');
+     
+      showToast('Validation Error','Please fill all required fields','error');
       return;
     }
 
     console.log('✅ Project Saved:', formData);
 
-    Alert.alert('Success', 'Project added successfully!', [
-      { text: 'OK', onPress: () => router.back() },
-    ]);
-  };
+    showToast('Success', 'Project Saved successfully!', 'success');
+
+  // ✅ Navigate back after toast is visible
+  setTimeout(() => {
+    router.back();
+  }, 1500);
+};
 
   const handleCancel = () => router.back();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScreenPage title="Add Project" icon="folder-outline">
+      <ScreenPage title="Add Project" >
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -260,14 +264,17 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
   formContainer: {
-    backgroundColor: Colors.light.white || '#fff',   
-    padding: 20,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
+    // backgroundColor: Colors.light.white || '#fff',   
+    // padding: 20,
+    // borderRadius: 16,
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.06,
+    // shadowRadius: 8,
+    // elevation: 3,
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    width: '100%',
   },
   sectionTitle: {
     fontSize: 18,

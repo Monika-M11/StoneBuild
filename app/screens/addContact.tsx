@@ -149,7 +149,7 @@ export default function AddContactScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScreenPage title="Add New Contact" icon="person-add-outline">
+      <ScreenPage title="New Contact" >
         {isLoading && <Loader />}
 
         <KeyboardAvoidingView
@@ -177,6 +177,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="default"
                 error={errors.contactName}
+                placeholder="Enter Contact Name"
               />
 
               <AuthInput
@@ -189,6 +190,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="phone"
                 error={errors.phoneNumber}
+                placeholder="Enter Phone Number"
               />
 
               <AuthInput
@@ -201,6 +203,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="email"
                 error={errors.emailId}
+                placeholder="Enter Email"
               />
 
               <DefaultText style={styles.sectionTitle} variant="bold">
@@ -217,6 +220,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="default"
                 error={errors.addressLine1}
+                placeholder="Enter Address 1"
               />
 
               <AuthInput
@@ -229,6 +233,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="default"
                 error={errors.addressLine2}
+                placeholder="Enter Address 2"
               />
 
               <AuthInput
@@ -241,6 +246,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="default"
                 error={errors.city}
+                placeholder="Enter City "
               />
 
               <AuthInput
@@ -253,6 +259,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="wholeNumber"
                 error={errors.pincode}
+                placeholder="Enter Pincode"
               />
 
               <DefaultText style={styles.sectionTitle} variant="bold">
@@ -269,6 +276,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="default"
                 error={errors.bankName}
+                placeholder="Enter Bank Name"
               />
 
               <AuthInput
@@ -281,6 +289,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="default"
                 error={errors.accountName}
+                placeholder="Enter Account Name"
               />
 
               <AuthInput
@@ -293,6 +302,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="alphanumeric"
                 error={errors.ifscCode}
+                placeholder="Enter IFSC Code"
               />
 
               <AuthInput
@@ -305,6 +315,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="default"
                 error={errors.branchName}
+                placeholder="Enter Branch Name"
               />
 
               <DefaultText style={styles.sectionTitle} variant="bold">
@@ -321,6 +332,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="alphanumeric"
                 error={errors.gstNumber}
+                placeholder="Enter GST Number"
               />
 
               <AuthInput
@@ -333,6 +345,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="wholeNumber"
                 error={errors.aadhaar}
+                placeholder="Enter Aadhaar Number"
               />
 
               <AuthInput
@@ -345,6 +358,7 @@ export default function AddContactScreen() {
                 onBlur={handleBlur}
                 inputMode="alphanumeric"
                 error={errors.panNumber}
+                placeholder="Enter PAN Number"
               />
             </View>
           </ScrollView>
@@ -384,13 +398,17 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   formCard: {
-    backgroundColor: Colors.light.white || '#fff',     // ← Changed to white
-    borderRadius: 16,
+    // backgroundColor: Colors.light.white || '#fff',    
+    // borderRadius: 16,
+    // paddingHorizontal: 16,
+    // paddingVertical: 20,
+    // borderWidth: 1,
+    // borderColor: Colors.light.inputBorder || '#e5e7eb',
+    // width: '100%',
     paddingHorizontal: 16,
-    paddingVertical: 20,
-    borderWidth: 1,
-    borderColor: Colors.light.inputBorder || '#e5e7eb',
-    width: '100%',
+    
+
+    width: "100%",
   },
   sectionTitle: {
     fontSize: 18,
@@ -400,13 +418,17 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   fixedButtonContainer: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
+    // gap: 12,
+    // paddingHorizontal: 16,
+    // paddingVertical: 16,
+    // backgroundColor: Colors.light.white || '#fff',     // ← Also updated for consistency
+    // borderTopWidth: 1,
+    // borderTopColor: Colors.light.border || '#e5e7eb',
+    flexDirection: "row",
     gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: Colors.light.white || '#fff',     // ← Also updated for consistency
-    borderTopWidth: 1,
-    borderTopColor: Colors.light.border || '#e5e7eb',
   },
   fixedSaveButton: { flex: 1 },
   fixedCancelButton: { flex: 1 },
