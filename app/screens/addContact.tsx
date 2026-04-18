@@ -131,9 +131,13 @@ export default function AddContactScreen() {
 
       if (response.status === 'success') {
         showToast('Success', response.message || 'Contact added successfully', 'success');
-        setTimeout(() => {
-          router.back();
-        }, 800);
+        // setTimeout(() => {
+        //   router.back();
+        // }, 800);
+        router.push({
+  pathname: '/screens/contacts',
+  params: { refresh: 'true' }
+});
       } else {
         showToast('Error', response.message || 'Failed to add contact', 'error');
       }
@@ -162,10 +166,11 @@ export default function AddContactScreen() {
             keyboardShouldPersistTaps="handled"
           >
             {/* Interchanged Colors Applied Here */}
-            <View style={styles.formCard}>
-              <DefaultText style={styles.sectionTitle} variant="bold">
+            <DefaultText style={styles.sectionTitle} variant="bold">
                 Personal Information
               </DefaultText>
+            <View style={styles.formCard}>
+              
 
               <AuthInput
                 label="Contact Name *"
@@ -205,10 +210,12 @@ export default function AddContactScreen() {
                 error={errors.emailId}
                 placeholder="Enter Email"
               />
+              </View>
 
               <DefaultText style={styles.sectionTitle} variant="bold">
                 Address Details
               </DefaultText>
+              <View style={styles.formCard}>
 
               <AuthInput
                 label="Address Line 1 *"
@@ -261,10 +268,12 @@ export default function AddContactScreen() {
                 error={errors.pincode}
                 placeholder="Enter Pincode"
               />
+            </View>
 
               <DefaultText style={styles.sectionTitle} variant="bold">
                 Bank Details
               </DefaultText>
+              <View style={styles.formCard}>
 
               <AuthInput
                 label="Bank Name"
@@ -317,11 +326,11 @@ export default function AddContactScreen() {
                 error={errors.branchName}
                 placeholder="Enter Branch Name"
               />
-
+</View>
               <DefaultText style={styles.sectionTitle} variant="bold">
                 Tax & Identity Details
               </DefaultText>
-
+<View style={styles.formCard}>  
               <AuthInput
                 label="GST Number"
                 fieldId="gstNumber"
@@ -398,17 +407,14 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   formCard: {
-    // backgroundColor: Colors.light.white || '#fff',    
-    // borderRadius: 16,
-    // paddingHorizontal: 16,
-    // paddingVertical: 20,
-    // borderWidth: 1,
-    // borderColor: Colors.light.inputBorder || '#e5e7eb',
-    // width: '100%',
+    backgroundColor: Colors.light.white || '#fff',    
+    borderRadius: 16,
     paddingHorizontal: 16,
+    paddingVertical: 20,
+    borderWidth: 1,
+    borderColor: Colors.light.inputBorder || '#e5e7eb',
+    width: '100%',
     
-
-    width: "100%",
   },
   sectionTitle: {
     fontSize: 18,

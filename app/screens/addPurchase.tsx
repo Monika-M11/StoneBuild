@@ -1,4 +1,5 @@
 import AuthInput from '@/components/AuthInput';
+import { useToast } from '@/providers/ToastProvider';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import DateTimePicker, {
   DateTimePickerEvent,
@@ -11,19 +12,17 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-import { useToast } from '@/providers/ToastProvider';
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import PrimaryButton from '../../components/PrimaryButton';
 import ScreenPage from '../../components/ScreenPage';
 import Colors from '../../constants/theme';
 import { useFormValidation } from '../../hooks/useFormValidation';
+import { DefaultText } from '../../providers/ThemeProvider'; // ← Make sure this is imported
 
 type FormData = {
   orderDate: string;
@@ -48,20 +47,18 @@ const VEHICLE_TYPES = ['OWN', 'RENTED'] as const;
 
 export default function AddPurchaseScreen() {
   const router = useRouter();
-  const {showToast} = useToast();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState('purchase');
   const [focusedField, setFocusedField] = useState<string | null>(null);
-
   const [showOrderDatePicker, setShowOrderDatePicker] = useState(false);
   const [showDeliveryDatePicker, setShowDeliveryDatePicker] = useState(false);
-
   const [selectedOrderDate, setSelectedOrderDate] = useState<Date>(new Date());
   const [selectedDeliveryDate, setSelectedDeliveryDate] = useState<Date>(new Date());
 
   const [formData, setFormData] = useState<FormData>({
     orderDate: '',
     contactName: '',
-    vehicleType: null,           // ← No selection initially
+    vehicleType: null,
     vehicleAmount: '',
     deliveryDate: '',
     remarks: '',
@@ -133,7 +130,7 @@ export default function AddPurchaseScreen() {
 
   const saveMaterial = () => {
     if (!materialForm.material || !materialForm.qty || !materialForm.rate) {
-      showToast('Error','Material, Quantity and Rate are required','error');
+      showToast('Error', 'Material, Quantity and Rate are required', 'error');
       return;
     }
 
@@ -156,29 +153,28 @@ export default function AddPurchaseScreen() {
   };
 
   const handleSave = () => {
-    // Ensure vehicleType is string for validation
     const validatedFormData = {
       ...formData,
-      vehicleType: formData.vehicleType || 'OWN'
+      vehicleType: formData.vehicleType || 'OWN',
     };
-    
+
     if (!validate(validatedFormData as any)) {
-         showToast('Validation Error','Please fix the errors highlighted below','error');
+      showToast('Validation Error', 'Please fix the errors highlighted below', 'error');
       return;
     }
+
     if (materials.length === 0) {
-       showToast('Error','Please add at least one material','error');
+      showToast('Error', 'Please add at least one material', 'error');
       return;
     }
 
     console.log('✅ New Purchase Saved:', { ...formData, materials });
-     showToast('Success', 'Purchase saved successfully!', 'success');
+    showToast('Success', 'Purchase saved successfully!', 'success');
 
-  // ✅ Navigate back after toast is visible
-  setTimeout(() => {
-    router.back();
-  }, 1500); // adjust timing if needed
-};
+    setTimeout(() => {
+      router.back();
+    }, 1500);
+  };
 
   const handleCancel = () => router.back();
 
@@ -189,7 +185,6 @@ export default function AddPurchaseScreen() {
     return `${day}/${month}/${year}`;
   };
 
-  // Fixed: type parameter now has default value
   const handleDateChange = (
     event: DateTimePickerEvent,
     date?: Date,
@@ -200,6 +195,7 @@ export default function AddPurchaseScreen() {
       else setShowDeliveryDatePicker(false);
       return;
     }
+
     if (date) {
       if (type === 'order') {
         setShowOrderDatePicker(false);
@@ -215,16 +211,18 @@ export default function AddPurchaseScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ScreenPage title="Add Purchase" >
+      <ScreenPage title="Add Purchase">
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <ScrollView
             style={styles.scrollView}
             contentContainerStyle={styles.contentContainer}
             keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.formContainer}>
-              <Text style={styles.sectionTitle}>New Purchase</Text>
+            <DefaultText style={styles.sectionTitle} variant="bold">
+              New Purchase
+            </DefaultText>
 
+            <View style={styles.formContainer}>
               {/* Order Date */}
               <TouchableOpacity onPress={() => setShowOrderDatePicker(true)}>
                 <View pointerEvents="none">
@@ -254,9 +252,11 @@ export default function AddPurchaseScreen() {
                 error={errors.contactName}
               />
 
-              {/* Vehicle Type - Radio Options (None selected initially) */}
+              {/* Vehicle Type */}
               <View style={styles.radioGroupContainer}>
-                <Text style={styles.radioGroupLabel}>Vehicle Type *</Text>
+                <DefaultText style={styles.radioGroupLabel} variant="bold">
+                  Vehicle Type *
+                </DefaultText>
                 <View style={styles.radioOptions}>
                   {VEHICLE_TYPES.map((type) => {
                     const isSelected = formData.vehicleType === type;
@@ -269,30 +269,28 @@ export default function AddPurchaseScreen() {
                         <View style={styles.radioOuter}>
                           {isSelected && <View style={styles.radioInner} />}
                         </View>
-                        <Text style={styles.radioText}>{type}</Text>
+                        <DefaultText style={styles.radioText}>{type}</DefaultText>
                       </TouchableOpacity>
                     );
                   })}
                 </View>
               </View>
 
-              {/* Rent Amount - Show ONLY when RENTED is selected */}
-              {(formData.vehicleType === 'RENTED' ||
-                formData.vehicleType === 'OWN') 
-              && (
-                 <View style={{ marginTop: 20 }}>
-                <AuthInput
-                  label="Rent Amount (₹) *"
-                  fieldId="vehicleAmount"
-                  focusedField={focusedField}
-                  value={formData.vehicleAmount}
-                  onChangeText={handleInputChange('vehicleAmount')}
-                  onFocus={() => handleFocus('vehicleAmount')}
-                  onBlur={handleBlur}
-                  inputMode="amount"
-                  keyboardType="numeric"
-                  error={errors.vehicleAmount}
-                />
+              {/* Rent Amount - Show for both OWN and RENTED (as per your original logic) */}
+              {(formData.vehicleType === 'RENTED' || formData.vehicleType === 'OWN') && (
+                <View style={{ marginTop: 20 }}>
+                  <AuthInput
+                    label="Rent Amount (₹) *"
+                    fieldId="vehicleAmount"
+                    focusedField={focusedField}
+                    value={formData.vehicleAmount}
+                    onChangeText={handleInputChange('vehicleAmount')}
+                    onFocus={() => handleFocus('vehicleAmount')}
+                    onBlur={handleBlur}
+                    inputMode="amount"
+                    keyboardType="numeric"
+                    error={errors.vehicleAmount}
+                  />
                 </View>
               )}
 
@@ -313,27 +311,28 @@ export default function AddPurchaseScreen() {
                 </View>
               </TouchableOpacity>
 
-              {/* Remarks - Using custom TextInput for multiline */}
-               <View style={{ marginTop: 20 }}>
-  <AuthInput
-    label="Remarks"
-    fieldId="remarks"
-    focusedField={focusedField}
-    value={formData.remarks}
-    onChangeText={handleInputChange('remarks')}
-    onFocus={() => handleFocus('remarks')}
-    onBlur={handleBlur}
-    multiline
-    numberOfLines={4} 
-    error={errors.remarks}
-  />
-</View>
-
+              {/* Remarks */}
+              <View style={{ marginTop: 20 }}>
+                <AuthInput
+                  label="Remarks"
+                  fieldId="remarks"
+                  focusedField={focusedField}
+                  value={formData.remarks}
+                  onChangeText={handleInputChange('remarks')}
+                  onFocus={() => handleFocus('remarks')}
+                  onBlur={handleBlur}
+                  multiline
+                  numberOfLines={4}
+                  error={errors.remarks}
+                />
+              </View>
 
               {/* Materials Section */}
               <View style={styles.materialsSection}>
                 <View style={styles.materialsHeader}>
-                  <Text style={styles.materialsTitle}>Materials ({materials.length})</Text>
+                  <DefaultText style={styles.materialsTitle} variant="bold">
+                    Materials ({materials.length})
+                  </DefaultText>
                   <PrimaryButton onPress={openMaterialSheet} style={styles.addMaterialBtn}>
                     + Add Material
                   </PrimaryButton>
@@ -343,21 +342,28 @@ export default function AddPurchaseScreen() {
                   materials.map((item) => (
                     <View key={item.id} style={styles.materialCard}>
                       <View style={styles.materialInfo}>
-                        <Text style={styles.materialName}>{item.material}</Text>
-                        <Text style={styles.materialDetails}>
-                          {item.qty} {item.unit} × ₹{item.rate} {item.tax && item.tax !== '0' ? `+ Tax ₹${item.tax}` : ''}
-                        </Text>
+                        <DefaultText style={styles.materialName} variant="bold">
+                          {item.material}
+                        </DefaultText>
+                        <DefaultText style={styles.materialDetails}>
+                          {item.qty} {item.unit} × ₹{item.rate}
+                          {item.tax && item.tax !== '0' ? ` + Tax ₹${item.tax}` : ''}
+                        </DefaultText>
                       </View>
                       <View style={styles.materialRight}>
-                        <Text style={styles.materialTotal}>₹{item.total}</Text>
+                        <DefaultText style={styles.materialTotal} variant="bold">
+                          ₹{item.total}
+                        </DefaultText>
                         <TouchableOpacity onPress={() => removeMaterial(item.id)}>
-                          <Text style={styles.removeText}>Remove</Text>
+                          <DefaultText style={styles.removeText}>Remove</DefaultText>
                         </TouchableOpacity>
                       </View>
                     </View>
                   ))
                 ) : (
-                  <Text style={styles.noMaterialsText}>No materials added yet</Text>
+                  <DefaultText style={styles.noMaterialsText}>
+                    No materials added yet
+                  </DefaultText>
                 )}
               </View>
             </View>
@@ -383,7 +389,6 @@ export default function AddPurchaseScreen() {
             maximumDate={new Date()}
           />
         )}
-
         {showDeliveryDatePicker && (
           <DateTimePicker
             value={selectedDeliveryDate}
@@ -399,7 +404,9 @@ export default function AddPurchaseScreen() {
       {/* Material Bottom Sheet */}
       <BottomSheetModal ref={materialSheetRef} snapPoints={materialSnapPoints}>
         <BottomSheetScrollView contentContainerStyle={styles.bottomSheetContent}>
-          <Text style={styles.bottomSheetTitle}>Add Material</Text>
+          <DefaultText style={styles.bottomSheetTitle} variant="bold">
+            Add Material
+          </DefaultText>
 
           <AuthInput
             label="Material Name *"
@@ -421,7 +428,7 @@ export default function AddPurchaseScreen() {
                 onChangeText={handleMaterialInputChange('qty')}
                 onFocus={() => handleFocus('qty')}
                 onBlur={handleBlur}
-                inputMode='numeric'
+                inputMode="numeric"
               />
             </View>
             <View style={styles.half}>
@@ -432,7 +439,6 @@ export default function AddPurchaseScreen() {
                 value={materialForm.unit}
                 onChangeText={handleMaterialInputChange('unit')}
                 onFocus={() => handleFocus('unit')}
-                inputMode='numeric'
                 onBlur={handleBlur}
               />
             </View>
@@ -448,7 +454,7 @@ export default function AddPurchaseScreen() {
                 onChangeText={handleMaterialInputChange('rate')}
                 onFocus={() => handleFocus('rate')}
                 onBlur={handleBlur}
-                inputMode='amount' 
+                inputMode="amount"
               />
             </View>
             <View style={styles.half}>
@@ -466,8 +472,12 @@ export default function AddPurchaseScreen() {
           </View>
 
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Total Amount</Text>
-            <Text style={styles.totalValue}>₹{calculateTotal()}</Text>
+            <DefaultText style={styles.totalLabel} variant="bold">
+              Total Amount
+            </DefaultText>
+            <DefaultText style={styles.totalValue} variant="bold">
+              ₹{calculateTotal()}
+            </DefaultText>
           </View>
 
           <PrimaryButton onPress={saveMaterial} style={{ marginTop: 20 }}>
@@ -483,25 +493,23 @@ const styles = StyleSheet.create({
   scrollView: { flex: 1 },
   contentContainer: { padding: 20, paddingBottom: 140 },
   formContainer: {
-   paddingHorizontal: 16,
+    backgroundColor: Colors.light.white || '#fff',
+    borderRadius: 16,
+    paddingHorizontal: 16,
     paddingVertical: 20,
-   
-    width: '100%',
+    borderWidth: 1,
+    borderColor: Colors.light.inputBorder || '#e5e7eb',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: Colors.light.text,
     marginBottom: 16,
-    
+    // color removed → handled by DefaultText
   },
-
   radioGroupContainer: { marginTop: 16 },
   radioGroupLabel: {
     fontSize: 14,
-    fontWeight: '600',
-    color: Colors.light.text,
     marginBottom: 10,
+    // color removed
   },
   radioOptions: { flexDirection: 'row', gap: 12 },
   radioOption: {
@@ -535,38 +543,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: Colors.light.primary || '#2563eb',
   },
-  radioText: { fontSize: 15, color: Colors.light.text },
-
-  textAreaContainer: { marginTop: 16 },
-  remarksLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.light.text,
-    marginBottom: 8,
+  radioText: {
+    fontSize: 15,
+    // color removed
   },
-  textArea: {
-    minHeight: 100,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 12,
-    padding: 14,
-    fontSize: 16,
-    backgroundColor: Colors.light.background,
-    textAlignVertical: 'top',
-  },
-  textAreaFocused: {
-    borderColor: Colors.light.primary || '#2563eb',
-    borderWidth: 2,
-  },
-  textAreaError: {
-    borderColor: '#ef4444',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-    marginTop: 4,
-  },
-
   materialsSection: { marginTop: 24 },
   materialsHeader: {
     flexDirection: 'row',
@@ -574,9 +554,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
-  materialsTitle: { fontSize: 16, fontWeight: '600', color: Colors.light.text },
+  materialsTitle: {
+    fontSize: 16,
+    // color removed
+  },
   addMaterialBtn: { paddingHorizontal: 16, paddingVertical: 8 },
-
   materialCard: {
     backgroundColor: '#fff',
     padding: 16,
@@ -588,17 +570,33 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   materialInfo: { flex: 1 },
-  materialName: { fontSize: 16, fontWeight: '600' },
-  materialDetails: { fontSize: 13, color: '#666', marginTop: 4 },
+  materialName: {
+    fontSize: 16,
+    // color removed
+  },
+  materialDetails: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 4,
+  },
   materialRight: { alignItems: 'flex-end' },
-  materialTotal: { fontSize: 16, fontWeight: '700', color: Colors.light.primary },
-  removeText: { color: 'red', fontSize: 13, marginTop: 6 },
-
-  noMaterialsText: { textAlign: 'center', color: '#888', padding: 20 },
-
+  materialTotal: {
+    fontSize: 16,
+    color: Colors.light.primary,
+    // variant="bold" will handle weight
+  },
+  removeText: {
+    color: 'red',
+    fontSize: 13,
+    marginTop: 6,
+  },
+  noMaterialsText: {
+    textAlign: 'center',
+    color: '#888',
+    padding: 20,
+  },
   row: { flexDirection: 'row', gap: 12 },
   half: { flex: 1 },
-
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -608,18 +606,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
     borderRadius: 8,
   },
-  totalLabel: { fontSize: 15, fontWeight: '600' },
-  totalValue: { fontSize: 18, fontWeight: '700', color: Colors.light.primary },
-
+  totalLabel: {
+    fontSize: 15,
+    // color removed
+  },
+  totalValue: {
+    fontSize: 18,
+    color: Colors.light.primary,
+  },
   buttonContainer: {
     flexDirection: 'row',
     gap: 12,
     padding: 16,
-   
   },
   saveButton: { flex: 1 },
   cancelButton: { flex: 1 },
-
   bottomSheetContent: {
     paddingTop: 20,
     paddingHorizontal: 16,
@@ -627,9 +628,8 @@ const styles = StyleSheet.create({
   },
   bottomSheetTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: Colors.light.text,
     marginBottom: 24,
     textAlign: 'center',
+    // color removed
   },
 });

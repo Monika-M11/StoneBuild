@@ -127,6 +127,10 @@ export default function AddEquipmentScreen() {
             contentContainerStyle={styles.contentContainer}
             keyboardShouldPersistTaps="handled"
           >
+
+            <DefaultText style={styles.sectionTitle} variant="bold">
+                            New Equipments
+                          </DefaultText>
             <View style={styles.formCard}>
               <AuthInput
                 label="Name *"
@@ -238,10 +242,19 @@ const styles = StyleSheet.create({
   },
   formCard: {
     
+    backgroundColor: Colors.light.white || '#fff', 
+    borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 20,
-   
+    borderWidth: 1,
+    borderColor: Colors.light.inputBorder || '#e5e7eb',
     width: '100%',
+  },
+   sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.light.text,
+    marginBottom: 5,
   },
 
   // Serial number section
@@ -262,7 +275,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   serialCard: {
-    backgroundColor: Colors.light.inputBg,
+    backgroundColor:Colors.light.white || '#fff',
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 20,

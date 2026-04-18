@@ -145,7 +145,7 @@ export default function ProjectsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: Colors.light.background },
+  safeArea: { flex: 1},
   container: { flex: 1, backgroundColor: Colors.light.inputBg },
 
   header: {

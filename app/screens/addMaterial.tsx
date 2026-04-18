@@ -119,9 +119,9 @@ const formValidation = useFormValidation({
             contentContainerStyle={styles.contentContainer}
             keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.formCard}>
+           
               <DefaultText style={styles.sectionTitle} variant="bold">Material Details</DefaultText>
-
+              <View style={styles.formCard}>
               <AuthInput
                 label="Material Name *"
                 fieldId="materialName"
@@ -303,6 +303,11 @@ const styles = StyleSheet.create({
    paddingHorizontal: 16,
    paddingVertical: 20,
    width: '100%',
+   backgroundColor: Colors.light.white || '#fff',   
+    borderRadius: 16,
+    
+    borderWidth: 1,
+    borderColor: Colors.light.inputBorder || '#e5e7eb',
     
   },
   sectionTitle: {

@@ -159,12 +159,14 @@ export default function AddExpensesScreen() {
           <ScrollView
             style={styles.scrollView}
             contentContainerStyle={styles.contentContainer}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View style={styles.formContainer}>
-              <DefaultText style={styles.sectionTitle} variant="bold">
-                New expense
+            keyboardShouldPersistTaps="handled" >
+              
+             <DefaultText style={styles.sectionTitle} variant="bold">
+                New Expense
               </DefaultText>
+          
+            <View style={styles.formContainer}>
+             
 
               {/* Date Picker */}
               <TouchableOpacity onPress={() => setShowDatePicker(true)}>
@@ -359,9 +361,12 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
   },
   formContainer: {
-   
+    backgroundColor: Colors.light.white || '#fff',   
     borderRadius: 16,
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    borderWidth: 1,
+    borderColor: Colors.light.inputBorder || '#e5e7eb',
    
   },
 
