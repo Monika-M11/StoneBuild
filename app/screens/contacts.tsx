@@ -1,11 +1,14 @@
+
+
+
 import { postApi } from '@/api/apiClient';
 import { ENDPOINTS } from '@/api/endpoints';
 import ScreenPage from '@/components/ScreenPage';
 import { useToast } from '@/providers/ToastProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -18,7 +21,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
-import Loader from '../../components/Loader'; // ← Import your Loader
+import Loader from '../../components/Loader';
 import Colors from '../../constants/theme';
 import { useDrawer } from '../../contexts/DrawerContext';
 import { useFormValidation } from '../../hooks/useFormValidation';
@@ -94,7 +97,7 @@ export default function ContactsScreen() {
   const bottomSheetRef = useRef<any>(null);
   const snapPoints = useMemo(() => ['50%', '72%'], []);
 
-  // ==================== FORM VALIDATION ====================
+  // Form Validation
   const { errors, validate, clearAll } = useFormValidation<keyof FormData>({
     name: { required: true, requiredMessage: 'Name is required' },
     phone: {
@@ -166,7 +169,6 @@ export default function ContactsScreen() {
 
     console.log('✅ Form Submitted Successfully:', formData);
     showToast('Success', `Details saved for ${formData.name}`, 'success');
-
     setTimeout(() => router.back(), 1500);
   };
 
@@ -174,39 +176,119 @@ export default function ContactsScreen() {
     router.push('/screens/addContact');
   };
 
-  // ==================== RENDER CONTACT ITEM ====================
-  const renderContactItem = useCallback(
-    ({ item }: { item: Contact }) => (
-      <TouchableOpacity
-        style={styles.contactItem}
-        onPress={() => openFormSheet(item)}
-        activeOpacity={0.7}
-      >
-        <View style={styles.avatarContainer}>
-          <View style={styles.avatarPlaceholder}>
-            <DefaultText style={styles.avatarText} variant="medium">
-              {item.name.split(' ').map((n) => n[0]).join('').toUpperCase()}
-            </DefaultText>
-          </View>
-        </View>
+  // Render Contact Item - Improved UI
+  // const renderContactItem = useCallback(
+  //   ({ item }: { item: Contact }) => {
+  //     const fullAddress = [item.addressLine1, item.addressLine2]
+  //       .filter(Boolean)
+  //       .join(', ');
 
-        <View style={styles.contactInfo}>
-          <DefaultText style={[styles.contactName, { fontFamily: theme.fonts.bold }]}>
-            {item.name}
+  //     return (
+  //       <TouchableOpacity
+  //         style={styles.contactItem}
+  //         onPress={() => openFormSheet(item)}
+  //         activeOpacity={0.7}
+  //       >
+  //         <View style={styles.avatarContainer}>
+  //           <View style={styles.avatarPlaceholder}>
+  //             <DefaultText style={styles.avatarText} variant="medium">
+  //               {item.name
+  //                 .split(' ')
+  //                 .map((n) => n[0])
+  //                 .join('')
+  //                 .toUpperCase()
+  //                 .slice(0, 2)}
+  //             </DefaultText>
+  //           </View>
+  //         </View>
+
+  //         <View style={styles.contactInfo}>
+  //           <DefaultText style={styles.contactName} variant="bold">
+  //             {item.name}
+  //           </DefaultText>
+
+  //           <DefaultText style={styles.contactPhone}>{item.phone}</DefaultText>
+
+  //           <DefaultText style={styles.contactCity}>{item.city}</DefaultText>
+
+  //           {fullAddress ? (
+  //             <DefaultText style={styles.contactAddress} numberOfLines={1} ellipsizeMode="tail">
+  //               {fullAddress}
+  //             </DefaultText>
+  //           ) : null}
+  //         </View>
+
+  //         <Ionicons name="information-circle-outline" size={20} color={Colors.light.primaryDark} />
+  //       </TouchableOpacity>
+  //     );
+  //   },
+  //   [openFormSheet]
+  // );
+
+  // ==================== REPLACE THIS ENTIRE FUNCTION ====================
+const renderContactItem = useCallback(({ item }: { item: Contact }) => {
+  // Combine City + AddressLine1 + AddressLine2 on ONE line
+  const locationParts = [
+    item.city,
+    item.addressLine1,
+    item.addressLine2,
+  ].filter(Boolean);                    // Remove empty values
+
+  const locationText = locationParts.join(', ');
+
+  return (
+    <TouchableOpacity
+      style={styles.contactItem}
+      onPress={() => openFormSheet(item)}
+      activeOpacity={0.7}
+    >
+      {/* Avatar */}
+      <View style={styles.avatarContainer}>
+        <View style={styles.avatarPlaceholder}>
+          <DefaultText style={styles.avatarText} variant="medium">
+            {item.name
+              .split(' ')
+              .map((n) => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2)}
           </DefaultText>
-          <DefaultText style={styles.contactStatus}>{item.phone}</DefaultText>
-          <DefaultText style={styles.contactStatus}>{item.city}</DefaultText>
-          <DefaultText style={styles.contactStatus}>{item.addressLine1}</DefaultText>
-          <DefaultText style={styles.contactStatus}>{item.addressLine2}</DefaultText>
         </View>
+      </View>
 
-        <Ionicons name="eye-outline" size={24} color={Colors.light.primaryDark} />
-      </TouchableOpacity>
-    ),
-    [openFormSheet, theme]
+      {/* Contact Info */}
+      <View style={styles.contactInfo}>
+        <DefaultText style={styles.contactName} variant="bold">
+          {item.name}
+        </DefaultText>
+
+        <DefaultText style={styles.contactPhone}>
+          {item.phone}
+        </DefaultText>
+
+        {/* ✅ FIXED: City + Both Address lines on SAME LINE */}
+        {locationText ? (
+          <DefaultText 
+            style={styles.contactLocation} 
+            numberOfLines={1} 
+            ellipsizeMode="tail"
+          >
+            {locationText}
+          </DefaultText>
+        ) : null}
+      </View>
+
+      {/* Info Icon */}
+      <Ionicons 
+        name="information-circle-outline" 
+        size={22} 
+        color={Colors.light.primaryDark} 
+      />
+    </TouchableOpacity>
   );
+}, [openFormSheet]);
 
-  // ==================== API FETCH ====================
+  // API Fetch Logic (unchanged)
   const fetchContacts = async (pageNumber: number, isLoadMore = false) => {
     try {
       if (isLoadMore) {
@@ -258,9 +340,11 @@ export default function ContactsScreen() {
     }
   };
 
-  useEffect(() => {
-    fetchContacts(1, false);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchContacts(1, false);
+    }, [])
+  );
 
   const loadMore = () => {
     if (loading || loadingMore || !hasMore) return;
@@ -282,7 +366,7 @@ export default function ContactsScreen() {
       >
         <View style={styles.body}>
           {loading ? (
-            <Loader />                   
+            <Loader />
           ) : (
             <FlatList
               data={contacts}
@@ -292,9 +376,7 @@ export default function ContactsScreen() {
               onEndReachedThreshold={0.6}
               contentContainerStyle={styles.listContent}
               showsVerticalScrollIndicator={false}
-              ListFooterComponent={
-                loadingMore ? <Loader /> : null     // Loader at bottom while loading more
-              }
+              ListFooterComponent={loadingMore ? <Loader /> : null}
             />
           )}
         </View>
@@ -302,7 +384,7 @@ export default function ContactsScreen() {
         <Footer activeTab={activeTab} onTabChange={setActiveTab} />
       </ScreenPage>
 
-      {/* Bottom Sheet */}
+      {/* Bottom Sheet - (You can enhance this later with AuthInput fields) */}
       <BottomSheetModal
         ref={bottomSheetRef}
         snapPoints={snapPoints}
@@ -317,12 +399,17 @@ export default function ContactsScreen() {
               <View style={styles.sheetAvatarContainer}>
                 <View style={styles.sheetAvatarPlaceholder}>
                   <DefaultText style={styles.sheetAvatarText} variant="bold">
-                    {selectedContact.name.split(' ').map((n) => n[0]).join('').toUpperCase()}
+                    {selectedContact.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .toUpperCase()
+                      .slice(0, 2)}
                   </DefaultText>
                 </View>
               </View>
               <View style={{ flex: 1 }}>
-                <DefaultText style={styles.sheetContactName} variant="regular">
+                <DefaultText style={styles.sheetContactName} variant="bold">
                   {selectedContact.name}
                 </DefaultText>
                 <DefaultText style={styles.sheetStatus} variant="regular">
@@ -337,10 +424,9 @@ export default function ContactsScreen() {
             <BottomSheetScrollView
               style={styles.formScrollView}
               contentContainerStyle={styles.formContent}
-              showsVerticalScrollIndicator={true}
               keyboardShouldPersistTaps="handled"
             >
-              {/* Add your AuthInput fields here when ready */}
+              {/* TODO: Add AuthInput fields here */}
               <TouchableOpacity style={styles.submitButton} onPress={handleSave}>
                 <DefaultText style={styles.submitButtonText} variant="bold">
                   Save Details
@@ -353,7 +439,6 @@ export default function ContactsScreen() {
     </GestureHandlerRootView>
   );
 }
-
 const styles = StyleSheet.create({
   body: { flex: 1 },
 
@@ -363,59 +448,96 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
 
+  // Improved Contact Card
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderRadius: 14,
     marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 2,
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
     elevation: 2,
   },
 
-  avatarContainer: { marginRight: 12 },
+  avatarContainer: { marginRight: 14 },
   avatarPlaceholder: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#dbeafe',
-    justifyContent: 'center',
-    alignItems: 'center',
+    // width: 48,
+    // height: 48,
+    // borderRadius: 24,
+    // backgroundColor: '#dbeafe',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    
+  width: 52,                    // slightly bigger for better look
+  height: 52,
+  borderRadius: 26,
+  backgroundColor: '#dbeafe',   // light blue background (you can change)
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderWidth: 1,               // ← Added border thickness
+  borderColor: Colors.light.primaryDark,  // ← Primary color border
+
   },
   avatarText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
     color: Colors.light.primaryDark,
   },
 
-  contactInfo: { flex: 1 },
-  contactName: {
-    fontSize: 15.5,
-    color: '#111827',
+  // contactInfo: { flex: 1, paddingRight: 8 },
+  // contactName: {
+  //   fontSize: 16,
+  //   color: '#111827',
+  //   marginBottom: 3,
+  // },
+  // contactPhone: {
+  //   fontSize: 13.5,
+  //   color: '#2563eb',
+  //   marginBottom: 1,
+  // },
+  
+  contactInfo: { 
+  flex: 1, 
+  paddingRight: 12 
+},
+
+contactName: {
+  fontSize: 16.5,
+  color: '#1f2937',
+  marginBottom: 4,
+},
+
+contactPhone: {
+  fontSize: 14.5,
+  color: '#2563eb',
+  marginBottom: 4,
+},
+  contactCity: {
+    fontSize: 13,
+    color: '#374151',
     marginBottom: 2,
   },
-  contactStatus: {
+  contactAddress: {
     fontSize: 12.5,
     color: '#6b7280',
     marginTop: 1,
   },
 
-  // Bottom Sheet Styles
+  // Bottom Sheet Styles (slightly refined)
   sheetHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#f1f1f1',
     backgroundColor: '#fff',
   },
-  sheetAvatarContainer: { marginRight: 12 },
+  sheetAvatarContainer: { marginRight: 14 },
   sheetAvatarPlaceholder: {
     width: 56,
     height: 56,
@@ -424,25 +546,47 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  sheetAvatarText: { fontSize: 22, fontWeight: '700', color: '#2563eb' },
-  sheetContactName: { fontSize: 18, color: '#111827' },
-  sheetStatus: { fontSize: 14, color: '#6b7280', marginTop: 2 },
+  sheetAvatarText: { 
+    fontSize: 22, 
+    color: '#2563eb' 
+  },
+  sheetContactName: { 
+    fontSize: 18, 
+    color: '#111827' 
+  },
+  sheetStatus: { 
+    fontSize: 14, 
+    color: '#6b7280', 
+    marginTop: 2 
+  },
   closeButton: { padding: 8 },
 
   formScrollView: { flex: 1 },
-  formContent: { paddingHorizontal: 16, paddingTop: 20, paddingBottom: 40 },
+  formContent: { 
+    paddingHorizontal: 16, 
+    paddingTop: 24, 
+    paddingBottom: 40 
+  },
 
   submitButton: {
     backgroundColor: '#2563eb',
-    paddingVertical: 15,
+    paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: 30,
   },
   submitButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 16.5,
     letterSpacing: 0.3,
   },
+
+
+// ✅ NEW STYLE - This displays city + address on same line
+contactLocation: {
+  fontSize: 13,
+  color: '#6b7280',
+},
 });
+
+

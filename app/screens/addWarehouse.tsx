@@ -221,14 +221,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingBottom: 120,
-    paddingHorizontal: 12,
-  },
+  paddingTop: 16, // 👈 add this
+  paddingBottom: 120,
+  paddingHorizontal: 12,
+},
   formCard: {
+     backgroundColor: Colors.light.white || '#fff', 
+     borderRadius: 16,
+    
     paddingHorizontal: 16,
     paddingVertical: 20,
-
-    width: "100%",
+    borderWidth: 1,
+    borderColor: Colors.light.inputBorder || '#e5e7eb',
+   
+    width: '100%',
   },
   sectionTitle: {
     fontSize: 18,
