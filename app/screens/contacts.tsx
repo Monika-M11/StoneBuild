@@ -1,24 +1,23 @@
-
-
-
-import { postApi } from '@/api/apiClient';
-import { ENDPOINTS } from '@/api/endpoints';
 import ScreenPage from '@/components/ScreenPage';
 import { useToast } from '@/providers/ToastProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { useFocusEffect, useRouter } from 'expo-router';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
+  TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { postApi } from '@/api/apiClient';
+import { ENDPOINTS } from '@/api/endpoints';
+import { useFocusEffect } from '@react-navigation/native';
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import Loader from '../../components/Loader';
@@ -89,6 +88,9 @@ export default function ContactsScreen() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
+
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const router = useRouter();
   const { showToast } = useToast();
@@ -176,55 +178,6 @@ export default function ContactsScreen() {
     router.push('/screens/addContact');
   };
 
-  // Render Contact Item - Improved UI
-  // const renderContactItem = useCallback(
-  //   ({ item }: { item: Contact }) => {
-  //     const fullAddress = [item.addressLine1, item.addressLine2]
-  //       .filter(Boolean)
-  //       .join(', ');
-
-  //     return (
-  //       <TouchableOpacity
-  //         style={styles.contactItem}
-  //         onPress={() => openFormSheet(item)}
-  //         activeOpacity={0.7}
-  //       >
-  //         <View style={styles.avatarContainer}>
-  //           <View style={styles.avatarPlaceholder}>
-  //             <DefaultText style={styles.avatarText} variant="medium">
-  //               {item.name
-  //                 .split(' ')
-  //                 .map((n) => n[0])
-  //                 .join('')
-  //                 .toUpperCase()
-  //                 .slice(0, 2)}
-  //             </DefaultText>
-  //           </View>
-  //         </View>
-
-  //         <View style={styles.contactInfo}>
-  //           <DefaultText style={styles.contactName} variant="bold">
-  //             {item.name}
-  //           </DefaultText>
-
-  //           <DefaultText style={styles.contactPhone}>{item.phone}</DefaultText>
-
-  //           <DefaultText style={styles.contactCity}>{item.city}</DefaultText>
-
-  //           {fullAddress ? (
-  //             <DefaultText style={styles.contactAddress} numberOfLines={1} ellipsizeMode="tail">
-  //               {fullAddress}
-  //             </DefaultText>
-  //           ) : null}
-  //         </View>
-
-  //         <Ionicons name="information-circle-outline" size={20} color={Colors.light.primaryDark} />
-  //       </TouchableOpacity>
-  //     );
-  //   },
-  //   [openFormSheet]
-  // );
-
   // ==================== REPLACE THIS ENTIRE FUNCTION ====================
 const renderContactItem = useCallback(({ item }: { item: Contact }) => {
   // Combine City + AddressLine1 + AddressLine2 on ONE line
@@ -288,70 +241,182 @@ const renderContactItem = useCallback(({ item }: { item: Contact }) => {
   );
 }, [openFormSheet]);
 
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setDebouncedSearch(search);
+  }, 2000);
+
+  return () => clearTimeout(timer);
+}, [search]);
+
+useEffect(() => {
+  if (debouncedSearch.length < 3) return;
+
+  // Reset list when searching
+  fetchContacts(1, false, debouncedSearch);
+
+}, [debouncedSearch]);
+
   // API Fetch Logic (unchanged)
-  const fetchContacts = async (pageNumber: number, isLoadMore = false) => {
-    try {
-      if (isLoadMore) {
-        setLoadingMore(true);
-      } else {
-        setLoading(true);
-        setContacts([]);
-        setPage(1);
-      }
+  // const fetchContacts = async (pageNumber: number, isLoadMore = false) => {
+  //   try {
+  //     if (isLoadMore) {
+  //       setLoadingMore(true);
+  //     } else {
+  //       setLoading(true);
+  //       setContacts([]);
+  //       setPage(1);
+  //     }
 
-      const response = await postApi(ENDPOINTS.CONTACT_LIST, {
-        page: pageNumber,
-        count: 10,
-      });
+  //     const response = await postApi(ENDPOINTS.CONTACT_LIST, {
+  //       page: pageNumber,
+  //       count: 10,
+  //     });
 
-      const apiData = response?.data;
-      const apiList = apiData?.contacts || [];
+  //     const apiData = response?.data;
+  //     const apiList = apiData?.contacts || [];
 
-      const mappedList: Contact[] = apiList.map((item: any) => ({
-        id: item.id.toString(),
-        name: item.contactName,
-        phone: item.phoneNumber,
-        city: item.city,
-        email: item.email,
-        addressLine1: item.addressLine1,
-        addressLine2: item.addressLine2,
-        pincode: item.pincode,
-        bankName: item.bankName,
-        branchName: item.branchName,
-        bankAccountNumber: item.bankAccountNumber,
-        ifscCode: item.ifscCode,
-        gstin: item.gstin,
-        aadhaarNumber: item.aadhaarNumber,
-        panNumber: item.panNumber,
-      }));
+  //     const mappedList: Contact[] = apiList.map((item: any) => ({
+  //       id: item.id.toString(),
+  //       name: item.contactName,
+  //       phone: item.phoneNumber,
+  //       city: item.city,
+  //       email: item.email,
+  //       addressLine1: item.addressLine1,
+  //       addressLine2: item.addressLine2,
+  //       pincode: item.pincode,
+  //       bankName: item.bankName,
+  //       branchName: item.branchName,
+  //       bankAccountNumber: item.bankAccountNumber,
+  //       ifscCode: item.ifscCode,
+  //       gstin: item.gstin,
+  //       aadhaarNumber: item.aadhaarNumber,
+  //       panNumber: item.panNumber,
+  //     }));
 
-      if (isLoadMore) {
-        setContacts((prev) => [...prev, ...mappedList]);
-      } else {
-        setContacts(mappedList);
-      }
+  //     if (isLoadMore) {
+  //       setContacts((prev) => [...prev, ...mappedList]);
+  //     } else {
+  //       setContacts(mappedList);
+  //     }
 
-      setHasMore(!!apiData?.has_more);
-    } catch (err: any) {
-      console.log('CONTACT API ERROR:', err);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
+  //     setHasMore(!!apiData?.has_more);
+  //   } catch (err: any) {
+  //     console.log('CONTACT API ERROR:', err);
+  //   } finally {
+  //     setLoading(false);
+  //     setLoadingMore(false);
+  //   }
+  // };
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     fetchContacts(1, false);
+  //   }, [])
+  // );
+
+  // const loadMore = () => {
+  //   if (loading || loadingMore || !hasMore) return;
+  //   const nextPage = page + 1;
+  //   setPage(nextPage);
+  //   fetchContacts(nextPage, true);
+  // };
+  const fetchContacts = async (
+  pageNumber: number,
+  isLoadMore = false,
+  searchQuery = ''
+) => {
+  try {
+    if (isLoadMore) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+      setContacts([]);
+      setPage(1);
     }
-  };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchContacts(1, false);
-    }, [])
-  );
+    const response = await postApi(ENDPOINTS.CONTACT_LIST, {
+      page: pageNumber,
+      count: 10,
+      search: searchQuery, // ✅ ADD THIS
+    });
+
+    const apiData = response?.data;
+    const apiList = apiData?.contacts || [];
+
+    const mappedList: Contact[] = apiList.map((item: any) => ({
+      id: item.id.toString(),
+      name: item.contactName,
+      phone: item.phoneNumber,
+      city: item.city,
+      email: item.email,
+      addressLine1: item.addressLine1,
+      addressLine2: item.addressLine2,
+      pincode: item.pincode,
+      bankName: item.bankName,
+      branchName: item.branchName,
+      bankAccountNumber: item.bankAccountNumber,
+      ifscCode: item.ifscCode,
+      gstin: item.gstin,
+      aadhaarNumber: item.aadhaarNumber,
+      panNumber: item.panNumber,
+    }));
+
+    //Flitered list 
+    const filteredList = mappedList.filter((item) =>
+  item.name.toLowerCase().includes(searchQuery.toLowerCase())
+);
+    
+//To pritorize search-sort list
+  const sortedList = mappedList.sort((a, b) => {
+  const query = searchQuery.toLowerCase();
+
+  const aName = a.name.toLowerCase();
+  const bName = b.name.toLowerCase();
+
+  // Priority 1: startsWith
+  if (aName.startsWith(query) && !bName.startsWith(query)) return -1;
+  if (!aName.startsWith(query) && bName.startsWith(query)) return 1;
+
+  // Priority 2: includes
+  if (aName.includes(query) && !bName.includes(query)) return -1;
+  if (!aName.includes(query) && bName.includes(query)) return 1;
+
+  return 0;
+});
+
+
+if (isLoadMore) {
+  setContacts((prev) => [...prev, ...sortedList]);
+} else {
+  setContacts(sortedList);
+}
+
+    setHasMore(!!apiData?.has_more);
+  } catch (err: any) {
+    console.log('CONTACT API ERROR:', err);
+  } finally {
+    setLoading(false);
+    setLoadingMore(false);
+  }
+};
+
+useFocusEffect(
+  useCallback(() => {
+    fetchContacts(1, false, '');
+  }, [])
+);
 
   const loadMore = () => {
-    if (loading || loadingMore || !hasMore) return;
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchContacts(nextPage, true);
-  };
+  if (loading || loadingMore || !hasMore) return;
+
+  const nextPage = page + 1;
+  setPage(nextPage);
+
+  fetchContacts(nextPage, true, debouncedSearch);
+};
+
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -364,9 +429,25 @@ const renderContactItem = useCallback(({ item }: { item: Contact }) => {
           </TouchableOpacity>
         }
       >
+        <View style={styles.searchContainer}>
+  <Ionicons name="search" size={18} color="#6b7280" />
+
+  <TextInput
+    value={search}
+    onChangeText={setSearch}
+    placeholder="Search contacts..."
+    style={styles.searchInput}
+  />
+
+  {search.length > 0 && (
+    <TouchableOpacity onPress={() => setSearch('')}>
+      <Ionicons name="close-circle" size={18} color="#9ca3af" />
+    </TouchableOpacity>
+  )}
+</View>
         <View style={styles.body}>
           {loading ? (
-            <Loader />
+           <Loader />
           ) : (
             <FlatList
               data={contacts}
@@ -586,6 +667,27 @@ contactPhone: {
 contactLocation: {
   fontSize: 13,
   color: '#6b7280',
+},
+
+searchContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  backgroundColor: '#fff',
+  marginHorizontal: 16,
+  marginTop: 10,
+  marginBottom: 6,
+  paddingHorizontal: 12,
+  borderRadius: 12,
+  borderWidth: 1,
+  borderColor: '#e5e7eb',
+},
+
+searchInput: {
+  flex: 1,
+  height: 40,
+  marginLeft: 8,
+  fontSize: 14,
+  color: '#111827',
 },
 });
 

@@ -32,7 +32,7 @@ const FooterItem = ({
     <Ionicons 
       name={icon} 
       size={24} 
-      color={active ? Colors.light.primaryDark : Colors.light.icon} 
+      color={active ? Colors.light.background : Colors.light.icon} 
     />
     <Text style={[styles.footerText, active && styles.footerTextActive]}>
       {label}
@@ -99,7 +99,8 @@ export default function Footer({ activeTab = 'home', onTabChange }: FooterProps)
 const styles = StyleSheet.create({
   footer: {
     height: 70,
-    backgroundColor: Colors.light.background,
+    // backgroundColor: Colors.light.background,
+     backgroundColor: Colors.light.primaryDark,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
@@ -119,7 +120,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   footerTextActive: {
-    color: Colors.light.primaryDark,
+    // color: Colors.light.primaryDark,
+    color: Colors.light.background,
     fontWeight: '600',
   },
 });
