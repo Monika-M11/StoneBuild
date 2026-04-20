@@ -1,9 +1,13 @@
+import { postApi } from '@/api/apiClient';
+import { ENDPOINTS } from '@/api/endpoints';
 import ScreenPage from '@/components/ScreenPage';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -19,7 +23,6 @@ import Footer from '../../components/Footer';
 import Colors from '../../constants/theme';
 import { useDrawer } from '../../contexts/DrawerContext';
 import { DefaultText, useTheme } from '../../providers/ThemeProvider';
-
 type Equipment = {
   id: string;
   name: string;
@@ -72,9 +75,29 @@ export default function EquipmentsScreen() {
     location: '',
     notes: '',
   });
+const [equipments, setEquipments] = useState<Equipment[]>([]);
+const [page, setPage] = useState(1);
+const [hasMore, setHasMore] = useState(true);
+const [loading, setLoading] = useState(false);
+const [loadingMore, setLoadingMore] = useState(false);
 
+const [searchQuery, setSearchQuery] = useState('');
+const [debouncedSearch, setDebouncedSearch] = useState('');
   const bottomSheetRef = useRef<any>(null);
   const snapPoints = useMemo(() => ['50%', '92%'], []);
+
+  useEffect(() => {
+  const timer = setTimeout(() => {
+    setDebouncedSearch(searchQuery);
+  }, 500);
+
+  return () => clearTimeout(timer);
+}, [searchQuery]);
+
+useEffect(() => {
+  fetchEquipments(1, false, debouncedSearch);
+}, [debouncedSearch]);
+
 
   const openSheet = useCallback((equipment: Equipment) => {
     setSelectedEquipment(equipment);
@@ -133,6 +156,84 @@ export default function EquipmentsScreen() {
     [openSheet, theme]
   );
 
+  const fetchEquipments = async (
+  pageNumber: number,
+  isLoadMore = false,
+  search = ''
+) => {
+  try {
+    if (isLoadMore) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+      setEquipments([]);
+      setPage(1);
+    }
+
+    const response = await postApi(ENDPOINTS.EQUIPMENT_LIST, {
+      page: pageNumber,
+      count: 10,
+      search: search,
+    });
+
+    const apiData = response?.data;
+    const apiList = apiData?.equipments || [];
+
+    const mappedList: Equipment[] = apiList.map((item: any) => ({
+      id: item.id.toString(),
+      name: item.equipmentName,
+      category: item.category,
+      status: item.status,
+      serialNumber: item.serialNumber,
+    }));
+
+    // ✅ SAME PRIORITY SORT
+    const query = search.trim().toLowerCase();
+
+    const getPriority = (name: string) => {
+      const n = name.trim().toLowerCase();
+
+      if (!query) return 3;
+      if (n.startsWith(query)) return 1;
+      if (n.includes(query)) return 2;
+      return 3;
+    };
+
+    const sortedList = mappedList.sort(
+      (a, b) => getPriority(a.name) - getPriority(b.name)
+    );
+
+    if (isLoadMore) {
+      setEquipments((prev) => [...prev, ...sortedList]);
+    } else {
+      setEquipments(sortedList);
+    }
+
+    setHasMore(!!apiData?.has_more);
+  } catch (err) {
+    console.log('EQUIPMENT API ERROR:', err);
+  } finally {
+    setLoading(false);
+    setLoadingMore(false);
+  }
+};
+
+
+useFocusEffect(
+  useCallback(() => {
+    fetchEquipments(1, false, '');
+  }, [])
+);
+
+const loadMore = () => {
+  if (loading || loadingMore || !hasMore) return;
+
+  const nextPage = page + 1;
+  setPage(nextPage);
+
+  fetchEquipments(nextPage, true, debouncedSearch);
+};
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       {/* ✅ SafeAreaView wraps the main content — same structure as contacts.tsx */}
@@ -144,29 +245,57 @@ export default function EquipmentsScreen() {
             onPress={() => router.push('/screens/addEquipment' as any)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
+            <Ionicons name="add" size={24} color={Colors.light.background} />
           </TouchableOpacity>
         }
       >
 
+        <View style={styles.searchContainer}>
+  <Ionicons name="search" size={18} color="#6b7280" />
+
+  <TextInput
+    placeholder="Search equipment..."
+    value={searchQuery}
+    onChangeText={setSearchQuery}
+    style={styles.searchInput}
+    placeholderTextColor="#9ca3af"
+  />
+
+  {searchQuery ? (
+    <TouchableOpacity onPress={() => setSearchQuery('')}>
+      <Ionicons name="close-circle" size={18} color="#9ca3af" />
+    </TouchableOpacity>
+  ) : null}
+</View>
+
           {/* ✅ Body takes remaining space — footer stays pinned at bottom */}
-          <View style={styles.body}>
-            <FlatList
-              data={dummyEquipments}
-              keyExtractor={(item) => item.id}
-              renderItem={renderEquipmentItem}
-              contentContainerStyle={styles.listContent}
-              showsVerticalScrollIndicator={false}
-            />
-            <TouchableOpacity
-              style={styles.showEquipmentButton}
-              onPress={() => openSheet(dummyEquipments[0])}
-              activeOpacity={0.8}
-            >
-              <Ionicons name="add-circle-outline" size={24} color="#fff" />
-              <DefaultText style={styles.showEquipmentButtonText}>Show Equipment</DefaultText >
-            </TouchableOpacity>
-          </View>
+          
+                   <View style={styles.body}>
+  {loading ? (
+    <View style={styles.loaderContainer}>
+      <ActivityIndicator size="large" color={Colors.light.primaryDark} />
+    </View>
+  ) : (
+    <FlatList
+      data={equipments}
+      keyExtractor={(item) => item.id}
+      renderItem={renderEquipmentItem}
+      contentContainerStyle={styles.listContent}
+      showsVerticalScrollIndicator={false}
+      onEndReached={loadMore}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={
+        loadingMore ? (
+          <ActivityIndicator
+            size="small"
+            color={Colors.light.primaryDark}
+            style={{ marginVertical: 16 }}
+          />
+        ) : null
+      }
+    />
+  )}
+</View>
 
           <Footer activeTab={activeTab} onTabChange={setActiveTab} />
      </ScreenPage>
@@ -492,4 +621,29 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     letterSpacing: 0.3,
   },
+
+  searchContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  backgroundColor: '#fff',
+  marginHorizontal: 16,
+  marginTop: 10,
+  marginBottom: 6,
+  paddingHorizontal: 12,
+  borderRadius: 10,
+  height: 42,
+  elevation: 2,
+},
+
+searchInput: {
+  flex: 1,
+  fontSize: 14,
+  color: Colors.light.text,
+},
+
+  loaderContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 });

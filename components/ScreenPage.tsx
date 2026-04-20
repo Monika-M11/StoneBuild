@@ -174,7 +174,9 @@ export default function ScreenPage({
             <Ionicons
               name={leftIconName as any}
               size={24}
-              color={Colors.light.primaryDark}
+              color={Colors.light.background
+                
+              }
             />
           </TouchableOpacity>
 
@@ -214,7 +216,8 @@ const styles = StyleSheet.create({
   header: {
     height: 55,
     paddingHorizontal: 16,
-    backgroundColor: Colors.light.background,
+    // backgroundColor: Colors.light.background,
+    backgroundColor:Colors.light.primaryDark,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -223,12 +226,15 @@ const styles = StyleSheet.create({
 
   headerTitle: {
     fontSize: 18,
-    color: Colors.light.primaryDark,
+    // color: Colors.light.primaryDark,
+   color: Colors.light.background,
   },
 
   leftButton: {
     width: 48,
     alignItems: "flex-start",
+    
+
   },
 
   titleContainer: {

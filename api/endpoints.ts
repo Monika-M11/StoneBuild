@@ -5,7 +5,9 @@ export const ENDPOINTS = {
     LOGIN: '/login',
     ADDCONTACT: '/add-contact',
     CONTACT_LIST: '/contact-list',
-    ADDWAREHOUSE: '/add-warehouse'
+    ADDWAREHOUSE: '/add-warehouse',
+    WAREHOUSE_LIST :'/warehouse-list',
+    EQUIPMENT_LIST : '/contact-list'
   
 };
 

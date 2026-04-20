@@ -1,6 +1,3 @@
-import { postApi } from '@/api/apiClient';
-import { ENDPOINTS } from '@/api/endpoints';
-import { saveToken } from '@/auth/authStorage';
 import Colors from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useRouter } from 'expo-router';
@@ -81,68 +78,68 @@ export default function Login() {
     ]).start();
   };
 
-  // const handleSubmit = async () => {
-  //   if (!email || !password || (isSignUp && !name)) {
-  //     shake();
-  //     return;
-  //   }
-  //   setLoading(true);
-  //   await new Promise((res) => setTimeout(res, 1500));
-  //   setLoading(false);
-  //   router.replace('/home');
-  // };
-
-//   //backend url logic
-const handleSubmit = async () => {
-  if (loading) return;
-
-  if (!email || !password || (isSignUp && !name)) {
-    showToast('Validation Error', 'Please fill all required fields', 'error');
-    shake();
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    const payload = {
-      userName: email.trim(),
-      password: password.trim(),
-    };
-
-    const response = await postApi(
-      ENDPOINTS.LOGIN,
-
-      payload
-    );
-
-    console.log('API RESPONSE:', response);
-   
-    if (response?.status !== 'success') {
-      showToast('Login Failed', response?.message || 'Something went wrong', 'error');
+  const handleSubmit = async () => {
+    if (!email || !password || (isSignUp && !name)) {
       shake();
       return;
     }
-
-    //Save token
-    if (response?.token) {
-      await saveToken(response.token);
-    }
-
-    
-    showToast('Welcome!', 'Successfully logged in', 'success');
-    
-    setTimeout(() => {
-      router.replace('/home');
-    }, 1000); 
-
-  } catch (error: any) {
-    showToast('Error', error?.message || 'Something went wrong', 'error');
-    shake();
-  } finally {
+    setLoading(true);
+    await new Promise((res) => setTimeout(res, 1500));
     setLoading(false);
-  }
-};
+    router.replace('/home');
+  };
+
+//   //backend url logic
+// const handleSubmit = async () => {
+//   if (loading) return;
+
+//   if (!email || !password || (isSignUp && !name)) {
+//     showToast('Validation Error', 'Please fill all required fields', 'error');
+//     shake();
+//     return;
+//   }
+
+//   try {
+//     setLoading(true);
+
+//     const payload = {
+//       userName: email.trim(),
+//       password: password.trim(),
+//     };
+
+//     const response = await postApi(
+//       ENDPOINTS.LOGIN,
+
+//       payload
+//     );
+
+//     console.log('API RESPONSE:', response);
+   
+//     if (response?.status !== 'success') {
+//       showToast('Login Failed', response?.message || 'Something went wrong', 'error');
+//       shake();
+//       return;
+//     }
+
+//     //Save token
+//     if (response?.token) {
+//       await saveToken(response.token);
+//     }
+
+    
+//     showToast('Welcome!', 'Successfully logged in', 'success');
+    
+//     setTimeout(() => {
+//       router.replace('/home');
+//     }, 1000); 
+
+//   } catch (error: any) {
+//     showToast('Error', error?.message || 'Something went wrong', 'error');
+//     shake();
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
 
   const nameInputBorder =
