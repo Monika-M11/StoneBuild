@@ -179,13 +179,20 @@ useEffect(() => {
     const apiData = response?.data;
     const apiList = apiData?.equipments || [];
 
-    const mappedList: Equipment[] = apiList.map((item: any) => ({
-      id: item.id.toString(),
-      name: item.equipmentName,
-      category: item.category,
-      status: item.status,
-      serialNumber: item.serialNumber,
-    }));
+ const mappedList: Equipment[] = apiList.map((item: any) => ({
+
+  id: item.id?.toString?.() || '',
+
+  name: item.name || '',
+
+  category: item.brand || '',
+
+  status: item.status || '',
+
+  serialNumber:
+    item.serialNumbers?.[0] || '',
+
+}));
 
     // ✅ SAME PRIORITY SORT
     const query = search.trim().toLowerCase();

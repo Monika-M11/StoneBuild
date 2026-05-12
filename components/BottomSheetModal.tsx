@@ -74,4 +74,6 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+BottomSheetModal.displayName = 'BottomSheetModal';
+
 export default BottomSheetModal;

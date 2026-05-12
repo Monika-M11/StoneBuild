@@ -55,6 +55,7 @@ const [debouncedSearch, setDebouncedSearch] = useState('');
 useEffect(() => {
   fetchWarehouses(1, false, debouncedSearch);
 }, [debouncedSearch]);
+
   const renderWarehouseItem = ({ item }: any) => (
     <TouchableOpacity style={styles.warehouseItem} activeOpacity={0.7}>
       <View style={styles.iconBox}>
@@ -96,14 +97,19 @@ useEffect(() => {
       search: search,
     });
 
+
+  if (!response?.success) {
+  console.log('WAREHOUSE API FAILED:', response);
+  return;
+}
     const apiData = response?.data;
     const apiList = apiData?.warehouses || [];
 
-   const mappedList: Warehouse[] = apiList.map((item: any) => ({
-  id: item.id.toString(),
-  name: item.warehouseName,
-  location: item.location,
-  incharge: item.inchargeName,
+const mappedList: Warehouse[] = apiList.map((item: any) => ({
+  id: item.id?.toString?.() || '',
+  name: item.warehouseName || '',
+  location: item.address || '',
+  incharge: item.inchargeNumber || '',
 }));
 
     // ✅ FIXED SORT LOGIC

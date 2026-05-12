@@ -416,7 +416,7 @@ export default function AddEquipmentScreen() {
 
       console.log("📥 Equipment Response:", response);
 
-      if (response.status === "success") {
+      if (response.success) {
         showToast(
           "Success",
           response.message || "Equipment added successfully!",

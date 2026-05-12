@@ -641,6 +641,17 @@ export default function MaterialsScreen() {
         search: searchQuery,
       });
 
+       if (!response?.success) {
+
+      showToast(
+        'Error',
+        response?.message || 'Failed to load contacts',
+        'error'
+      );
+
+      return;
+    }
+
       const apiData = response?.data;
       const apiList = apiData?.materials || apiData?.data || [];
 
@@ -772,19 +783,21 @@ export default function MaterialsScreen() {
     [openSheet, theme]
   );
 
+   const handleAddMaterial = () => {
+    router.push('/screens/addMaterial');
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ScreenPage
         title="Materials"
         onMenuPress={openDrawer}
-        rightAction={
-          <TouchableOpacity
-            onPress={() => router.push('/screens/addMaterial' as any)}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
+         rightAction={
+          <TouchableOpacity onPress={handleAddMaterial}>
+            <Ionicons name="add" size={24} color={Colors.light.background} />
           </TouchableOpacity>
         }
+        
       >
         {/* Search Bar - Same as Contacts */}
         <View style={styles.searchContainer}>

@@ -24,15 +24,20 @@ interface MenuItem {
 
 const MENU_ITEMS: MenuItem[] = [
   { id: 'contacts',   label: 'Contacts',   icon: 'people-outline' },
-  { id: 'ledger',     label: 'Ledger',     icon: 'book-outline' },
+   { id: 'materials',  label: 'Materials',  icon: 'layers-outline' },
+  
+   { id: 'equipments', label: 'Equipments', icon: 'construct-outline' },
   { id: 'warehouse',  label: 'Warehouse',  icon: 'business-outline' },
-  { id: 'equipments', label: 'Equipments', icon: 'construct-outline' },
+ { id: 'ledger',     label: 'Ledger',     icon: 'book-outline' },
   // { id: 'payment',    label: 'Payment',    icon: 'card-outline' },
   // { id: 'receipt',    label: 'Receipt',    icon: 'receipt-outline' },
-  { id: 'expense',    label: 'Expense',    icon: 'wallet-outline' },
-  { id: 'reports',    label: 'Reports',    icon: 'bar-chart-outline' },
-  { id: 'materials',  label: 'Materials',  icon: 'layers-outline' },
   { id: 'purchase',   label: 'Purchase',   icon: 'cart-outline' },
+  { id: 'expense',    label: 'Expense',    icon: 'wallet-outline' },
+   { id: 'quotation',    label: 'Quotation',    icon: 'receipt-outline' },
+   { id: 'CRM',    label: 'CRM',    icon: 'people-outline' },
+  { id: 'reports',    label: 'Reports',    icon: 'bar-chart-outline' },
+ 
+  
 ];
 
 interface SideDrawerProps {

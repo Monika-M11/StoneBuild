@@ -1,9 +1,14 @@
+import { postApi } from '@/api/apiClient';
+import { ENDPOINTS } from '@/api/endpoints';
+import { saveToken } from '@/auth/authStorage';
 import Colors from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { useRouter } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import { useAuth } from '@/providers/AuthProvider';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   Animated,
+  BackHandler,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -35,6 +40,10 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const shakeAnim = useRef(new Animated.Value(0)).current;
+  
+const [showPassword, setShowPassword] = useState(false);
+  const { setIsLoggedIn } = useAuth();
+  
 
 
 
@@ -54,6 +63,24 @@ export default function Login() {
     inputRange: [0, 1],
     outputRange: [14, -8],
   });
+
+//To avoid back navigation
+useFocusEffect(
+  useCallback(() => {
+    const onBackPress = () => {
+      BackHandler.exitApp(); //exit app
+      return true;
+    };
+
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      onBackPress
+    );
+
+    return () => subscription.remove(); 
+  }, [])
+);
+
 
   const nameFontSize = nameAnimValue.interpolate({
     inputRange: [0, 1],
@@ -78,16 +105,16 @@ export default function Login() {
     ]).start();
   };
 
-  const handleSubmit = async () => {
-    if (!email || !password || (isSignUp && !name)) {
-      shake();
-      return;
-    }
-    setLoading(true);
-    await new Promise((res) => setTimeout(res, 1500));
-    setLoading(false);
-    router.replace('/home');
-  };
+  // const handleSubmit = async () => {
+  //   if (!email || !password || (isSignUp && !name)) {
+  //     shake();
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   await new Promise((res) => setTimeout(res, 1500));
+  //   setLoading(false);
+  //   router.replace('/home');
+  // };
 
 //   //backend url logic
 // const handleSubmit = async () => {
@@ -141,6 +168,55 @@ export default function Login() {
 //   }
 // };
 
+
+const handleSubmit = async () => {
+  if (loading) return;
+
+  if (!email || !password || (isSignUp && !name)) {
+    showToast('Validation Error', 'Please fill all required fields', 'error');
+    shake();
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+ const payload = {
+  username: email.trim(),
+  password: password.trim(),
+};
+
+    const response = await postApi(
+      ENDPOINTS.LOGIN,
+      payload
+    );
+
+    console.log('API RESPONSE:', response);
+
+    if (response?.status) {
+      showToast('Login Failed', response?.message || 'Something went wrong', 'error');
+      shake();
+      return;
+    }
+
+    // ✅ Save token
+    if (response?.token) {
+      await saveToken(response.token);
+      setIsLoggedIn(true);
+    }
+
+    // ✅ Trigger global auth state
+    
+
+    showToast('Welcome!', 'Successfully logged in', 'success');
+
+  } catch (error: any) {
+    showToast('Error', error?.message || 'Something went wrong', 'error');
+    shake();
+  } finally {
+    setLoading(false);
+  }
+};
 
   const nameInputBorder =
     focusedField === 'name' ? primaryDark : inputBorder + '66';
@@ -231,10 +307,14 @@ export default function Login() {
             onChangeText={setPassword}
             onFocus={() => setFocusedField('password')}
             onBlur={() => setFocusedField(null)}
-            secureTextEntry
+            secureTextEntry={!showPassword} //toggle
             autoComplete={isSignUp ? 'new-password' : 'current-password'}
             focusedField={focusedField}
             fieldId="password"
+
+            // 👇 NEW PROPS (you will add in AuthInput)
+            rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
+            onRightIconPress={() => setShowPassword(prev => !prev)}
           />
 
           {!isSignUp && (

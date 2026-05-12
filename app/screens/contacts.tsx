@@ -18,6 +18,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { postApi } from '@/api/apiClient';
 import { ENDPOINTS } from '@/api/endpoints';
 import { useFocusEffect } from '@react-navigation/native';
+import { Linking } from 'react-native';
 import BottomSheetModal from '../../components/BottomSheetModal';
 import Footer from '../../components/Footer';
 import Loader from '../../components/Loader';
@@ -179,26 +180,94 @@ export default function ContactsScreen() {
   };
 
   // ==================== REPLACE THIS ENTIRE FUNCTION ====================
+// const renderContactItem = useCallback(({ item }: { item: Contact }) => {
+//   // Combine City + AddressLine1 + AddressLine2 on ONE line
+//   const locationParts = [
+//     item.city,
+//     item.addressLine1,
+//     item.addressLine2,
+//   ].filter(Boolean);                    // Remove empty values
+
+//   const locationText = locationParts.join(', ');
+
+//   return (
+//     <TouchableOpacity
+//   style={styles.contactItem}
+//   onPress={() => openFormSheet(item)}
+//   activeOpacity={0.85}
+// >
+//   {/* Avatar */}
+//   <View style={styles.avatarContainer}>
+//     <DefaultText style={styles.avatarText} variant="bold">
+//       {item.name
+//         .split(' ')
+//         .map((n) => n[0])
+//         .join('')
+//         .toUpperCase()
+//         .slice(0, 2)}
+//     </DefaultText>
+//   </View>
+
+//   {/* Contact Info */}
+//   <View style={styles.contactInfo}>
+//     <DefaultText style={styles.contactName} numberOfLines={1}>
+//       {item.name}
+//     </DefaultText>
+
+//     <DefaultText style={styles.contactPhone} numberOfLines={1}>
+//       {item.phone}
+//     </DefaultText>
+
+//     {locationText ? (
+//       <DefaultText
+//         style={styles.contactLocation}
+//         numberOfLines={1}
+//         ellipsizeMode="tail"
+//       >
+//         {locationText}
+//       </DefaultText>
+//     ) : null}
+//   </View>
+
+//   {/* Right Action */}
+//   <View style={styles.infoIconContainer}>
+//     <Ionicons
+//       name="chevron-forward"
+//       size={18}
+//       color={Colors.light.primary}
+//     />
+//   </View>
+// </TouchableOpacity>
+//   );
+// }, [openFormSheet]);
+
 const renderContactItem = useCallback(({ item }: { item: Contact }) => {
-  // Combine City + AddressLine1 + AddressLine2 on ONE line
-  const locationParts = [
-    item.city,
-    item.addressLine1,
-    item.addressLine2,
-  ].filter(Boolean);                    // Remove empty values
+    const locationParts = [
+      item.addressLine1,
+      item.addressLine2,
+      item.city,
+      item.pincode,
+    ].filter(Boolean);
 
-  const locationText = locationParts.join(', ');
+    const locationText = locationParts.join(', ');
 
-  return (
-    <TouchableOpacity
-      style={styles.contactItem}
-      onPress={() => openFormSheet(item)}
-      activeOpacity={0.7}
-    >
-      {/* Avatar */}
-      <View style={styles.avatarContainer}>
-        <View style={styles.avatarPlaceholder}>
-          <DefaultText style={styles.avatarText} variant="medium">
+    const handleCall = () => {
+      const phoneUrl = `tel:${item.phone}`;
+      Linking.canOpenURL(phoneUrl).then((supported) => {
+        if (supported) Linking.openURL(phoneUrl);
+      });
+    };
+
+    return (
+      // Card tap → opens bottom sheet
+      <TouchableOpacity
+        style={styles.contactItem}
+        onPress={() => openFormSheet(item)}
+        activeOpacity={0.85}
+      >
+        {/* Avatar */}
+        <View style={styles.avatarContainer}>
+          <DefaultText style={styles.avatarText} variant="bold">
             {item.name
               .split(' ')
               .map((n) => n[0])
@@ -207,121 +276,49 @@ const renderContactItem = useCallback(({ item }: { item: Contact }) => {
               .slice(0, 2)}
           </DefaultText>
         </View>
-      </View>
 
-      {/* Contact Info */}
-      <View style={styles.contactInfo}>
-        <DefaultText style={styles.contactName} variant="bold">
-          {item.name}
-        </DefaultText>
-
-        <DefaultText style={styles.contactPhone}>
-          {item.phone}
-        </DefaultText>
-
-        {/* ✅ FIXED: City + Both Address lines on SAME LINE */}
-        {locationText ? (
-          <DefaultText 
-            style={styles.contactLocation} 
-            numberOfLines={1} 
-            ellipsizeMode="tail"
-          >
-            {locationText}
+        {/* Contact Info */}
+        <View style={styles.contactInfo}>
+          <DefaultText style={styles.contactName} numberOfLines={1}>
+            {item.name}
           </DefaultText>
-        ) : null}
-      </View>
 
-      {/* Info Icon */}
-      <Ionicons 
-        name="information-circle-outline" 
-        size={22} 
-        color={Colors.light.primaryDark} 
-      />
-    </TouchableOpacity>
-  );
-}, [openFormSheet]);
+          {locationText ? (
+            <DefaultText style={styles.contactLocation}>
+              {locationText}
+            </DefaultText>
+          ) : null}
+        </View>
 
+        {/* ✅ Call icon replaces chevron — only this initiates call */}
+        <TouchableOpacity
+          style={styles.infoIconContainer}
+          onPress={(e) => {
+            e.stopPropagation();
+            handleCall();
+          }}
+          activeOpacity={0.7}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="call-outline" size={18} color={Colors.light.primary} />
+        </TouchableOpacity>
+
+      </TouchableOpacity>
+    );
+  }, [openFormSheet]);
 
 useEffect(() => {
   const timer = setTimeout(() => {
     setDebouncedSearch(search);
-  }, 2000);
+  }, 1000);
 
   return () => clearTimeout(timer);
 }, [search]);
 
 useEffect(() => {
-  if (debouncedSearch.length < 3) return;
-
-  // Reset list when searching
   fetchContacts(1, false, debouncedSearch);
-
 }, [debouncedSearch]);
 
-  // API Fetch Logic (unchanged)
-  // const fetchContacts = async (pageNumber: number, isLoadMore = false) => {
-  //   try {
-  //     if (isLoadMore) {
-  //       setLoadingMore(true);
-  //     } else {
-  //       setLoading(true);
-  //       setContacts([]);
-  //       setPage(1);
-  //     }
-
-  //     const response = await postApi(ENDPOINTS.CONTACT_LIST, {
-  //       page: pageNumber,
-  //       count: 10,
-  //     });
-
-  //     const apiData = response?.data;
-  //     const apiList = apiData?.contacts || [];
-
-  //     const mappedList: Contact[] = apiList.map((item: any) => ({
-  //       id: item.id.toString(),
-  //       name: item.contactName,
-  //       phone: item.phoneNumber,
-  //       city: item.city,
-  //       email: item.email,
-  //       addressLine1: item.addressLine1,
-  //       addressLine2: item.addressLine2,
-  //       pincode: item.pincode,
-  //       bankName: item.bankName,
-  //       branchName: item.branchName,
-  //       bankAccountNumber: item.bankAccountNumber,
-  //       ifscCode: item.ifscCode,
-  //       gstin: item.gstin,
-  //       aadhaarNumber: item.aadhaarNumber,
-  //       panNumber: item.panNumber,
-  //     }));
-
-  //     if (isLoadMore) {
-  //       setContacts((prev) => [...prev, ...mappedList]);
-  //     } else {
-  //       setContacts(mappedList);
-  //     }
-
-  //     setHasMore(!!apiData?.has_more);
-  //   } catch (err: any) {
-  //     console.log('CONTACT API ERROR:', err);
-  //   } finally {
-  //     setLoading(false);
-  //     setLoadingMore(false);
-  //   }
-  // };
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     fetchContacts(1, false);
-  //   }, [])
-  // );
-
-  // const loadMore = () => {
-  //   if (loading || loadingMore || !hasMore) return;
-  //   const nextPage = page + 1;
-  //   setPage(nextPage);
-  //   fetchContacts(nextPage, true);
-  // };
   const fetchContacts = async (
   pageNumber: number,
   isLoadMore = false,
@@ -339,52 +336,70 @@ useEffect(() => {
     const response = await postApi(ENDPOINTS.CONTACT_LIST, {
       page: pageNumber,
       count: 10,
-      search: searchQuery, // ✅ ADD THIS
+      search: searchQuery, 
     });
+
+
+     console.log('CONTACT API RESPONSE:', response);
+
+    // ✅ IMPORTANT
+    if (!response?.success) {
+
+      showToast(
+        'Error',
+        response?.message || 'Failed to load contacts',
+        'error'
+      );
+
+      return;
+    }
 
     const apiData = response?.data;
     const apiList = apiData?.contacts || [];
 
     const mappedList: Contact[] = apiList.map((item: any) => ({
-      id: item.id.toString(),
-      name: item.contactName,
-      phone: item.phoneNumber,
-      city: item.city,
-      email: item.email,
-      addressLine1: item.addressLine1,
-      addressLine2: item.addressLine2,
-      pincode: item.pincode,
-      bankName: item.bankName,
-      branchName: item.branchName,
-      bankAccountNumber: item.bankAccountNumber,
-      ifscCode: item.ifscCode,
-      gstin: item.gstin,
-      aadhaarNumber: item.aadhaarNumber,
-      panNumber: item.panNumber,
+      id: item.id?.toString?.() ?? '',
+      name: item.contactName ?? '',
+      phone: item.phoneNumber ?? '',
+      city: item.city ?? '',
+      email: item.email ?? '',
+      addressLine1: item.addressLine1 ?? '',
+      addressLine2: item.addressLine2 ?? '',
+      pincode: item.pincode ?? '',
+      bankName: item.bankName ?? '',
+      branchName: item.branchName ?? '',
+      bankAccountNumber: item.bankAccountNumber ?? '',
+      ifscCode: item.ifscCode ?? '',
+      gstin: item.gstin ?? '',
+      aadhaarNumber: item.aadhaarNumber ?? '',
+      panNumber: item.panNumber ?? '',
     }));
 
-    //Flitered list 
-    const filteredList = mappedList.filter((item) =>
-  item.name.toLowerCase().includes(searchQuery.toLowerCase())
-);
-    
-//To pritorize search-sort list
-  const sortedList = mappedList.sort((a, b) => {
-  const query = searchQuery.toLowerCase();
+    const normalizedQuery = (searchQuery || '').toString().trim().toLowerCase();
 
-  const aName = a.name.toLowerCase();
-  const bName = b.name.toLowerCase();
+    // Filtered list (null-safe)
+    const filteredList = mappedList.filter((item) => {
+      const name = (item.name || '').toString().toLowerCase();
+      return name.includes(normalizedQuery);
+    });
 
-  // Priority 1: startsWith
-  if (aName.startsWith(query) && !bName.startsWith(query)) return -1;
-  if (!aName.startsWith(query) && bName.startsWith(query)) return 1;
+    // Prioritize search-sort list (null-safe)
+    const sortedList = [...filteredList].sort((a, b) => {
+      const query = normalizedQuery;
 
-  // Priority 2: includes
-  if (aName.includes(query) && !bName.includes(query)) return -1;
-  if (!aName.includes(query) && bName.includes(query)) return 1;
+      const aName = ((a.name || '') as string).toString().toLowerCase();
+      const bName = ((b.name || '') as string).toString().toLowerCase();
 
-  return 0;
-});
+      // Priority 1: startsWith
+      if (aName.startsWith(query) && !bName.startsWith(query)) return -1;
+      if (!aName.startsWith(query) && bName.startsWith(query)) return 1;
+
+      // Priority 2: includes
+      if (aName.includes(query) && !bName.includes(query)) return -1;
+      if (!aName.includes(query) && bName.includes(query)) return 1;
+
+      return 0;
+    });
 
 
 if (isLoadMore) {
@@ -425,7 +440,7 @@ useFocusEffect(
         onMenuPress={openDrawer}
         rightAction={
           <TouchableOpacity onPress={handleAddContact}>
-            <Ionicons name="add" size={24} color={Colors.light.primaryDark} />
+            <Ionicons name="add" size={24} color={Colors.light.background} />
           </TouchableOpacity>
         }
       >
@@ -529,74 +544,153 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
 
-  // Improved Contact Card
+
+
+
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+
     paddingVertical: 14,
-    paddingHorizontal: 14,
-    borderRadius: 14,
+    paddingHorizontal: 16,
+
     marginBottom: 10,
+
+    backgroundColor: '#fff',
+    borderRadius: 14,
+
+    // Soft elevation
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 3,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
 
-  avatarContainer: { marginRight: 14 },
-  avatarPlaceholder: {
-    // width: 48,
-    // height: 48,
-    // borderRadius: 24,
-    // backgroundColor: '#dbeafe',
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    
-  width: 52,                    // slightly bigger for better look
-  height: 52,
-  borderRadius: 26,
-  backgroundColor: '#dbeafe',   // light blue background (you can change)
-  justifyContent: 'center',
-  alignItems: 'center',
-  borderWidth: 1,               // ← Added border thickness
-  borderColor: Colors.light.primaryDark,  // ← Primary color border
+  avatarContainer: {
+    height: 46,
+    width: 46,
+    borderRadius: 23,
 
+    backgroundColor: Colors.light.primary + '15', // soft tint
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    marginRight: 14,
   },
+
   avatarText: {
-    fontSize: 17,
-    color: Colors.light.primaryDark,
+    fontSize: 16,
+    color: Colors.light.primary,
   },
 
-  // contactInfo: { flex: 1, paddingRight: 8 },
-  // contactName: {
-  //   fontSize: 16,
-  //   color: '#111827',
-  //   marginBottom: 3,
+  contactInfo: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+
+  contactName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111',
+  },
+
+  contactPhone: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 2,
+  },
+
+  // contactLocation: {
+  //   fontSize: 12,
+  //   color: '#999',
+  //   marginTop: 2,
   // },
-  // contactPhone: {
-  //   fontSize: 13.5,
-  //   color: '#2563eb',
-  //   marginBottom: 1,
-  // },
+  contactLocation: {
+  fontSize: 12,
+  color: '#999',
+  marginTop: 2,
+
+},
+
+  infoIconContainer: {
+    height: 32,
+    width: 32,
+    borderRadius: 16,
+
+    backgroundColor: '#F5F7FA',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Improved Contact Card
+//   contactItem: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     backgroundColor: '#fff',
+//     paddingVertical: 14,
+//     paddingHorizontal: 14,
+//     borderRadius: 14,
+//     marginBottom: 10,
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 1 },
+//     shadowOpacity: 0.05,
+//     shadowRadius: 3,
+//     elevation: 2,
+//   },
+
+//   avatarContainer: { marginRight: 14 },
+//   avatarPlaceholder: {
+//     // width: 48,
+//     // height: 48,
+//     // borderRadius: 24,
+//     // backgroundColor: '#dbeafe',
+//     // justifyContent: 'center',
+//     // alignItems: 'center',
+    
+//   width: 52,                    // slightly bigger for better look
+//   height: 52,
+//   borderRadius: 26,
+//   backgroundColor: '#dbeafe',   // light blue background (you can change)
+//   justifyContent: 'center',
+//   alignItems: 'center',
+//   borderWidth: 1,               // ← Added border thickness
+//   borderColor: Colors.light.primaryDark,  // ← Primary color border
+
+//   },
+//   avatarText: {
+//     fontSize: 17,
+//     color: Colors.light.primaryDark,
+//   },
+
+//   // contactInfo: { flex: 1, paddingRight: 8 },
+//   // contactName: {
+//   //   fontSize: 16,
+//   //   color: '#111827',
+//   //   marginBottom: 3,
+//   // },
+//   // contactPhone: {
+//   //   fontSize: 13.5,
+//   //   color: '#2563eb',
+//   //   marginBottom: 1,
+//   // },
   
-  contactInfo: { 
-  flex: 1, 
-  paddingRight: 12 
-},
+//   contactInfo: { 
+//   flex: 1, 
+//   paddingRight: 12 
+// },
 
-contactName: {
-  fontSize: 16.5,
-  color: '#1f2937',
-  marginBottom: 4,
-},
+// contactName: {
+//   fontSize: 16.5,
+//   color: '#1f2937',
+//   marginBottom: 4,
+// },
 
-contactPhone: {
-  fontSize: 14.5,
-  color: '#2563eb',
-  marginBottom: 4,
-},
+// contactPhone: {
+//   fontSize: 14.5,
+//   color: '#2563eb',
+//   marginBottom: 4,
+// },
   contactCity: {
     fontSize: 13,
     color: '#374151',
@@ -607,6 +701,12 @@ contactPhone: {
     color: '#6b7280',
     marginTop: 1,
   },
+  phoneRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 5,
+  marginTop: 2,
+},
 
   // Bottom Sheet Styles (slightly refined)
   sheetHeader: {
@@ -664,10 +764,10 @@ contactPhone: {
 
 
 // ✅ NEW STYLE - This displays city + address on same line
-contactLocation: {
-  fontSize: 13,
-  color: '#6b7280',
-},
+// contactLocation: {
+//   fontSize: 13,
+//   color: '#6b7280',
+// },
 
 searchContainer: {
   flexDirection: 'row',
@@ -689,6 +789,21 @@ searchInput: {
   fontSize: 14,
   color: '#111827',
 },
+
+
+
+
+
+
+  // infoIconContainer: {
+  //   height: 32,
+  //   width: 32,
+  //   borderRadius: 16,
+
+  //   backgroundColor: '#F5F7FA',
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  // },
 });
 
 

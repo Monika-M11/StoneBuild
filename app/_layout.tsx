@@ -584,6 +584,287 @@
 
 
 
+// import { Stack, useRouter } from 'expo-router';
+// import { StatusBar } from 'expo-status-bar';
+// import React, { useEffect, useRef, useState } from 'react';
+// import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+// import {
+//   SourceSans3_400Regular,
+//   SourceSans3_500Medium,
+//   SourceSans3_700Bold,
+//   useFonts,
+// } from '@expo-google-fonts/source-sans-3';
+// import * as SplashScreen from 'expo-splash-screen';
+
+// import SideDrawer from '../components/SideDrawer';
+// import { DrawerProvider, useDrawer } from '../contexts/DrawerContext';
+
+// import { AuthProvider, useAuth } from '@/providers/AuthProvider';
+// import { ToastProvider, useToast } from '@/providers/ToastProvider';
+// import { getDeviceInfo } from '@/utils/deviceInfo';
+// import * as Battery from 'expo-battery';
+// import * as Device from 'expo-device';
+// import * as Network from 'expo-network';
+// import * as SecureStore from 'expo-secure-store';
+// import { LoaderProvider } from '../providers/LoaderProvider';
+// import { ThemeProvider } from '../providers/ThemeProvider';
+
+// import * as Application from 'expo-application';
+// import ForceUpdateModal from './screens/forceUpdate';
+
+// // Prevent splash auto hide
+// SplashScreen.preventAutoHideAsync();
+
+
+// // 🔹 Drawer Overlay
+// function DrawerOverlay() {
+//   const { drawerVisible, closeDrawer } = useDrawer();
+//   const router = useRouter();
+
+//   if (!drawerVisible) return null;
+
+//   return (
+//     <SideDrawer
+//       visible={drawerVisible}
+//       onClose={closeDrawer}
+//       onMenuPress={(id) => {
+//         router.push(`/screens/${id}` as any);
+//         closeDrawer();
+//       }}
+//     />
+//   );
+// }
+
+
+// // App Initializer
+// function AppInitializer() {
+//   const { showToast } = useToast();
+
+//   const hasShownOffline = useRef(false);
+//   const hasShownBattery = useRef(false);
+
+//   useEffect(() => {
+//     let networkSub: any;
+//     let batterySub: any;
+//     let batteryInterval: any;
+
+//     const init = async () => {
+//       try {
+//         // Store device info once
+//         const existing = await SecureStore.getItemAsync('device_info');
+
+//         if (!existing) {
+//           const deviceInfo = getDeviceInfo();
+
+//           await SecureStore.setItemAsync(
+//             'device_info',
+//             JSON.stringify(deviceInfo)
+//           );
+//         }
+
+//         // Network check
+//         const network = await Network.getNetworkStateAsync();
+
+//         if (!network.isConnected) {
+//           showToast('No Internet', 'Check your connection', 'error');
+//           hasShownOffline.current = true;
+//         }
+
+//         // Device check
+//         if (!Device.isDevice) {
+//           showToast('Invalid Device', 'Use a real device', 'error');
+//         }
+
+//         // Battery check
+//         const checkBattery = async () => {
+//           const level = await Battery.getBatteryLevelAsync();
+
+//           if (level < 0.2 && !hasShownBattery.current) {
+//             showToast(
+//               'Low Battery',
+//               `Battery is ${(level * 100).toFixed(0)}%`,
+//               'error'
+//             );
+//             hasShownBattery.current = true;
+//           }
+
+//           if (level >= 0.25) {
+//             hasShownBattery.current = false;
+//           }
+//         };
+
+//         await checkBattery();
+
+//         // Network listener
+//         networkSub = Network.addNetworkStateListener((state) => {
+//           const isOffline =
+//             !state.isConnected || state.isInternetReachable === false;
+
+//           if (isOffline && !hasShownOffline.current) {
+//             showToast('No Internet', 'Connection lost', 'error');
+//             hasShownOffline.current = true;
+//           }
+
+//           if (!isOffline) {
+//             hasShownOffline.current = false;
+//           }
+//         });
+
+//         // Battery listener
+//         batterySub = Battery.addBatteryLevelListener(({ batteryLevel }) => {
+//           if (batteryLevel < 0.2 && !hasShownBattery.current) {
+//             showToast(
+//               'Low Battery',
+//               `Battery is ${(batteryLevel * 100).toFixed(0)}%`,
+//               'error'
+//             );
+//             hasShownBattery.current = true;
+//           }
+//         });
+
+//         batteryInterval = setInterval(checkBattery, 30000);
+
+//       } catch (err) {
+//         console.log('Init error:', err);
+//       }
+//     };
+
+//     init();
+
+//     return () => {
+//       networkSub?.remove();
+//       batterySub?.remove();
+//       clearInterval(batteryInterval);
+//     };
+//   }, []);
+
+//   return null;
+// }
+
+
+// // 🔹 Root Layout
+// export default function RootLayout() {
+//   const router = useRouter();
+
+//   const [loaded, error] = useFonts({
+//     SourceSans3_400Regular,
+//     SourceSans3_500Medium,
+//     SourceSans3_700Bold,
+//   });
+
+//   const [appReady, setAppReady] = useState(false);
+//   const [forceUpdate, setForceUpdate] = useState(false);
+//   const [updateUrl, setUpdateUrl] = useState('');
+
+//   // Splash + fonts
+//   useEffect(() => {
+//     if (loaded || error) {
+//       SplashScreen.hideAsync();
+//       setAppReady(true);
+//     }
+//   }, [loaded, error]);
+
+//   // Auth check
+//   // useEffect(() => {
+//   //   if (!appReady) return;
+
+//   //   const checkAuth = async () => {
+//   //     const token = await getToken();
+
+//   //     if (token) {
+//   //       router.replace('/home');
+//   //     } else {
+//   //       router.replace('/getting-started');
+//   //     }
+//   //   };
+
+//   //   checkAuth();
+//   // }, [appReady]);
+
+
+
+// const { isLoggedIn } = useAuth();
+
+
+// useEffect(() => {
+//   console.log("Auth State Changed:", isLoggedIn);
+
+//   if (isLoggedIn === null) return;
+
+//   if (isLoggedIn) {
+//     router.replace('/home');
+//   } else {
+//     router.replace('/getting-started');
+//   }
+// }, [isLoggedIn]);
+
+// // ✅ Version check (MOVE THIS UP)
+// useEffect(() => {
+//   const checkVersion = async () => {
+//     try {
+//       const currentVersion =
+//         Application.nativeApplicationVersion || '0.0.0';
+
+//       console.log('Current Version:', currentVersion);
+
+//       // TEMP: disable API (since backend not running)
+//       return;
+
+
+//     } catch (err) {
+//       console.log('Version check error:', err);
+//     }
+//   };
+
+//   checkVersion();
+// }, []);
+
+
+//   // ⛔ RETURN AFTER ALL HOOKS
+//   if (!loaded && !error) return null;
+
+//   return (
+//     <AuthProvider>
+//     <GestureHandlerRootView style={{ flex: 1 }}>
+//       <StatusBar style="auto" />
+
+//       <ThemeProvider>
+//         <LoaderProvider>
+//           <ToastProvider>
+
+//             <AppInitializer />
+
+//             <DrawerProvider>
+//               <Stack
+//                 screenOptions={{
+//                   headerShown: false,
+//                   animation: 'fade',
+//                 }}
+//               >
+//                 <Stack.Screen name="getting-started" />
+//                 <Stack.Screen name="login" />
+//                 <Stack.Screen name="home" />
+//                 <Stack.Screen name="profileScreen" />
+//               </Stack>
+
+//               <DrawerOverlay />
+//             </DrawerProvider>
+
+//             <ForceUpdateModal
+//               visible={forceUpdate}
+//               updateUrl={updateUrl}
+//             />
+
+//           </ToastProvider>
+//         </LoaderProvider>
+//       </ThemeProvider>
+    
+//     </GestureHandlerRootView>
+//       </AuthProvider>
+//   );
+// }
+
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState } from 'react';
@@ -600,7 +881,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import SideDrawer from '../components/SideDrawer';
 import { DrawerProvider, useDrawer } from '../contexts/DrawerContext';
 
-import { getToken } from '@/auth/authStorage';
+import { AuthProvider, useAuth } from '@/providers/AuthProvider';
 import { ToastProvider, useToast } from '@/providers/ToastProvider';
 import { LoaderProvider } from '../providers/LoaderProvider';
 import { ThemeProvider } from '../providers/ThemeProvider';
@@ -652,7 +933,6 @@ function AppInitializer() {
 
     const init = async () => {
       try {
-        // Store device info once
         const existing = await SecureStore.getItemAsync('device_info');
 
         if (!existing) {
@@ -664,7 +944,6 @@ function AppInitializer() {
           );
         }
 
-        // Network check
         const network = await Network.getNetworkStateAsync();
 
         if (!network.isConnected) {
@@ -672,12 +951,10 @@ function AppInitializer() {
           hasShownOffline.current = true;
         }
 
-        // Device check
         if (!Device.isDevice) {
           showToast('Invalid Device', 'Use a real device', 'error');
         }
 
-        // Battery check
         const checkBattery = async () => {
           const level = await Battery.getBatteryLevelAsync();
 
@@ -697,7 +974,6 @@ function AppInitializer() {
 
         await checkBattery();
 
-        // Network listener
         networkSub = Network.addNetworkStateListener((state) => {
           const isOffline =
             !state.isConnected || state.isInternetReachable === false;
@@ -712,7 +988,6 @@ function AppInitializer() {
           }
         });
 
-        // Battery listener
         batterySub = Battery.addBatteryLevelListener(({ batteryLevel }) => {
           if (batteryLevel < 0.2 && !hasShownBattery.current) {
             showToast(
@@ -743,123 +1018,106 @@ function AppInitializer() {
   return null;
 }
 
-
-// 🔹 Root Layout
-export default function RootLayout() {
+function RootLayoutInner() {
   const router = useRouter();
+  const { isLoggedIn } = useAuth();
 
+  useEffect(() => {
+    console.log("Auth State Changed:", isLoggedIn);
+
+    if (isLoggedIn === null) return;
+
+    if (isLoggedIn) {
+      router.replace('/home');
+    } else {
+      router.replace('/login');
+    }
+  }, [isLoggedIn]);
+
+  // Prevent flicker
+  if (isLoggedIn === null) return null;
+
+  return (
+    <>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          animation: 'fade',
+        }}
+      >
+        <Stack.Screen name="index" />
+        <Stack.Screen name="getting-started" />
+        <Stack.Screen name="login" />
+        <Stack.Screen name="home" />
+        <Stack.Screen name="profileScreen" />
+      </Stack>
+
+      <DrawerOverlay />
+    </>
+  );
+}
+
+
+// 🔹 ROOT LAYOUT
+export default function RootLayout() {
   const [loaded, error] = useFonts({
     SourceSans3_400Regular,
     SourceSans3_500Medium,
     SourceSans3_700Bold,
   });
 
-  const [appReady, setAppReady] = useState(false);
   const [forceUpdate, setForceUpdate] = useState(false);
   const [updateUrl, setUpdateUrl] = useState('');
 
-  // Splash + fonts
   useEffect(() => {
     if (loaded || error) {
       SplashScreen.hideAsync();
-      setAppReady(true);
     }
   }, [loaded, error]);
 
-  // Auth check
+  // Version check (optional)
   useEffect(() => {
-    if (!appReady) return;
+    const checkVersion = async () => {
+      try {
+        const currentVersion =
+          Application.nativeApplicationVersion || '0.0.0';
 
-    const checkAuth = async () => {
-      const token = await getToken();
-
-      if (token) {
-        router.replace('/home');
-      } else {
-        router.replace('/getting-started');
+        console.log('Current Version:', currentVersion);
+      } catch (err) {
+        console.log('Version check error:', err);
       }
     };
 
-    checkAuth();
-  }, [appReady]);
+    checkVersion();
+  }, []);
 
-  // ✅ Version check (FIXED POSITION)
-  // useEffect(() => {
-  //   const checkVersion = async () => {
-  //     try {
-  //       const currentVersion =
-  //         Application.nativeApplicationVersion || '0.0.0';
-
-  //       console.log('Current Version:', currentVersion);
-
-  //       // ⛔ TEMP: backend not ready → skip API
-  //       return;
-
-
-  //     } catch (err) {
-  //       console.log('Version check error:', err);
-  //     }
-  //   };
-  // ✅ Version check (MOVE THIS UP)
-// ✅ Version check (MOVE THIS UP)
-useEffect(() => {
-  const checkVersion = async () => {
-    try {
-      const currentVersion =
-        Application.nativeApplicationVersion || '0.0.0';
-
-      console.log('Current Version:', currentVersion);
-
-      // TEMP: disable API (since backend not running)
-      return;
-
-
-    } catch (err) {
-      console.log('Version check error:', err);
-    }
-  };
-
-  checkVersion();
-}, []);
-
-
-  // ⛔ RETURN AFTER ALL HOOKS
   if (!loaded && !error) return null;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar style="auto" />
+    <AuthProvider> {/* ✅ PROVIDER AT TOP */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar style="auto" />
 
-      <ThemeProvider>
-        <LoaderProvider>
-          <ToastProvider>
+        <ThemeProvider>
+          <LoaderProvider>
+            <ToastProvider>
 
-            <AppInitializer />
+              <AppInitializer />
 
-            <DrawerProvider>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  animation: 'fade',
-                }}
-              >
-                <Stack.Screen name="getting-started" />
-                <Stack.Screen name="login" />
-                <Stack.Screen name="home" />
-                <Stack.Screen name="profileScreen" />
-              </Stack>
+              <DrawerProvider>
+                <RootLayoutInner /> {/* ✅ FIXED */}
+              </DrawerProvider>
 
-              <DrawerOverlay />
-            </DrawerProvider>
+              <ForceUpdateModal
+                visible={forceUpdate}
+                updateUrl={updateUrl}
+              />
 
-            <ForceUpdateModal
-              visible={forceUpdate}
-              updateUrl={updateUrl}
-            />
+            </ToastProvider>
+          </LoaderProvider>
+        </ThemeProvider>
 
-          </ToastProvider>
-        </LoaderProvider>
-      </ThemeProvider>
-    </GestureHandlerRootView>
+      </GestureHandlerRootView>
+    </AuthProvider>
   );
 }

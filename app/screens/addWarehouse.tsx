@@ -100,7 +100,7 @@ export default function AddWarehouseScreen() {
 
       console.log("📥 Warehouse Response:", response);
 
-      if (response.status === "success") {
+      if (response.success) {
         showToast(
           "Success",
           response.message || "Warehouse added successfully!",

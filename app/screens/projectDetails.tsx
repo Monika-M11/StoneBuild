@@ -316,7 +316,7 @@ function PlaceholderTab({ icon, title, sub }: { icon: string; title: string; sub
   );
 }
 
-type TabKey = 'party' | 'transaction' | 'site' | 'task' | 'attendance';
+type TabKey = 'party' | 'transaction' | 'site' | 'task' | 'attendance' | 'equipments' | 'materials';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'party',       label: 'Party'       },
@@ -324,6 +324,8 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'site',        label: 'Site'        },
   { key: 'task',        label: 'Task'        },
   { key: 'attendance',  label: 'Attendance'  },
+  { key: 'equipments',  label: 'Equipments'  },
+  { key: 'materials',  label: 'Materials'  },
 ];
 
 export default function ProjectDetailScreen() {
@@ -350,6 +352,11 @@ export default function ProjectDetailScreen() {
         return <PlaceholderTab icon="location-outline" title="Site" sub="Site details will appear here" />;
       case 'task':
         return <PlaceholderTab icon="checkmark-circle-outline" title="Task" sub="Task list will appear here" />;
+      case 'equipments':
+        return <PlaceholderTab icon="checkmark-circle-outline" title="Equipments" sub="Equipments list will appear here" />;
+        case 'materials':
+        return <PlaceholderTab icon="checkmark-circle-outline" title="Materials" sub="Materials list will appear here" />;
+
       default:
         return null;
     }

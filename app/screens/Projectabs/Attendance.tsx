@@ -1,13 +1,4 @@
-/**
- * PATH: app/screens/ProjectTabs/Attendance.tsx
- *
- * Attendance tab body — rendered inside ProjectDetailScreen.
- * Features:
- *   • Fetch GPS location  (expo-location)
- *   • Take photo          (expo-image-picker)
- *   • Upload file         (expo-document-picker)
- *   • Attendance history list
- */
+
 import { useToast } from '@/providers/ToastProvider';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
@@ -29,9 +20,8 @@ import Colors from '../../../constants/theme';
 import { DefaultText, useTheme } from '../../../providers/ThemeProvider';
 
 
-// ─────────────────────────────────────────────────────────────
 // Types
-// ─────────────────────────────────────────────────────────────
+
 interface Props { projectId?: string }
 
 interface LocationData {
@@ -52,9 +42,8 @@ interface AttendanceRecord {
   status: 'Present' | 'Late' | 'Absent';
 }
 
-// ─────────────────────────────────────────────────────────────
 // Constants
-// ─────────────────────────────────────────────────────────────
+
 const DUMMY_RECORDS: AttendanceRecord[] = [
   {
     id: '1',
@@ -150,17 +139,17 @@ export default function AttendanceTab({ projectId }: Props) {
 
     let uri = result.assets[0].uri;
 
-    // ==============================
-    // 🔹 GET ORIGINAL SIZE
-    // ==============================
+   
+    // GET ORIGINAL SIZE
+   
     const originalResponse = await fetch(uri);
     const originalBlob = await originalResponse.blob();
     const originalSize = originalBlob.size;
     const originalSizeKB = (originalSize / 1024).toFixed(2);
 
-    // ==============================
-    // 🔹 COMPRESSION LOOP
-    // ==============================
+   
+    //COMPRESSION LOOP
+   
     let compressed = uri;
     let finalFileSize = originalSize;
     let finalSizeInKB = originalSizeKB;
@@ -189,9 +178,8 @@ export default function AttendanceTab({ projectId }: Props) {
       }
     }
 
-    // ==============================
-    // ❌ STILL TOO LARGE
-    // ==============================
+    // STILL TOO LARGE
+    
     if (finalFileSize > 50 * 1024) {
       showToast(
         'Image Too Large',
@@ -201,9 +189,9 @@ export default function AttendanceTab({ projectId }: Props) {
       return;
     }
 
-    // ==============================
-    // ✅ SUCCESS
-    // ==============================
+   
+    // SUCCESS
+
     showToast(
       'Image Compressed',
       `Original: ${originalSizeKB} KB → Final: ${finalSizeInKB} KB`,
@@ -220,7 +208,7 @@ setPhotoSize(`${finalSizeInKB} KB`);
     setCameraLoading(false);
   }
 };
-  // ── File picker ────────────────────────────────────────────
+
  const handleUploadFile = async () => {
   setFileLoading(true);
 
@@ -235,7 +223,7 @@ setPhotoSize(`${finalSizeInKB} KB`);
 
     const asset = result.assets[0];
 
-    // ✅ Allowed types (images + documents)
+   
     const allowedTypes = [
       // 📄 Documents
       'application/pdf',

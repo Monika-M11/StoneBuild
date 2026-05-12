@@ -1,6 +1,7 @@
 import { removeToken } from '@/auth/authStorage';
 import AuthInput from '@/components/AuthInput';
 import ScreenPage from '@/components/ScreenPage';
+import { useAuth } from '@/providers/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useRouter } from 'expo-router';
@@ -23,6 +24,7 @@ import { useToast } from '../providers/ToastProvider';
 export default function ProfileScreen() {
   const theme = useTheme();
   const router = useRouter();
+  const { setIsLoggedIn } = useAuth();
   const { openDrawer } = useDrawer();
   const { showToast } = useToast(); // disabled - ToastProvider not working
 
@@ -87,11 +89,11 @@ export default function ProfileScreen() {
   //   ]);
   // };
 
-  const handleLogout = async () => {
+const handleLogout = async () => {
   await removeToken();
-  console.log("Logged-out Successfully")
-  router.replace('/login');
-  
+  console.log("Logged-out Successfully");
+
+  setIsLoggedIn(false); 
 };
 
 

@@ -1,10 +1,12 @@
 import Colors from "@/constants/theme";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { DefaultText, useTheme } from "@/providers/ThemeProvider";
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRef } from "react";
 import {
   StyleSheet,
   TextInput,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -20,7 +22,11 @@ export type InputMode =
   | "wholeNumber"
   | "alphanumeric"
   | "numeric"
-  | "email";
+  | "email"
+  // Backward-compatible aliases used across the app
+  | "tel"
+  | "text";
+
 
 interface AuthInputProps {
   label: string;
@@ -45,6 +51,8 @@ interface AuthInputProps {
   numberOfLines?: number;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   autoComplete?: "email" | "current-password" | "new-password" | "username";
+  rightIcon?: string;
+  onRightIconPress?: () => void;
 }
 
 function applyTransform(text: string, mode: InputMode): string {
@@ -77,10 +85,15 @@ function applyTransform(text: string, mode: InputMode): string {
         .toLowerCase()
         .replace(/[^a-z0-9@._+-]/g, "")
         .replace(/[@.]{2,}/g, "@");
+    case "tel":
+      // Alias for phone-mode handling
+      return applyTransform(text, "phone");
+    case "text":
     default:
       return text;
   }
 }
+
 
 function formatOnBlur(text: string, mode: InputMode): string {
   if (mode === "amount") {
@@ -108,6 +121,8 @@ export default function AuthInput({
   multiline = false,
   autoCapitalize = "none",
   numberOfLines,
+  rightIcon,                
+  onRightIconPress,  
 }: AuthInputProps) {
   const theme = useTheme();
   const primaryDark = Colors.light.primaryDark;
@@ -150,32 +165,41 @@ export default function AuthInput({
       <FloatingLabel label={label} isFocused={isFocused} hasError={hasError} />
 
       <TouchableWithoutFeedback onPress={handlePress} accessible={false}>
-        <View style={[styles.inputContainer, { borderColor }]}>
-          <TextInput
-            ref={textInputRef}
-            style={styles.textInput}
-            value={value}
-            onChangeText={handleChangeText}
-            onFocus={onFocus}
-            onBlur={handleBlur}
-            placeholder={placeholder}
-            placeholderTextColor="#aaa"
-            secureTextEntry={secureTextEntry}
-            keyboardType={keyboardType}
-            editable={editable}
-            multiline={multiline}
-            numberOfLines={numberOfLines}
-            textAlignVertical={multiline ? "top" : "center"}
-            autoCapitalize={
-              inputMode === "allCaps" ||
-              inputMode === "capitalize" ||
-              inputMode === "sentenceCase" ||
-              inputMode === "email"
-                ? "none"
-                : autoCapitalize
-            }
-          />
-        </View>
+       <View style={[styles.inputContainer, { borderColor }]}>
+  <TextInput
+    ref={textInputRef}
+    style={styles.textInput}
+    value={value}
+    onChangeText={handleChangeText}
+    onFocus={onFocus}
+    onBlur={handleBlur}
+    placeholder={placeholder}
+    placeholderTextColor="#aaa"
+    secureTextEntry={secureTextEntry}
+    keyboardType={keyboardType}
+    editable={editable}
+    multiline={multiline}
+    numberOfLines={numberOfLines}
+    textAlignVertical={multiline ? "top" : "center"}
+    autoCapitalize={
+      inputMode === "allCaps" ||
+      inputMode === "capitalize" ||
+      inputMode === "sentenceCase" ||
+      inputMode === "email"
+        ? "none"
+        : autoCapitalize
+    }
+  />
+
+  {rightIcon && (
+    <TouchableOpacity
+      onPress={onRightIconPress}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    >
+      <Ionicons name={rightIcon as any} size={20} color="#6B7280" />
+    </TouchableOpacity>
+  )}
+</View>
       </TouchableWithoutFeedback>
 
       {hasError && (
@@ -191,24 +215,42 @@ const styles = StyleSheet.create({
   wrapper: {
     marginBottom: 12,
   },
-  inputContainer: {
-    backgroundColor: Colors.light.background,
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    minHeight: 45,
-  },
-  textInput: {
-    fontSize: 15,
-    color: Colors.light.text,
-    paddingVertical: 1,
-    minHeight: 15,
-  },
+  // inputContainer: {
+  //   backgroundColor: Colors.light.background,
+  //   borderWidth: 1,
+  //   borderRadius: 10,
+  //   paddingHorizontal: 12,
+  //   paddingVertical: 8,
+  //   minHeight: 45,
+  // },
+  // textInput: {
+  //   fontSize: 15,
+  //   color: Colors.light.text,
+  //   paddingVertical: 1,
+  //   minHeight: 15,
+  // },
   errorText: {
     marginTop: 4,
     marginLeft: 4,
     fontSize: 12,
     color: "#ef4444",
   },
+
+  inputContainer: {
+  backgroundColor: Colors.light.background,
+  borderWidth: 1,
+  borderRadius: 10,
+  paddingHorizontal: 12,
+  minHeight: 45,
+
+  flexDirection: "row", // ✅ REQUIRED
+  alignItems: "center", // ✅ REQUIRED
+},
+
+textInput: {
+  flex: 1, // ✅ allows icon space
+  fontSize: 15,
+  color: Colors.light.text,
+  paddingVertical: 8,
+},
 });

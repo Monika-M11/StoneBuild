@@ -2,7 +2,10 @@ import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
+import { Fonts } from "../constants/theme";
 import { useTheme } from "../providers/ThemeProvider";
+
+
 
 export default function SplashScreen() {
   const router = useRouter();
@@ -39,14 +42,16 @@ const styles = StyleSheet.create({
   },
   logo: {
     fontSize: 34,
-    fontWeight: "bold",
+    fontFamily: Fonts.bold,
     color: '#574964',
     marginBottom: 10,
   },
   loading: {
+    fontFamily: Fonts.regular,
     color: '#574964',
     fontSize: 16,
   },
+
    loader: {
     marginTop: 16, // 👈 spacing below "Loading..."
   },
