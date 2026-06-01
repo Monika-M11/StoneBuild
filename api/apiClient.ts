@@ -166,23 +166,132 @@ import { BASE_URL } from './endpoints';
 // };
 
 
+// import * as SecureStore from 'expo-secure-store';
+
+// export const postApi = async (endpoint: string, data: any) => {
+//   if (!endpoint || endpoint === 'undefined') {
+//   throw new Error(`Invalid endpoint: ${endpoint}`);
+// }
+//   const TOKEN_KEY = 'user_jwt_token';
+
+//   try {
+//     const jwt = await SecureStore.getItemAsync(TOKEN_KEY);
+//     const fullUrl = `${BASE_URL}${endpoint}`;
+
+//     console.log(`🚀 Requesting: ${fullUrl}`);
+//     console.log(`📤 Payload:`, JSON.stringify(data, null, 2));
+
+//     const controller = new AbortController();
+//     const timeout = setTimeout(() => controller.abort(), 20000); // 20s timeout
+
+//     const response = await fetch(fullUrl, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         ...(jwt && { Authorization: `Bearer ${jwt}` }),
+//       },
+//       // body: JSON.stringify({ data: data }),
+
+//       body: JSON.stringify({
+//   token: 'checkUser',
+//   data: data,
+// }),
+//       signal: controller.signal,
+//     });
+//      console.log('🔑 JWT USED:', jwt);
+//     clearTimeout(timeout);
+
+//     console.log(`📥 Status: ${response.status} ${response.statusText}`);
+
+    
+
+//     const text = await response.text();
+//     console.log(`📥 Response body:`, text);
+
+
+    
+
+//     try {
+//       const result = JSON.parse(text);
+//       return { ...result, httpStatus: response.status };
+//     } catch {
+//       return { status: 'error', message: text, httpStatus: response.status };
+//     }
+//   } catch (error: any) {
+//     console.error('❌ FULL ERROR DETAILS:');
+//     console.error('Error Name:', error?.name);
+//     console.error('Error Message:', error?.message);
+//     console.error('Error Stack:', error?.stack);
+
+//     if (error?.name === 'AbortError') {
+//       return { status: 'error', message: 'Request timed out (tunnel too slow)', httpStatus: 0 };
+//     }
+
+//     return {
+//       status: 'error',
+//       message: error?.message || 'Network request failed',
+//       httpStatus: 0,
+//     };
+
+
+    
+//   }
+// };
+
+
+
 import * as SecureStore from 'expo-secure-store';
 
-export const postApi = async (endpoint: string, data: any) => {
+const TOKEN_KEY = 'user_jwt_token';
+
+type PayloadType = 'login' | 'data' | 'raw';
+
+export const postApi = async (
+  endpoint: string,
+  data: any,
+  payloadType: PayloadType = 'data'
+) => {
   if (!endpoint || endpoint === 'undefined') {
-  throw new Error(`Invalid endpoint: ${endpoint}`);
-}
-  const TOKEN_KEY = 'user_jwt_token';
+    throw new Error(`Invalid endpoint: ${endpoint}`);
+  }
 
   try {
     const jwt = await SecureStore.getItemAsync(TOKEN_KEY);
     const fullUrl = `${BASE_URL}${endpoint}`;
 
+    let requestBody;
+
+    switch (payloadType) {
+      case 'login':
+        requestBody = {
+          token: 'checkUser',
+          data,
+        };
+        break;
+
+      case 'raw':
+        requestBody = data;
+        break;
+
+      case 'data':
+      default:
+        requestBody = {
+          data,
+        };
+        break;
+    }
+
     console.log(`🚀 Requesting: ${fullUrl}`);
-    console.log(`📤 Payload:`, JSON.stringify(data, null, 2));
+    console.log(
+      `📤 Payload:`,
+      JSON.stringify(requestBody, null, 2)
+    );
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20000); // 20s timeout
+
+    const timeout = setTimeout(() => {
+      controller.abort();
+    }, 20000);
 
     const response = await fetch(fullUrl, {
       method: 'POST',
@@ -190,36 +299,64 @@ export const postApi = async (endpoint: string, data: any) => {
         'Content-Type': 'application/json',
         ...(jwt && { Authorization: `Bearer ${jwt}` }),
       },
-      body: JSON.stringify({ data: data }),
+      body: JSON.stringify(requestBody),
       signal: controller.signal,
     });
-     console.log('🔑 JWT USED:', jwt);
+
     clearTimeout(timeout);
 
-    console.log(`📥 Status: ${response.status} ${response.statusText}`);
+    console.log('🔑 JWT USED:', jwt);
+    console.log(
+      `📥 Status: ${response.status} ${response.statusText}`
+    );
 
     const text = await response.text();
-    console.log(`📥 Response body:`, text);
+
+    console.log('📥 Response body:', text);
+
+    // Auto Logout
+    if (response.status === 401) {
+      await SecureStore.deleteItemAsync(TOKEN_KEY);
+
+      return {
+        status: 'unauthorized',
+        forceLogout: true,
+        httpStatus: 401,
+      };
+    }
 
     try {
       const result = JSON.parse(text);
-      return { ...result, httpStatus: response.status };
+
+      return {
+        ...result,
+        httpStatus: response.status,
+      };
     } catch {
-      return { status: 'error', message: text, httpStatus: response.status };
+      return {
+        status: 'error',
+        message: text,
+        httpStatus: response.status,
+      };
     }
   } catch (error: any) {
-    console.error('❌ FULL ERROR DETAILS:');
-    console.error('Error Name:', error?.name);
-    console.error('Error Message:', error?.message);
-    console.error('Error Stack:', error?.stack);
+    console.error('❌ FULL ERROR DETAILS');
+    console.error('Name:', error?.name);
+    console.error('Message:', error?.message);
+    console.error('Stack:', error?.stack);
 
     if (error?.name === 'AbortError') {
-      return { status: 'error', message: 'Request timed out (tunnel too slow)', httpStatus: 0 };
+      return {
+        status: 'error',
+        message: 'Request timed out',
+        httpStatus: 0,
+      };
     }
 
     return {
       status: 'error',
-      message: error?.message || 'Network request failed',
+      message:
+        error?.message || 'Network request failed',
       httpStatus: 0,
     };
   }

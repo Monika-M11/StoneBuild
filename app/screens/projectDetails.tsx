@@ -336,9 +336,10 @@ export default function ProjectDetailScreen() {
     name: string;
     avatarColor: string;
   }>();
+  
 
   const [activeTab, setActiveTab] = useState<TabKey>('party');
-  const [footerTab, setFooterTab] = useState('projects');
+  const [footerTab, setFooterTab] = useState('project');
 
   const renderBody = () => {
     switch (activeTab) {

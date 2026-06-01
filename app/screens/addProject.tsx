@@ -33,7 +33,7 @@ type FormData = {
 export default function AddProjectScreen() {
   const router = useRouter();
   const {showToast} = useToast();
-  const [activeTab, setActiveTab] = useState('projects');
+  const [activeTab, setActiveTab] = useState('project');
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const [showStartPicker, setShowStartPicker] = useState(false);

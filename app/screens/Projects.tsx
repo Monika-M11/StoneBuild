@@ -63,7 +63,7 @@ export default function ProjectsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { openDrawer } = useDrawer();
-  const [activeTab, setActiveTab] = useState('projects');
+  const [activeTab, setActiveTab] = useState('project');
 
   const renderProjectItem = ({ item }: { item: Project }) => {
     const { bg, color } = statusStyles[item.status];

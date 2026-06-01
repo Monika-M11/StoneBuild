@@ -1,6 +1,8 @@
 import { getToken } from '@/auth/authStorage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
+
+
 type AuthContextType = {
   isLoggedIn: boolean | null;
   setIsLoggedIn: (value: boolean) => void;

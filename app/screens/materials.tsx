@@ -532,6 +532,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { postApi } from '@/api/apiClient';
 import { ENDPOINTS } from '@/api/endpoints';
 import ScreenPage from '@/components/ScreenPage';
+
 import { useToast } from '@/providers/ToastProvider';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import BottomSheetModal from '../../components/BottomSheetModal';
@@ -608,6 +609,7 @@ export default function MaterialsScreen() {
     notes: '',
   });
 
+
   const bottomSheetRef = useRef<any>(null);
   const snapPoints = useMemo(() => ['50%', '92%'], []);
 
@@ -651,6 +653,10 @@ export default function MaterialsScreen() {
 
       return;
     }
+
+   
+
+
 
       const apiData = response?.data;
       const apiList = apiData?.materials || apiData?.data || [];
