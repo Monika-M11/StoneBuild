@@ -855,6 +855,7 @@ import {
   View,
 } from "react-native";
 
+import BottomSheetModal from "@/components/BottomSheetModal";
 import AuthInput from "../components/AuthInput";
 import PrimaryButton from "../components/PrimaryButton";
 import { DefaultText } from "../providers/ThemeProvider";
@@ -866,6 +867,8 @@ export default function LoginScreen() {
   const router = useRouter();
   const { showToast } = useToast();
   const { setIsLoggedIn } = useAuth();
+
+  const bottomSheetRef = useRef<any>(null);
 
   const primaryDark = Colors.light.primaryDark;
   const icon = useThemeColor(
@@ -1139,10 +1142,9 @@ export default function LoginScreen() {
           />
 
           <TouchableOpacity
-            style={
-              styles.forgotButton
-            }
-          >
+  style={styles.forgotButton}
+  onPress={() => bottomSheetRef.current?.snapToIndex(0)}
+>
             <DefaultText
               style={[
                 styles.forgotText,
@@ -1202,7 +1204,29 @@ export default function LoginScreen() {
           </View>
         </Animated.View>
       </ScrollView>
+      
+      <BottomSheetModal
+  ref={bottomSheetRef}
+  snapPoints={["25%"]}
+>
+  <View style={styles.bottomSheetContainer}>
+    <DefaultText
+      style={styles.bottomSheetTitle}
+      variant="bold"
+    >
+      Forgot Password
+    </DefaultText>
+
+    <DefaultText
+      style={styles.bottomSheetText}
+      variant="regular"
+    >
+      Please contact the administrator to reset your password.
+    </DefaultText>
+  </View>
+</BottomSheetModal>
     </KeyboardAvoidingView>
+    
   );
 }
 
@@ -1274,4 +1298,21 @@ const styles =
       justifyContent: "center",
       marginTop: 16,
     },
+    bottomSheetContainer: {
+  paddingHorizontal: 20,
+  paddingTop: 10,
+  alignItems: "center",
+},
+
+bottomSheetTitle: {
+  fontSize: 18,
+  marginBottom: 12,
+},
+
+bottomSheetText: {
+  fontSize: 15,
+  textAlign: "center",
+  color: "#6B7280",
+  lineHeight: 22,
+},
   });
